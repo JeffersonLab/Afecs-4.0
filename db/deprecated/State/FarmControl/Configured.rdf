@@ -1,0 +1,56 @@
+<!--
+  ~   Copyright (c) 2016.  Jefferson Lab (JLab). All rights reserved. Permission
+  ~   to use, copy, modify, and distribute  this software and its documentation for
+  ~   educational, research, and not-for-profit purposes, without fee and without a
+  ~   signed licensing agreement.
+  ~
+  ~   IN NO EVENT SHALL JLAB BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL
+  ~   INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING
+  ~   OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF JLAB HAS
+  ~   BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  ~
+  ~   JLAB SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  ~   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  ~   PURPOSE. THE CLARA SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY,
+  ~   PROVIDED HEREUNDER IS PROVIDED "AS IS". JLAB HAS NO OBLIGATION TO PROVIDE
+  ~   MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+  ~
+  ~   This software was developed under the United States Government license.
+  ~   For more information contact author at gurjyan@jlab.org
+  ~   Department of Experimental Nuclear Physics, Jefferson Lab.
+  -->
+
+<rdf:RDF
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+xmlns:cool="http://AFECSHOMEDB/schema/cool#"
+>
+<rdf:Description rdf:about="http://AFECSHOMEDB/State/FarmControl/Configured#Configured">
+    <cool:hasName>configured</cool:hasName>
+    <cool:hasDescription>configure</cool:hasDescription>
+    <cool:achievedThrough rdf:resource="#Configure_Process"/>
+</rdf:Description>
+
+<cool:Process rdf:ID="Configure_Process">
+   <cool:hasName>Configure_Process</cool:hasName>
+   <cool:hasDescription>Configure state achieved through this process</cool:hasDescription>
+   <cool:isSync>true</cool:isSync>
+   <cool:isInitiator>true</cool:isInitiator>
+   <cool:sends rdf:resource="#Configure_Send_Package"/>
+</cool:Process>
+
+<cool:Package rdf:ID="Configure_Send_Package">
+   <cool:hasName>Configure_Send_Package</cool:hasName>
+   <cool:hasDescription>Configure process send package</cool:hasDescription>
+    <isForShellClient>true</isForShellClient>
+   <cool:hasChannel rdf:resource="#Configure_Send_Channel"/>
+</cool:Package>
+
+<cool:Channel rdf:ID="Configure_Send_Channel">
+    <cool:hasName>Configure_Send_Channel</cool:hasName>
+    <cool:hasDescription>Shell configure</cool:hasDescription>
+    <cool:hasSetValue>FarmConfigure</cool:hasSetValue>
+    <cool:hasValueType>206</cool:hasValueType>
+</cool:Channel>
+
+
+</rdf:RDF>

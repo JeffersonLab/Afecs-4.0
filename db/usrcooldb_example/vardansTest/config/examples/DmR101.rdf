@@ -1,0 +1,854 @@
+<!--
+  ~   Copyright (c) 2016.  Jefferson Lab (JLab). All rights reserved. Permission
+  ~   to use, copy, modify, and distribute  this software and its documentation for
+  ~   educational, research, and not-for-profit purposes, without fee and without a
+  ~   signed licensing agreement.
+  ~
+  ~   IN NO EVENT SHALL JLAB BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL
+  ~   INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING
+  ~   OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF JLAB HAS
+  ~   BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  ~
+  ~   JLAB SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  ~   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  ~   PURPOSE. THE CLARA SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY,
+  ~   PROVIDED HEREUNDER IS PROVIDED "AS IS". JLAB HAS NO OBLIGATION TO PROVIDE
+  ~   MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+  ~
+  ~   This software was developed under the United States Government license.
+  ~   For more information contact author at gurjyan@jlab.org
+  ~   Department of Experimental Nuclear Physics, Jefferson Lab.
+  -->
+
+<rdf:RDF
+xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+xmlns:rdfs='http://www.w3.org/2000/01/rdf-schema#'
+xmlns:cool='http://coda.jlab.org/COOL/cool#'
+>
+
+    <!-- Convention
+            The cool configuration name, the control name and
+            the name of the RC component should be the same.
+            This name defines the runtype of the experiment.
+    -->
+
+<cool:Control rdf:ID="DmR101">
+    <cool:hasComponent rdf:resource="#ROC101"/>
+    <cool:hasComponent rdf:resource="#ROC102"/>
+    <cool:hasComponent rdf:resource="#ROC103"/>
+    <cool:hasComponent rdf:resource="#ROC104"/>
+    <cool:hasComponent rdf:resource="#ROC105"/>
+    <cool:hasComponent rdf:resource="#ROC106"/>
+    <cool:hasComponent rdf:resource="#ROC107"/>
+    <cool:hasComponent rdf:resource="#ROC108"/>
+    <cool:hasComponent rdf:resource="#ROC109"/>
+    <cool:hasComponent rdf:resource="#ROC110"/>
+    <cool:hasComponent rdf:resource="#ROC111"/>
+    <cool:hasComponent rdf:resource="#ROC112"/>
+    <cool:hasComponent rdf:resource="#ROC113"/>
+    <cool:hasComponent rdf:resource="#ROC114"/>
+    <cool:hasComponent rdf:resource="#ROC115"/>
+    <cool:hasComponent rdf:resource="#ROC116"/>
+    <cool:hasComponent rdf:resource="#ROC117"/>
+    <cool:hasComponent rdf:resource="#ROC118"/>
+    <cool:hasComponent rdf:resource="#ROC119"/>
+    <cool:hasComponent rdf:resource="#ROC120"/>
+    <cool:hasComponent rdf:resource="#ROC121"/>
+    <cool:hasComponent rdf:resource="#ROC122"/>
+    <cool:hasComponent rdf:resource="#ROC123"/>
+    <cool:hasComponent rdf:resource="#ROC124"/>
+    <cool:hasComponent rdf:resource="#ROC125"/>
+    <cool:hasComponent rdf:resource="#ROC126"/>
+    <cool:hasComponent rdf:resource="#ROC127"/>
+    <cool:hasComponent rdf:resource="#ROC128"/>
+    <cool:hasComponent rdf:resource="#ROC129"/>
+    <cool:hasComponent rdf:resource="#ROC130"/>
+    <cool:hasComponent rdf:resource="#ROC131"/>
+    <cool:hasComponent rdf:resource="#ROC132"/>
+    <cool:hasComponent rdf:resource="#ROC133"/>
+    <cool:hasComponent rdf:resource="#ROC134"/>
+    <cool:hasComponent rdf:resource="#ROC135"/>
+    <cool:hasComponent rdf:resource="#ROC136"/>
+    <cool:hasComponent rdf:resource="#ROC137"/>
+    <cool:hasComponent rdf:resource="#ROC138"/>
+    <cool:hasComponent rdf:resource="#ROC139"/>
+    <cool:hasComponent rdf:resource="#ROC140"/>
+    <cool:hasComponent rdf:resource="#ROC141"/>
+    <cool:hasComponent rdf:resource="#ROC142"/>
+    <cool:hasComponent rdf:resource="#ROC143"/>
+    <cool:hasComponent rdf:resource="#ROC144"/>
+    <cool:hasComponent rdf:resource="#ROC145"/>
+    <cool:hasComponent rdf:resource="#ROC146"/>
+    <cool:hasComponent rdf:resource="#ROC147"/>
+    <cool:hasComponent rdf:resource="#ROC148"/>
+    <cool:hasComponent rdf:resource="#ROC149"/>
+    <cool:hasComponent rdf:resource="#ROC150"/>
+    <cool:hasComponent rdf:resource="#ROC151"/>
+    <cool:hasComponent rdf:resource="#ROC152"/>
+    <cool:hasComponent rdf:resource="#ROC153"/>
+    <cool:hasComponent rdf:resource="#ROC154"/>
+    <cool:hasComponent rdf:resource="#ROC155"/>
+    <cool:hasComponent rdf:resource="#ROC156"/>
+    <cool:hasComponent rdf:resource="#ROC157"/>
+    <cool:hasComponent rdf:resource="#ROC158"/>
+    <cool:hasComponent rdf:resource="#ROC159"/>
+    <cool:hasComponent rdf:resource="#ROC160"/>
+    <cool:hasComponent rdf:resource="#ROC161"/>
+    <cool:hasComponent rdf:resource="#ROC162"/>
+    <cool:hasComponent rdf:resource="#ROC163"/>
+    <cool:hasComponent rdf:resource="#ROC164"/>
+    <cool:hasComponent rdf:resource="#ROC165"/>
+    <cool:hasComponent rdf:resource="#ROC166"/>
+    <cool:hasComponent rdf:resource="#ROC167"/>
+    <cool:hasComponent rdf:resource="#ROC168"/>
+    <cool:hasComponent rdf:resource="#ROC169"/>
+    <cool:hasComponent rdf:resource="#ROC170"/>
+    <cool:hasComponent rdf:resource="#ROC171"/>
+    <cool:hasComponent rdf:resource="#ROC172"/>
+    <cool:hasComponent rdf:resource="#ROC173"/>
+    <cool:hasComponent rdf:resource="#ROC174"/>
+    <cool:hasComponent rdf:resource="#ROC175"/>
+    <cool:hasComponent rdf:resource="#ROC176"/>
+    <cool:hasComponent rdf:resource="#ROC177"/>
+    <cool:hasComponent rdf:resource="#ROC178"/>
+    <cool:hasComponent rdf:resource="#ROC179"/>
+    <cool:hasComponent rdf:resource="#ROC180"/>
+    <cool:hasComponent rdf:resource="#ROC181"/>
+    <cool:hasComponent rdf:resource="#ROC182"/>
+    <cool:hasComponent rdf:resource="#ROC183"/>
+    <cool:hasComponent rdf:resource="#ROC184"/>
+    <cool:hasComponent rdf:resource="#ROC185"/>
+    <cool:hasComponent rdf:resource="#ROC186"/>
+    <cool:hasComponent rdf:resource="#ROC187"/>
+    <cool:hasComponent rdf:resource="#ROC188"/>
+    <cool:hasComponent rdf:resource="#ROC189"/>
+    <cool:hasComponent rdf:resource="#ROC190"/>
+    <cool:hasComponent rdf:resource="#ROC191"/>
+    <cool:hasComponent rdf:resource="#ROC192"/>
+    <cool:hasComponent rdf:resource="#ROC193"/>
+    <cool:hasComponent rdf:resource="#ROC194"/>
+    <cool:hasComponent rdf:resource="#ROC195"/>
+    <cool:hasComponent rdf:resource="#ROC196"/>
+    <cool:hasComponent rdf:resource="#ROC197"/>
+    <cool:hasComponent rdf:resource="#ROC198"/>
+    <cool:hasComponent rdf:resource="#ROC199"/>
+    <cool:hasComponent rdf:resource="#ROC200"/>
+    <cool:hasComponent rdf:resource="#RC"/>
+    <cool:hasCodaOption rdf:resource="#OPTION"/>
+</cool:Control>
+
+<cool:Option rdf:ID="OPTION">
+    <cool:hasCoda2Component>false</cool:hasCoda2Component>
+    <cool:hasTokenInterval>200</cool:hasTokenInterval>
+    <cool:hasDataFile>/tmp/test.dat</cool:hasDataFile>
+    <cool:Splitmb>2047</cool:Splitmb>
+</cool:Option>
+
+<cool:Component rdf:ID="ROC101">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc101</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC102">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc102</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC103">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc103</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC104">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc104</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC105">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc105</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC106">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc106</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC107">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc107</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC108">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc108</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC109">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc109</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC110">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc110</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC111">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc111</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC112">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc112</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC113">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc113</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC114">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc114</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC115">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc115</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC116">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc116</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC117">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc117</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC118">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc118</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC119">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc119</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC120">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc120</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC121">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc121</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC122">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc122</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC123">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc123</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC124">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc124</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC125">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc125</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC126">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc126</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC127">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc127</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC128">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc128</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC129">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc129</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC130">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc130</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+<cool:Component rdf:ID="ROC131">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc131</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC132">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc132</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC133">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc133</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC134">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc134</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC135">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc135</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC136">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc136</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC137">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc137</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC138">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc138</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC139">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc139</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC140">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc140</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC141">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc141</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC142">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>Roc142</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+</cool:Component>
+
+    <cool:Component rdf:ID="ROC143">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc143</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC144">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc144</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC145">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc145</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC146">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc146</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC147">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc147</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC148">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc148</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC149">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc149</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC150">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc150</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC151">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc151</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC152">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc152</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC153">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc153</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC154">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc154</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC155">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc155</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC156">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc156</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC157">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc157</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC158">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc158</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC159">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc159</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC160">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc160</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC161">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc161</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC162">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc162</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC163">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc163</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC164">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc164</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC165">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc165</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC166">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc166</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC167">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc167</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC168">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc168</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC169">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc169</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC170">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc170</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC171">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc171</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC172">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc172</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+    <cool:Component rdf:ID="ROC173">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc173</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC174">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc174</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC175">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc175</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC176">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc176</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC177">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc177</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC178">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc178</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC179">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc179</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC180">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc180</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC181">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc181</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC182">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc182</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC183">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc183</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC184">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc184</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC185">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc185</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC186">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc186</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC187">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc187</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC188">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc188</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC189">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc189</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC190">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc190</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC191">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc191</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC192">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc192</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC193">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc193</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC194">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc194</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC195">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc195</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC196">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc196</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC197">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc197</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC198">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc198</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC199">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc199</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+        <cool:Component rdf:ID="ROC200">
+        <cool:hasIpc>cMsg</cool:hasIpc>
+        <cool:hasType>ROC</cool:hasType>
+        <cool:hasName>Roc200</cool:hasName>
+        <cool:hasPriority>44</cool:hasPriority>
+    </cool:Component>
+
+<cool:Component rdf:ID="RC">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>RCS</cool:hasType>
+    <cool:hasName>DmR101</cool:hasName>
+    <cool:hasPriority>77</cool:hasPriority>
+</cool:Component>
+
+</rdf:RDF>

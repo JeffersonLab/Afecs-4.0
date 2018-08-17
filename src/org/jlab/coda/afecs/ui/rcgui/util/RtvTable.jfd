@@ -1,0 +1,52 @@
+JFDML JFormDesigner: "5.1.0.2.64" Java: "1.6.0_27" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {seq {space :::p, par l {comp scrollPane1::t::446:x, seq t {space :0:317:x, comp button1:::p::p, space s:::p, comp button2:::p::p}}, space :::p}}"
+			"$verticalGroup": "par l {seq l {space :::p, comp scrollPane1:::p:491:p, space :::p, par b {comp button2::b:p::p, comp button1::b:p::p}, space ::5:x}}"
+		} ) {
+			name: "this"
+			"title": "CODA RTV Settings"
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "scrollPane1"
+				add( new FormComponent( "javax.swing.JTable" ) {
+					name: "rtvTable"
+					auxiliary() {
+						"JavaCodeGenerator.preInitCode": "rtvTable.setModel(_model);\nTableColumnModel cm = rtvTable.getColumnModel();\ncm.getColumn(0).setMinWidth(10);\ncm.getColumn(0).setMaxWidth(200);\ncm.getColumn(0).setPreferredWidth(100);\n"
+					}
+				} )
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "button1"
+				"action": new FormReference( "action2" )
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "button2"
+				"action": new FormReference( "action1" )
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 470, 560 )
+		} )
+		add( new FormNonVisual( "javax.swing.AbstractAction" ) {
+			name: "action1"
+			"$action.Name": "Cancel"
+			auxiliary() {
+				"JavaCodeGenerator.className": "CancelAction"
+			}
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 570 )
+		} )
+		add( new FormNonVisual( "javax.swing.AbstractAction" ) {
+			name: "action2"
+			"$action.Name": "  Ok  "
+			auxiliary() {
+				"JavaCodeGenerator.className": "OkAction"
+			}
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 622 )
+		} )
+	}
+}

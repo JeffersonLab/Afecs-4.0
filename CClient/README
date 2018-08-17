@@ -1,0 +1,5 @@
+Coda Run Control C client.
+Implements all the functions necessary to become Coda RC component.
+Function prototypes are described in the AComponent.h header file.
+The cclient.c must be compiled as a shared library and be presented as a value to the
+-m parameter of the ACodaCC program.

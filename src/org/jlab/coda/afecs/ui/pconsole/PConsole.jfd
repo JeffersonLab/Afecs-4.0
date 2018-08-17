@@ -1,0 +1,156 @@
+JFDML JFormDesigner: "5.2.5.1.342" Java: "1.8.0_112-release" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+			"$horizontalGroup": "par l {seq {space :::p, par l {seq t {par l {seq {comp label13:::p::p, space :::x}, seq t {comp databaseTextField:::::x, space s:::p, par l {comp label14:::p:41:p, comp tcpTextField:::p:61:p}, space :p:18:p}}, par l {comp udpTextField:::p:61:p, comp label15:::p::p}, space s:::p, par l {comp rcUdpTextField:::p:67:p, comp label16:::p::p}}, seq l {par l {comp label1:::p:118:p, comp nameTextField::::185:x}, space :p:18:p, par l {comp hostTextField::l::203:x, comp label2::l:p::p}, space s:p::p, par l {comp label3:::p::p, comp startTimeTextField:::p:182:p}}, seq t {par l {seq {space :p:6:p, comp scrollPane1::::135:x, space s:p::p, comp scrollPane2::::140:x, space s:p::p, comp scrollPane3::::133:x, space s:p::p, comp scrollPane4::::131:x}, comp scrollPane5::::599:x}, space :p:7:p}, seq l {comp label4:::p::p, space :0:574:x}}, space :::p}}"
+			"$verticalGroup": "par l {seq l {space :p::p, par b {comp label1::b:p::p, comp label2::b:p::p, comp label3::b:p::p}, space :p::p, par b {comp nameTextField::b:p::p, comp hostTextField::b:p::p, comp startTimeTextField::b:p::p}, space s:p::p, par l:::p {comp label13::t:::x, comp label16::t:::x, par b:t {comp label15::b:::x, comp label14::b:::x}}, space :p::p, par b {comp rcUdpTextField::b:p::p, comp udpTextField::b:p::p, comp tcpTextField::b:p::p, comp databaseTextField::b:p::p}, space :p:38:p, par t {par l {par t:l {comp scrollPane2:::p:152:p, comp scrollPane1:::p:151:p}, comp scrollPane3::t:p:152:p}, comp scrollPane4:::p:152:p}, space s:::p, comp label4:::p::p, space :::p, comp scrollPane5::::188:x, space :p:10:p}}"
+		} ) {
+			name: "this"
+			"title": "Platform Inspector"
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label1"
+				"text": "Platform Name"
+				"foreground": new java.awt.Color( 0, 102, 102, 255 )
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label2"
+				"text": "Platform Host"
+				"foreground": new java.awt.Color( 0, 102, 102, 255 )
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "nameTextField"
+				"editable": false
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "hostTextField"
+				"editable": false
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "startTimeTextField"
+				"editable": false
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label3"
+				"text": "Start TIme"
+				"foreground": new java.awt.Color( 0, 102, 102, 255 )
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "databaseTextField"
+				"editable": false
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "tcpTextField"
+				"editable": false
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "rcUdpTextField"
+				"editable": false
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "udpTextField"
+				"editable": false
+			} )
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "scrollPane1"
+				add( new FormComponent( "javax.swing.JList" ) {
+					name: "AgentList"
+					"foreground": new java.awt.Color( 0, 102, 102, 255 )
+					"border": new javax.swing.border.TitledBorder( null, "Agents", 4, 0, null, new java.awt.Color( 0, 102, 102, 255 ) )
+					auxiliary() {
+						"JavaCodeGenerator.postInitCode": "AgentList.setCellRenderer(new ListRender());\nAgentList.setModel(new javax.swing.AbstractListModel() {\npublic int getSize() { return agents.length; }\npublic Object getElementAt(int i) { return agents[i]; }\n});\n\nAgentList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);\nAgentList.addMouseListener(new java.awt.event.MouseAdapter() {\npublic void mouseClicked(java.awt.event.MouseEvent evt) {\nAgentListMouseClicked(evt);\n}\n});\n"
+					}
+				} )
+			} )
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "scrollPane2"
+				add( new FormComponent( "javax.swing.JList" ) {
+					name: "SupervisorList"
+					"foreground": new java.awt.Color( 0, 102, 102, 255 )
+					"border": new javax.swing.border.TitledBorder( null, "Supervisors", 4, 0, null, new java.awt.Color( 0, 102, 102, 255 ) )
+					auxiliary() {
+						"JavaCodeGenerator.postInitCode": "SupervisorList.setCellRenderer(new ListRender());\nSupervisorList.setModel(new javax.swing.AbstractListModel() {\npublic int getSize() { return supervisors.length; }\npublic Object getElementAt(int i) { return supervisors[i]; }\n});\n\nSupervisorList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);\nSupervisorList.addMouseListener(new java.awt.event.MouseAdapter() {\npublic void mouseClicked(java.awt.event.MouseEvent evt) {\nSupervisorListMouseClicked(evt);\n}\n});\n"
+					}
+				} )
+			} )
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "scrollPane3"
+				add( new FormComponent( "javax.swing.JList" ) {
+					name: "SessionList"
+					"foreground": new java.awt.Color( 0, 102, 102, 255 )
+					"border": new javax.swing.border.TitledBorder( null, "Sessions", 4, 0, null, new java.awt.Color( 0, 102, 102, 255 ) )
+					auxiliary() {
+						"JavaCodeGenerator.postInitCode": "SessionList.setCellRenderer(new ListRender());\nSessionList.setModel(new javax.swing.AbstractListModel() {\npublic int getSize() { return sessions.length; }\npublic Object getElementAt(int i) { return sessions[i]; }\n});\n\nSessionList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);\nSessionList.addMouseListener(new java.awt.event.MouseAdapter() {\npublic void mouseClicked(java.awt.event.MouseEvent evt) {\nSessionListMouseClicked(evt);\n}\n});\n"
+					}
+				} )
+			} )
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "scrollPane4"
+				add( new FormComponent( "javax.swing.JList" ) {
+					name: "ContainerList"
+					"foreground": new java.awt.Color( 0, 102, 102, 255 )
+					"border": new javax.swing.border.TitledBorder( null, "Containers", 4, 0, null, new java.awt.Color( 0, 102, 102, 255 ) )
+					auxiliary() {
+						"JavaCodeGenerator.postInitCode": "ContainerList.setCellRenderer(new ListRender());\nContainerList.setModel(new javax.swing.AbstractListModel() {\npublic int getSize() { return containers.length; }\npublic Object getElementAt(int i) { return containers[i]; }\n});\n\nContainerList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);\n\n"
+					}
+				} )
+			} )
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "scrollPane5"
+				add( new FormComponent( "javax.swing.JTextArea" ) {
+					name: "stdioTextArea"
+					"editable": false
+				} )
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label13"
+				"text": "Database"
+				"foreground": new java.awt.Color( 0, 102, 102, 255 )
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label14"
+				"text": "TCP"
+				"foreground": new java.awt.Color( 0, 102, 102, 255 )
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label15"
+				"text": "UDP"
+				"foreground": new java.awt.Color( 0, 102, 102, 255 )
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label16"
+				"text": "rcUDP"
+				"foreground": new java.awt.Color( 0, 102, 102, 255 )
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label4"
+				"text": "Stdio"
+				"foreground": new java.awt.Color( 0, 102, 102, 255 )
+			} )
+			menuBar: new FormContainer( "javax.swing.JMenuBar", new FormLayoutManager( class javax.swing.JMenuBar ) ) {
+				name: "menuBar1"
+				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
+					name: "menu1"
+					"text": "File"
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "menuItem1"
+						"action": new FormReference( "action1" )
+					} )
+				} )
+			}
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 20 )
+			"size": new java.awt.Dimension( 620, 590 )
+		} )
+		add( new FormNonVisual( "javax.swing.AbstractAction" ) {
+			name: "action1"
+			"$action.Name": "Exit"
+			auxiliary() {
+				"JavaCodeGenerator.className": "ExitAction"
+			}
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 620 )
+		} )
+	}
+}

@@ -1,0 +1,62 @@
+<!--
+  ~   Copyright (c) 2016.  Jefferson Lab (JLab). All rights reserved. Permission
+  ~   to use, copy, modify, and distribute  this software and its documentation for
+  ~   educational, research, and not-for-profit purposes, without fee and without a
+  ~   signed licensing agreement.
+  ~
+  ~   IN NO EVENT SHALL JLAB BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL
+  ~   INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING
+  ~   OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF JLAB HAS
+  ~   BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  ~
+  ~   JLAB SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  ~   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  ~   PURPOSE. THE CLARA SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY,
+  ~   PROVIDED HEREUNDER IS PROVIDED "AS IS". JLAB HAS NO OBLIGATION TO PROVIDE
+  ~   MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+  ~
+  ~   This software was developed under the United States Government license.
+  ~   For more information contact author at gurjyan@jlab.org
+  ~   Department of Experimental Nuclear Physics, Jefferson Lab.
+  -->
+
+<rdf:RDF
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+xmlns:cool="http://AFECSHOMEDB/schema/cool#"
+>
+
+<rdf:Description rdf:about="http://COOLHOME/Component/NOER/EB1#EB1">
+   <cool:hasName>EB1</cool:hasName>
+   <cool:hasType>CDEB</cool:hasType>
+   <cool:hasCode>{CODA} {CODA}</cool:hasCode>
+   <cool:representsCoda2Component>true</cool:representsCoda2Component>
+
+   <cool:include rdf:resource="http://AFECSHOMEDB/Plugin/DPPlugin.rdf"/>
+   <cool:hasCommunicationPlugin rdf:resource="http://AFECSHOMEDB/Plugin/DPPlugin#DPPlugin"/>
+
+   <cool:include rdf:resource="http://AFECSHOMEDB/State/CodaRC/Configured.rdf"/>
+   <cool:hasState rdf:resource="http://AFECSHOMEDB/State/CodaRC/Configured#Configured"/>
+
+   <cool:include rdf:resource="http://AFECSHOMEDB/State/CodaRC/Downloaded.rdf"/>
+   <cool:hasState rdf:resource="http://AFECSHOMEDB/State/CodaRC/Downloaded#Downloaded"/>
+
+   <cool:include rdf:resource="http://AFECSHOMEDB/State/CodaRC/Prestarted.rdf"/>
+   <cool:hasState rdf:resource="http://AFECSHOMEDB/State/CodaRC/Prestarted#Prestarted"/>
+
+   <cool:include rdf:resource="http://AFECSHOMEDB/State/CodaRC/Active.rdf"/>
+   <cool:hasState rdf:resource="http://AFECSHOMEDB/State/CodaRC/Active#Active"/>
+
+   <cool:include rdf:resource="http://AFECSHOMEDB/State/CodaRC/Ended.rdf"/>
+   <cool:hasState rdf:resource="http://AFECSHOMEDB/State/CodaRC/Ended#Ended"/>
+
+   <cool:include rdf:resource="http://AFECSHOMEDB/State/CodaRC/Reseted.rdf"/>
+   <cool:hasState rdf:resource="http://AFECSHOMEDB/State/CodaRC/Reseted#Reseted"/>
+
+   <cool:include rdf:resource="http://AFECSHOMEDB/State/CodaRC/Paused.rdf"/>
+   <cool:hasState rdf:resource="http://AFECSHOMEDB/State/CodaRC/Paused#Paused"/>
+
+   <cool:include rdf:resource="http://COOLHOME/Process/NOER/EB1_predownloaded.rdf"/>
+   <cool:hasProcess rdf:resource="http://COOLHOME/Process/NOER/EB1_predownloaded#EB1_predownloaded"/>
+
+</rdf:Description>
+</rdf:RDF>

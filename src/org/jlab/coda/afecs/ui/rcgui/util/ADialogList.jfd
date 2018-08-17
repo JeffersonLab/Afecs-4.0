@@ -1,0 +1,94 @@
+JFDML JFormDesigner: "5.2.3.0.281" Java: "1.8.0_40-release" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "dialogPane"
+				"border": new javax.swing.border.EmptyBorder( 12, 12, 12, 12 )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.layout.GroupLayout ) {
+					"$horizontalGroup": "par l {seq {par l {comp infoTitle::::368:x, comp guiTitle::::368:x, seq l {space :::p, comp scrollPane1::::362:x}}, space :::p}}"
+					"$verticalGroup": "par l {seq l {comp guiTitle:::p::p, space s:::p, comp infoTitle:::p::p, space u:::p, comp scrollPane1:::::x, space :::p}}"
+				} ) {
+					name: "contentPanel"
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "guiTitle"
+						"text": "guiTitle"
+						"horizontalAlignment": 0
+						"background": new java.awt.Color( 0, 51, 51, 255 )
+						"font": new java.awt.Font( "Lucida Grande", 0, 16 )
+						"foreground": new java.awt.Color( 0, 51, 51, 255 )
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "infoTitle"
+						"text": "infoTitile"
+						"horizontalAlignment": 0
+						"foreground": new java.awt.Color( 51, 0, 0, 255 )
+					} )
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "scrollPane1"
+						add( new FormComponent( "javax.swing.JList" ) {
+							name: "sessionsList"
+							"border": new javax.swing.border.SoftBevelBorder( 1, null, null, null, null )
+							auxiliary() {
+								"JavaCodeGenerator.postInitCode": "        sessionsList.setCellRenderer(new MyCellRenderer());\n        sessionsList.setModel(new javax.swing.AbstractListModel() {\n            String[] strings = myList;\n            public int getSize() { return strings.length; }\n            public Object getElementAt(int i) { return strings[i]; }\n        });\n\n        sessionsList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);\n        sessionsList.addMouseListener(new java.awt.event.MouseAdapter() {\n            public void mouseClicked(java.awt.event.MouseEvent evt) {\n                SessionsListMouseClicked(evt);\n            }\n        });\n"
+							}
+						} )
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+					"$columnSpecs": "0:1.0, 80, 80"
+					"$rowSpecs": "0"
+					"$hGap": 5
+					"$vGap": 5
+				} ) {
+					name: "buttonBar"
+					"border": new javax.swing.border.EmptyBorder( 12, 0, 0, 0 )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "okButton"
+						"action": new FormReference( "action1" )
+					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+						"gridx": 1
+						"gridy": 0
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "cancelButton"
+						"action": new FormReference( "action2" )
+					}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+						"gridx": 2
+						"gridy": 0
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "South"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 300 )
+		} )
+		add( new FormNonVisual( "javax.swing.AbstractAction" ) {
+			name: "action1"
+			"$action.Name": "OK"
+			auxiliary() {
+				"JavaCodeGenerator.className": "OkAction"
+			}
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 316 )
+		} )
+		add( new FormNonVisual( "javax.swing.AbstractAction" ) {
+			name: "action2"
+			"$action.Name": "Cancel"
+			auxiliary() {
+				"JavaCodeGenerator.className": "CancelAction"
+			}
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 376 )
+		} )
+	}
+}

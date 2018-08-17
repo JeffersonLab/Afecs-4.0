@@ -1,0 +1,414 @@
+<!--
+  ~   Copyright (c) 2016.  Jefferson Lab (JLab). All rights reserved. Permission
+  ~   to use, copy, modify, and distribute  this software and its documentation for
+  ~   educational, research, and not-for-profit purposes, without fee and without a
+  ~   signed licensing agreement.
+  ~
+  ~   IN NO EVENT SHALL JLAB BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL
+  ~   INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING
+  ~   OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF JLAB HAS
+  ~   BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  ~
+  ~   JLAB SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  ~   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  ~   PURPOSE. THE CLARA SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY,
+  ~   PROVIDED HEREUNDER IS PROVIDED "AS IS". JLAB HAS NO OBLIGATION TO PROVIDE
+  ~   MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+  ~
+  ~   This software was developed under the United States Government license.
+  ~   For more information contact author at gurjyan@jlab.org
+  ~   Department of Experimental Nuclear Physics, Jefferson Lab.
+  -->
+
+<rdf:RDF
+xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+xmlns:rdfs='http://www.w3.org/2000/01/rdf-schema#'
+xmlns:cool='http://coda.jlab.org/COOL/cool#'
+>
+
+    <!-- Convention
+            The cool configuration name, the control name and
+            the name of the RC component should be the same.
+            This name defines the runtype of the experiment.
+    -->
+
+<cool:Control rdf:ID="MR1000">
+    <cool:hasComponentGroup rdf:resource="#CG1"/>
+    <cool:hasComponentGroup rdf:resource="#CG2"/>
+    <cool:hasComponentGroup rdf:resource="#CG3"/>
+    <cool:hasComponentGroup rdf:resource="#CG4"/>
+    <cool:hasComponentGroup rdf:resource="#CG5"/>
+    <cool:hasComponentGroup rdf:resource="#CG6"/>
+    <cool:hasComponentGroup rdf:resource="#CG7"/>
+    <cool:hasComponentGroup rdf:resource="#CG8"/>
+    <cool:hasComponentGroup rdf:resource="#CG9"/>
+    <cool:hasComponentGroup rdf:resource="#CG10"/>
+    <cool:hasComponentGroup rdf:resource="#CG11"/>
+    <cool:hasComponentGroup rdf:resource="#CG12"/>
+    <cool:hasComponentGroup rdf:resource="#CG13"/>
+    <cool:hasComponentGroup rdf:resource="#CG14"/>
+    <cool:hasComponentGroup rdf:resource="#CG15"/>
+    <cool:hasComponentGroup rdf:resource="#CG16"/>
+    <cool:hasComponentGroup rdf:resource="#CG17"/>
+    <cool:hasComponentGroup rdf:resource="#CG18"/>
+    <cool:hasComponentGroup rdf:resource="#CG19"/>
+    <cool:hasComponentGroup rdf:resource="#CG20"/>
+    <cool:hasComponent rdf:resource="#RC"/>
+    <cool:hasCodaOption rdf:resource="#OPTION"/>
+</cool:Control>
+
+<cool:Option rdf:ID="OPTION">
+    <cool:hasCoda2Component>false</cool:hasCoda2Component>
+    <cool:hasTokenInterval>200</cool:hasTokenInterval>
+    <cool:hasDataFile>/tmp/test.dat</cool:hasDataFile>
+    <cool:Splitmb>2047</cool:Splitmb>
+</cool:Option>
+
+<cool:ComponentGroup rdf:ID="CG1">
+    <cool:hasCGName>Roc?1-50</cool:hasCGName>
+    <cool:hasSettingsOf rdf:resource="#CMP1"/>
+</cool:ComponentGroup>
+
+<cool:ComponentGroup rdf:ID="CG2">
+    <cool:hasCGName>Roc?51-100</cool:hasCGName>
+    <cool:hasSettingsOf rdf:resource="#CMP2"/>
+</cool:ComponentGroup>
+
+<cool:ComponentGroup rdf:ID="CG3">
+    <cool:hasCGName>Roc?101-150</cool:hasCGName>
+    <cool:hasSettingsOf rdf:resource="#CMP3"/>
+</cool:ComponentGroup>
+
+<cool:ComponentGroup rdf:ID="CG4">
+    <cool:hasCGName>Roc?151-200</cool:hasCGName>
+    <cool:hasSettingsOf rdf:resource="#CMP4"/>
+</cool:ComponentGroup>
+
+<cool:ComponentGroup rdf:ID="CG5">
+    <cool:hasCGName>Roc?201-250</cool:hasCGName>
+    <cool:hasSettingsOf rdf:resource="#CMP5"/>
+</cool:ComponentGroup>
+
+<cool:ComponentGroup rdf:ID="CG6">
+    <cool:hasCGName>Roc?251-300</cool:hasCGName>
+    <cool:hasSettingsOf rdf:resource="#CMP6"/>
+</cool:ComponentGroup>
+
+<cool:ComponentGroup rdf:ID="CG7">
+    <cool:hasCGName>Roc?301-350</cool:hasCGName>
+    <cool:hasSettingsOf rdf:resource="#CMP7"/>
+</cool:ComponentGroup>
+
+<cool:ComponentGroup rdf:ID="CG8">
+    <cool:hasCGName>Roc?351-400</cool:hasCGName>
+    <cool:hasSettingsOf rdf:resource="#CMP8"/>
+</cool:ComponentGroup>
+
+<cool:ComponentGroup rdf:ID="CG9">
+    <cool:hasCGName>Roc?401-450</cool:hasCGName>
+    <cool:hasSettingsOf rdf:resource="#CMP9"/>
+</cool:ComponentGroup>
+
+<cool:ComponentGroup rdf:ID="CG10">
+    <cool:hasCGName>Roc?451-500</cool:hasCGName>
+    <cool:hasSettingsOf rdf:resource="#CMP10"/>
+</cool:ComponentGroup>
+
+<cool:ComponentGroup rdf:ID="CG11">
+    <cool:hasCGName>Roc?501-550</cool:hasCGName>
+    <cool:hasSettingsOf rdf:resource="#CMP11"/>
+</cool:ComponentGroup>
+
+<cool:ComponentGroup rdf:ID="CG12">
+    <cool:hasCGName>Roc?551-600</cool:hasCGName>
+    <cool:hasSettingsOf rdf:resource="#CMP12"/>
+</cool:ComponentGroup>
+
+<cool:ComponentGroup rdf:ID="CG13">
+    <cool:hasCGName>Roc?601-650</cool:hasCGName>
+    <cool:hasSettingsOf rdf:resource="#CMP13"/>
+</cool:ComponentGroup>
+
+<cool:ComponentGroup rdf:ID="CG14">
+    <cool:hasCGName>Roc?651-700</cool:hasCGName>
+    <cool:hasSettingsOf rdf:resource="#CMP14"/>
+</cool:ComponentGroup>
+
+<cool:ComponentGroup rdf:ID="CG15">
+    <cool:hasCGName>Roc?701-750</cool:hasCGName>
+    <cool:hasSettingsOf rdf:resource="#CMP15"/>
+</cool:ComponentGroup>
+
+<cool:ComponentGroup rdf:ID="CG16">
+    <cool:hasCGName>Roc?751-800</cool:hasCGName>
+    <cool:hasSettingsOf rdf:resource="#CMP16"/>
+</cool:ComponentGroup>
+
+<cool:ComponentGroup rdf:ID="CG17">
+    <cool:hasCGName>Roc?801-850</cool:hasCGName>
+    <cool:hasSettingsOf rdf:resource="#CMP17"/>
+</cool:ComponentGroup>
+
+<cool:ComponentGroup rdf:ID="CG18">
+    <cool:hasCGName>Roc?851-900</cool:hasCGName>
+    <cool:hasSettingsOf rdf:resource="#CMP18"/>
+</cool:ComponentGroup>
+
+<cool:ComponentGroup rdf:ID="CG19">
+    <cool:hasCGName>Roc?901-950</cool:hasCGName>
+    <cool:hasSettingsOf rdf:resource="#CMP19"/>
+</cool:ComponentGroup>
+
+<cool:ComponentGroup rdf:ID="CG20">
+    <cool:hasCGName>Roc?951-1000</cool:hasCGName>
+    <cool:hasSettingsOf rdf:resource="#CMP20"/>
+</cool:ComponentGroup>
+
+<cool:Component rdf:ID="CMP1">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>-</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+    <cool:hasNode rdf:resource="#ND1"/>
+</cool:Component>
+
+<cool:Component rdf:ID="CMP2">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>-</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+    <cool:hasNode rdf:resource="#ND2"/>
+</cool:Component>
+
+<cool:Component rdf:ID="CMP3">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>-</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+    <cool:hasNode rdf:resource="#ND3"/>
+</cool:Component>
+
+<cool:Component rdf:ID="CMP4">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>-</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+    <cool:hasNode rdf:resource="#ND4"/>
+</cool:Component>
+
+<cool:Component rdf:ID="CMP5">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>-</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+    <cool:hasNode rdf:resource="#ND5"/>
+</cool:Component>
+
+<cool:Component rdf:ID="CMP6">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>-</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+    <cool:hasNode rdf:resource="#ND6"/>
+</cool:Component>
+
+<cool:Component rdf:ID="CMP7">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>-</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+    <cool:hasNode rdf:resource="#ND7"/>
+</cool:Component>
+
+<cool:Component rdf:ID="CMP8">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>-</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+    <cool:hasNode rdf:resource="#ND8"/>
+</cool:Component>
+
+<cool:Component rdf:ID="CMP9">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>-</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+    <cool:hasNode rdf:resource="#ND9"/>
+</cool:Component>
+
+<cool:Component rdf:ID="CMP10">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>-</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+    <cool:hasNode rdf:resource="#ND10"/>
+</cool:Component>
+
+<cool:Component rdf:ID="CMP11">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>-</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+    <cool:hasNode rdf:resource="#ND11"/>
+</cool:Component>
+
+<cool:Component rdf:ID="CMP12">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>-</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+    <cool:hasNode rdf:resource="#ND12"/>
+</cool:Component>
+
+<cool:Component rdf:ID="CMP13">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>-</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+    <cool:hasNode rdf:resource="#ND13"/>
+</cool:Component>
+
+<cool:Component rdf:ID="CMP14">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>-</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+    <cool:hasNode rdf:resource="#ND14"/>
+</cool:Component>
+
+<cool:Component rdf:ID="CMP15">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>-</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+    <cool:hasNode rdf:resource="#ND15"/>
+</cool:Component>
+
+<cool:Component rdf:ID="CMP16">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>-</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+    <cool:hasNode rdf:resource="#ND16"/>
+</cool:Component>
+
+<cool:Component rdf:ID="CMP17">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>-</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+    <cool:hasNode rdf:resource="#ND17"/>
+</cool:Component>
+
+<cool:Component rdf:ID="CMP18">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>-</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+    <cool:hasNode rdf:resource="#ND18"/>
+</cool:Component>
+
+<cool:Component rdf:ID="CMP19">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>-</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+    <cool:hasNode rdf:resource="#ND19"/>
+</cool:Component>
+
+<cool:Component rdf:ID="CMP20">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>ROC</cool:hasType>
+    <cool:hasName>-</cool:hasName>
+    <cool:hasPriority>44</cool:hasPriority>
+    <cool:hasNode rdf:resource="#ND20"/>
+</cool:Component>
+
+<cool:Node rdf:ID="ND1">
+    <cool:hasNodeName>dafarm1</cool:hasNodeName>
+</cool:Node>
+
+<cool:Node rdf:ID="ND2">
+    <cool:hasNodeName>dafarm2</cool:hasNodeName>
+</cool:Node>
+
+<cool:Node rdf:ID="ND3">
+    <cool:hasNodeName>dafarm3</cool:hasNodeName>
+</cool:Node>
+
+<cool:Node rdf:ID="ND4">
+    <cool:hasNodeName>dafarm4</cool:hasNodeName>
+</cool:Node>
+
+<cool:Node rdf:ID="ND5">
+    <cool:hasNodeName>dafarm5</cool:hasNodeName>
+</cool:Node>
+
+<cool:Node rdf:ID="ND6">
+    <cool:hasNodeName>dafarm6</cool:hasNodeName>
+</cool:Node>
+
+<cool:Node rdf:ID="ND7">
+    <cool:hasNodeName>dafarm7</cool:hasNodeName>
+</cool:Node>
+
+<cool:Node rdf:ID="ND8">
+    <cool:hasNodeName>dafarm8</cool:hasNodeName>
+</cool:Node>
+
+<cool:Node rdf:ID="ND9">
+    <cool:hasNodeName>dafarm9</cool:hasNodeName>
+</cool:Node>
+
+<cool:Node rdf:ID="ND10">
+    <cool:hasNodeName>dafarm10</cool:hasNodeName>
+</cool:Node>
+
+<cool:Node rdf:ID="ND11">
+    <cool:hasNodeName>dafarm11</cool:hasNodeName>
+</cool:Node>
+
+<cool:Node rdf:ID="ND12">
+    <cool:hasNodeName>dafarm12</cool:hasNodeName>
+</cool:Node>
+
+<cool:Node rdf:ID="ND13">
+    <cool:hasNodeName>dafarm13</cool:hasNodeName>
+</cool:Node>
+
+<cool:Node rdf:ID="ND14">
+    <cool:hasNodeName>dafarm14</cool:hasNodeName>
+</cool:Node>
+
+<cool:Node rdf:ID="ND15">
+    <cool:hasNodeName>dafarm15</cool:hasNodeName>
+</cool:Node>
+
+<cool:Node rdf:ID="ND16">
+    <cool:hasNodeName>dafarm22</cool:hasNodeName>
+</cool:Node>
+
+<cool:Node rdf:ID="ND17">
+    <cool:hasNodeName>dafarm17</cool:hasNodeName>
+</cool:Node>
+
+<cool:Node rdf:ID="ND18">
+    <cool:hasNodeName>dafarm18</cool:hasNodeName>
+</cool:Node>
+
+<cool:Node rdf:ID="ND19">
+    <cool:hasNodeName>dafarm19</cool:hasNodeName>
+</cool:Node>
+
+<cool:Node rdf:ID="ND20">
+    <cool:hasNodeName>dafarm20</cool:hasNodeName>
+</cool:Node>
+
+<cool:Component rdf:ID="RC">
+    <cool:hasIpc>cMsg</cool:hasIpc>
+    <cool:hasType>RCS</cool:hasType>
+    <cool:hasName>MR1000</cool:hasName>
+    <cool:hasPriority>77</cool:hasPriority>
+</cool:Component>
+
+</rdf:RDF>

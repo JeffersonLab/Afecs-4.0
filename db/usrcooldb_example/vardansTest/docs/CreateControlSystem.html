@@ -1,0 +1,94 @@
+
+<!--
+  ~   Copyright (c) 2017.  Jefferson Lab (JLab). All rights reserved. Permission
+  ~   to use, copy, modify, and distribute  this software and its documentation for
+  ~   governmental use, educational, research, and not-for-profit purposes, without
+  ~   fee and without a signed licensing agreement.
+  ~
+  ~   IN NO EVENT SHALL JLAB BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL
+  ~   INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING
+  ~   OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF JLAB HAS
+  ~   BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  ~
+  ~   JLAB SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  ~   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  ~   PURPOSE. THE CLARA SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY,
+  ~   PROVIDED HEREUNDER IS PROVIDED "AS IS". JLAB HAS NO OBLIGATION TO PROVIDE
+  ~   MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+  ~
+  ~   This software was developed under the United States Government license.
+  ~   For more information contact author at gurjyan@jlab.org
+  ~   Department of Experimental Nuclear Physics, Jefferson Lab.
+  -->
+
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+
+
+<h2 xmlns="http://www.w3.org/1999/xhtml" id="sites-page-title-header" style="" align="left">
+<span id="sites-page-title" dir="ltr">Create control system</span>
+</h2>
+
+<div id="sites-canvas-main" class="sites-canvas-main">
+<div id="sites-canvas-main-content">
+<table xmlns="http://www.w3.org/1999/xhtml" class="sites-layout-name-one-column sites-layout-hbox" cellspacing="0"><tbody><tr><td class="sites-layout-tile sites-tile-name-content-1"><div dir="ltr">
+<p>Let us assume that we need to create a control system that
+implements CODA state machine. For simplicity we will create a control system with
+one user component. Any control system must have a supervisor agent that will orchestrate
+the control, i.e. implementing FSM. AFECS allows designing and implementing
+user FSMs, yet for this tutorial we will show how to create control system that
+implements CODA state machine. This is by far the simplest COOL control system
+design, since CODA FSM description is hidden from users. <br></p><p>
+</p><p>Control system COOL configuration file having only one user
+component is shown below.</p>
+<p style="margin-bottom: 0.0001pt; line-height: normal; color: rgb(102, 0, 0);"><span style="font-size: 9pt; font-family: Courier New;">1 <span>&nbsp;</span>&lt;rdf:RDF<br>2 <span>&nbsp;</span>xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"<br>3 <span>&nbsp;</span>xmlns:cool="http://AFECSHOMEDB/schema/cool#"<br>4 <span>&nbsp;</span>&gt;<br>5&nbsp; <br>6 <span>&nbsp;</span>&lt;rdf:Description
+rdf:about="http://COOLHOME/Control/USER1#USER1"&gt;<br>7<br>8<span>&nbsp;&nbsp; </span><span>&nbsp;</span>&lt;cool:include
+rdf:resource="http://COOLHOME/Component/USER/COMPONENTS.rdf"/&gt;<br>9<span>&nbsp; </span><span>&nbsp;</span><span>&nbsp;</span>&lt;cool:hasComponent
+rdf:resource="http://COOLHOME/Component/USER/U0#U0"/&gt;<br>10<br>11 &lt;/rdf:Description&gt;<br>12<br>13 &lt;/rdf:RDF&gt;</span></p>
+
+<p>First 4 lines indicate that we are using RDF and COOL
+language definitions. Line 6 starts the definition of the control system named
+USER1. Lines 9 tells that this specific control system has a component named U0
+and that the COOL description of that component is presented in the
+COMPONENTS.rdf file located in the $COOL_HOME/&lt;expid&gt;/Component/USER/
+directory (see line 8).</p>
+<p>A control system description having 2 components (U0 and U1)
+that are described in the same COMPONENTS.rdf file will look like this:</p>
+<p style="margin-bottom: 0.0001pt; line-height: normal; color: rgb(102, 0, 0);"><span style="font-size: 9pt; font-family: Courier New;">1 <span>&nbsp;</span>&lt;rdf:RDF<br>2 <span>&nbsp;</span>xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"<br>3 <span>&nbsp;</span>xmlns:cool="http://AFECSHOMEDB/schema/cool#"<br>4 <span>&nbsp;</span>&gt;<br>5&nbsp; <br>6 <span>&nbsp;</span>&lt;rdf:Description
+rdf:about="http://COOLHOME/Control/USER1#USER1"&gt;<br>7<br>8<span>&nbsp;&nbsp; </span><span>&nbsp;</span>&lt;cool:include
+rdf:resource="http://COOLHOME/Component/USER/COMPONENTS.rdf"/&gt;<br>9<span>&nbsp; </span><span>&nbsp;</span><span>&nbsp;</span>&lt;cool:hasComponent
+rdf:resource="http://COOLHOME/Component/USER/U0#U0"/&gt;<br>10 <span>&nbsp;</span><span>&nbsp;</span>&lt;cool:hasComponent rdf:resource="http://COOLHOME/Component/USER/U1#U1"/&gt;<br>11<br>12 &lt;/rdf:Description&gt;<br>13<br>14 &lt;/rdf:RDF&gt;</span></p>
+
+<p>In the case U1 component is described in $COOL_HOME/Component/&lt;expid&gt;/USER/OLDCOMPONENTS.rdf
+file than the previous configuration will look like:</p>
+<p><span style="font-size: 9pt; font-family: Courier New; color: rgb(102, 0, 0);">1 <span>&nbsp;</span>&lt;rdf:RDF<br>2 <span>&nbsp;</span>xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"<br>3 <span>&nbsp;</span>xmlns:cool="http://AFECSHOMEDB/schema/cool#"<br>4 <span>&nbsp;</span>&gt;<br>5&nbsp; <br>6 <span>&nbsp;</span>&lt;rdf:Description
+rdf:about="http://COOLHOME/Control/USER1#USER1"&gt;<br>7<br>8<span>&nbsp;&nbsp; </span><span>&nbsp;</span>&lt;cool:include
+rdf:resource="http://COOLHOME/Component/USER/COMPONENTS.rdf"/&gt;<br>9<span>&nbsp; </span><span>&nbsp;</span><span>&nbsp;</span>&lt;cool:hasComponent
+rdf:resource="http://COOLHOME/Component/USER/U0#U0"/&gt;<br>10<br>11<span>&nbsp;&nbsp; </span>&lt;cool:include rdf:resource="http://COOLHOME/Component/USER/OLDCOMPONENTS.rdf"/&gt;<br>12 <span>&nbsp;</span><span>&nbsp;</span>&lt;cool:hasComponent rdf:resource="http://COOLHOME/Component/USER/U1#U1"/&gt;<br>13<br>14 &lt;/rdf:Description&gt;<br>15<br>16 &lt;/rdf:RDF&gt;</span> <br></p>
+
+<p>Control system COOL/rdf configuration files must be located
+in the $COOL_HOME/&lt;expid&gt;/Control directory. As we mentioned earlier every
+AFECS control system must have a supervisor agent, and must have its own
+description in the Component/&lt;runtype&gt; directory.<span>&nbsp; </span>However if the configuration is missing
+supervisor agent description, control designer agent will provide default
+supervisor with CODA FSM knowledge. Attention: provided default supervisors are
+for CODA FSM only. If you design a new state machine you must provide complete
+supervisor component description in COOL. <span>&nbsp;</span></p>
+<p>COOL/rdf description for the U0 and U1 user components (file
+COMPONENTS.rdf) looks like this:</p>
+<p style="margin-bottom: 0.0001pt; line-height: normal;"><span style="font-size: 9pt; font-family: Courier New;"><span style="color: rgb(102, 0, 0);">1&nbsp; &lt;rdf:RDF</span><br style="color: rgb(102, 0, 0);"><span style="color: rgb(102, 0, 0);">2&nbsp; xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"</span><br style="color: rgb(102, 0, 0);"><span style="color: rgb(102, 0, 0);">3&nbsp; xmlns:cool="http://AFECSHOMEDB/schema/cool#"</span><br style="color: rgb(102, 0, 0);"><span style="color: rgb(102, 0, 0);">4&nbsp; &gt;</span><br style="color: rgb(102, 0, 0);"><span style="color: rgb(102, 0, 0);">5</span><br style="color: rgb(102, 0, 0);"><span style="color: rgb(102, 0, 0);">6&nbsp; &lt;rdf:Description
+rdf:about="http://COOLHOME/Component/USER/U0#U0"&gt;</span><br style="color: rgb(102, 0, 0);"><span style="color: rgb(102, 0, 0);">7&nbsp; &nbsp;&nbsp;&nbsp;&lt;cool:hasName&gt;U0&lt;/cool:hasName&gt;</span><br style="color: rgb(102, 0, 0);"><span style="color: rgb(102, 0, 0);">8&nbsp; &nbsp;&nbsp;&nbsp;&lt;cool:hasType&gt;USER&lt;/cool:hasType&gt;</span><br style="color: rgb(102, 0, 0);"><span style="color: rgb(102, 0, 0);">9&nbsp; &nbsp;&nbsp;&nbsp;&lt;cool:hasPriority&gt;88&lt;/cool:hasPriority&gt;</span><br style="color: rgb(102, 0, 0);"><span style="color: rgb(102, 0, 0);">10 &nbsp;&nbsp;&nbsp;&lt;cool:isCodaComponent&gt;true&lt;/cool:isCodaComponent&gt;</span><br style="color: rgb(102, 0, 0);"><span style="color: rgb(102, 0, 0);">11 &lt;/rdf:Description&gt;</span><br style="color: rgb(102, 0, 0);"><span style="color: rgb(102, 0, 0);">12</span><br style="color: rgb(102, 0, 0);"><span style="color: rgb(102, 0, 0);">13 &lt;rdf:Description
+rdf:about="http://COOLHOME/Component/USER/U1#U1"&gt;</span><br style="color: rgb(102, 0, 0);"><span style="color: rgb(102, 0, 0);">14 &nbsp;&nbsp;&nbsp;&lt;cool:hasName&gt;U1&lt;/cool:hasName&gt;</span><br style="color: rgb(102, 0, 0);"><span style="color: rgb(102, 0, 0);">15 &nbsp;&nbsp;&nbsp;&lt;cool:hasType&gt;USER&lt;/cool:hasType&gt;</span><br style="color: rgb(102, 0, 0);"><span style="color: rgb(102, 0, 0);">16 &nbsp;&nbsp;&nbsp;&lt;cool:hasPriority&gt;88&lt;/cool:hasPriority&gt;</span><br style="color: rgb(102, 0, 0);"><span style="color: rgb(102, 0, 0);">17 &nbsp;&nbsp;&nbsp;&lt;cool:isCodaComponent&gt;true&lt;/cool:isCodaComponent&gt;</span><br style="color: rgb(102, 0, 0);"><span style="color: rgb(102, 0, 0);">18 &lt;/rdf:Description&gt;</span><br style="color: rgb(102, 0, 0);"><span style="color: rgb(102, 0, 0);">19 &lt;/rdf:RDF&gt;</span><br> <br></span></p>
+
+<span style="font-size: 10pt; line-height: 115%; font-family: Courier New;"><span style="font-family: arial,sans-serif;">As one can see we define a name, a type and a priority for a component
+at the lines 7, 8, 9 (14, 15, 16) respectively. Note the lines 10 and 17
+informing that these components are CODA components. This tells control
+designer agent to provide default CODA FSM state descriptions for a component. </span><span>&nbsp;</span><span>&nbsp;</span></span>
+</div></td></tr></tbody></table>
+</div>
+</div>
+</body>
+</html>

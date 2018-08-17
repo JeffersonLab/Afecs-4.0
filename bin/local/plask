@@ -1,0 +1,12 @@
+#!/bin/csh -f
+
+#Afecs platform user program
+# author: vhg, 29-aug-2013
+# Synopsis: plask [<option> <value>...]
+
+
+# start plask
+$JAVA_HOME/bin/java -cp "../../../build/common/jar/*" org.jlab.coda.afecs.usr.rcapi.deprecated.AskPlatformApp $1 $2 $3 $4 $5
+
+
+#memory settings  and jConsole -Xms200m -Xmx500m -Dcom.sun.management.jmxremote

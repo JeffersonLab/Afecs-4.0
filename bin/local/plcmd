@@ -1,0 +1,13 @@
+#!/bin/csh -f
+
+# Coda Run Control command line user interface
+# author: vhg, 29-aug-2013
+# synopsis:
+# plcmd [ parameter ] < value >
+
+
+# start rc-cmd
+$JAVA_HOME/bin/java -cp "../../../build/common/jar/*" org.jlab.coda.afecs.usr.rcapi.deprecated..RcCommand $1 $2 $3 $4 $5 $6
+
+
+#memory settings  and jConsole -Xms200m -Xmx500m -Dcom.sun.management.jmxremote

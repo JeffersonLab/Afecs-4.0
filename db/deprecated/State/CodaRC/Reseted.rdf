@@ -1,0 +1,74 @@
+<!--
+  ~   Copyright (c) 2016.  Jefferson Lab (JLab). All rights reserved. Permission
+  ~   to use, copy, modify, and distribute  this software and its documentation for
+  ~   educational, research, and not-for-profit purposes, without fee and without a
+  ~   signed licensing agreement.
+  ~
+  ~   IN NO EVENT SHALL JLAB BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL
+  ~   INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING
+  ~   OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF JLAB HAS
+  ~   BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  ~
+  ~   JLAB SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  ~   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  ~   PURPOSE. THE CLARA SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY,
+  ~   PROVIDED HEREUNDER IS PROVIDED "AS IS". JLAB HAS NO OBLIGATION TO PROVIDE
+  ~   MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+  ~
+  ~   This software was developed under the United States Government license.
+  ~   For more information contact author at gurjyan@jlab.org
+  ~   Department of Experimental Nuclear Physics, Jefferson Lab.
+  -->
+
+<rdf:RDF
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+xmlns:cool="http://AFECSHOMEDB/schema/cool#"
+>
+    <!--DO NOT MODIFY... CRITICAL STATE MACHINE CONFIGURATION!-->
+    <!---->
+<rdf:Description rdf:about="http://AFECSHOMEDB/State/CodaRC/Reseted#Reseted">
+    <cool:hasName>reseted</cool:hasName>
+    <!--used for reporting as a 'description'_ing-->
+    <cool:hasDescription>configur</cool:hasDescription>
+    <cool:achievedThrough rdf:resource="#Reset_Process"/>
+</rdf:Description>
+
+<cool:Process rdf:ID="Reset_Process">
+   <cool:hasName>Reset_Process</cool:hasName>
+   <cool:hasDescription>Reset transition achieved through this process</cool:hasDescription>
+   <cool:isSync>true</cool:isSync>
+   <cool:isInitiator>true</cool:isInitiator>
+   <cool:sends rdf:resource="#Reset_Send_Package"/>
+   <cool:receives rdf:resource="#Reset_Receive_Package"/>
+</cool:Process>
+
+<cool:Package rdf:ID="Reset_Send_Package">
+   <cool:hasName>Reset_Send_Package</cool:hasName>
+   <cool:hasDescription>Reset process send package</cool:hasDescription>
+    <!--send through rc cmsg-->
+    <!--<cool:isForRcClient>true</cool:isForRcClient>-->
+    <!--<cool:hasSendType>run/transition/reset</cool:hasSendType>-->
+    <!--<cool:hasSendText>reset</cool:hasSendText>-->
+
+    <!--also send using dp channel-->
+   <cool:hasChannel rdf:resource="#DP_Reset_Channel"/>
+</cool:Package>
+
+<cool:Package rdf:ID="Reset_Receive_Package">
+   <cool:hasName>Reset_Receive_Package</cool:hasName>
+   <cool:hasDescription>Reset process receive package</cool:hasDescription>
+   <cool:isForRcClient>true</cool:isForRcClient>
+    <!--missing subject means subject = the name of the agent-->
+   <cool:hasReceivedType>rc/report/status</cool:hasReceivedType>
+   <cool:hasReceivedText>configured</cool:hasReceivedText>
+   <cool:hasReceivedText>booted</cool:hasReceivedText>
+</cool:Package>
+
+<cool:Channel rdf:ID="DP_Reset_Channel">
+    <cool:hasName>DP</cool:hasName>
+    <cool:hasDescription>DP reset</cool:hasDescription>
+    <cool:hasSetValue>exit</cool:hasSetValue>
+    <cool:hasValueType>206</cool:hasValueType>
+</cool:Channel>
+
+</rdf:RDF>

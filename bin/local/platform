@@ -1,0 +1,12 @@
+#!/bin/csh -f
+
+#Starts Afecs platform
+# author: vhg, 29-aug-2013
+
+# set classpath
+setenv CLASSPATH "../../../build/common/jar/*"
+
+# start the platform
+#$JAVA_HOME/bin/java -Xms200m -Xmx500m -Dcom.sun.management.jmxremote  org.jlab.coda.afecs.platform.APlatform $1 $2 $3
+$JAVA_HOME/bin/java -Xms200m -Xmx500m -Xconcurrentio -Djava.net.preferIPv4Stack=true org.jlab.coda.afecs.platform.APlatform $1 $2 $3
+

@@ -1,0 +1,1280 @@
+<!--
+Copyright (c) 2006   Southeastern Universities Research Association,
+Thomas Jefferson National Accelerator Facility
+
+This software was developed under a United States Government license
+described in the NOTICE file included as part of this distribution.
+
+Author:  Vardan Gyurjyan
+gurjyan@jlab.org                  Jefferson Lab, MS-12H
+Phone: (757) 269-5879             12000 Jefferson Ave.
+Fax:   (757) 269-5800             Newport News, VA 23606
+-->
+<rdf:RDF
+        xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+    <!-- =========================================================================================== -->
+    <!--                                         SYSTEM -->
+    <rdfs:Class rdf:ID="System">
+        <rdfs:label>
+            System
+        </rdfs:label>
+        <rdfs:comment>
+            System can have multiple controls, for e.g. hv control, dc control etc.
+            Effectively system is an experiment, with the set of subsystems.
+        </rdfs:comment>
+    </rdfs:Class>
+
+    <rdf:Property rdf:ID="hasName">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#System"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasControl">
+        <rdfs:range rdf:resource="#Control"/>
+        <rdfs:domain rdf:resource="#System"/>
+         <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasOption">
+        <rdfs:range rdf:resource="#Option"/>
+        <rdfs:domain rdf:resource="#System"/>
+         <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasHmi">
+        <rdfs:range rdf:resource="#HMI"/>
+        <rdfs:domain rdf:resource="#System"/>
+         <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <!-- =========================================================================================== -->
+    <!--                                         CONTROL -->
+    <rdfs:Class rdf:ID="Control">
+        <rdfs:label>
+        </rdfs:label>
+        <rdfs:comment>
+            Control describes actual control system.
+        </rdfs:comment>
+    </rdfs:Class>
+
+    <rdf:Property rdf:ID="hasName">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Control"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasComponent">
+        <rdfs:range rdf:resource="#Component"/>
+        <rdfs:domain rdf:resource="#Control"/>
+         <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasSupervisor">
+        <rdfs:range rdf:resource="#Component"/>
+        <rdfs:domain rdf:resource="#Control"/>
+         <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasOption">
+        <rdfs:range rdf:resource="#Option"/>
+        <rdfs:domain rdf:resource="#Control"/>
+         <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasHmi">
+        <rdfs:range rdf:resource="#HMI"/>
+        <rdfs:domain rdf:resource="#Control"/>
+         <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <!-- =========================================================================================== -->
+    <!--                                         OPTION -->
+    <rdfs:Class rdf:ID="Option">
+        <rdfs:label>
+            COOL Option
+        </rdfs:label>
+        <rdfs:comment>
+            Class encapsulates the properties to support information stored in the coda options table.
+        </rdfs:comment>
+    </rdfs:Class>
+
+
+    <rdf:Property rdf:ID="hasName">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Option"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasDescription">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Option"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasDataFile">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Option"/>
+        <rdfs:comment>
+            ER will store the data in this file (the complete command to the file).
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasDataFilePrefix">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Option"/>
+        <rdfs:comment>
+            ER will store the data in the file with the name constructed with this prefix+ the runnumber.
+            prefix includes complete command.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasCoda2Component">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Option"/>
+        <rdfs:comment>
+            Indicates that there is at least one coda2 component in the configuration, that needs DB.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasAutoStart">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Option"/>
+        <rdfs:comment>
+            After end (UI initiated or event limit reached) it will automaticaly start the new run.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasStartRun">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Option"/>
+        <rdfs:comment>
+            Gui configuration option. It will tell org.jlab.coda.afecs.gui to enable start run buton.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasDataLimit">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Integer"/>
+        <rdfs:domain rdf:resource="#Option"/>
+        <rdfs:comment>
+            Stop the run after this data limit. (depricated)
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasEventLimit">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Integer"/>
+        <rdfs:domain rdf:resource="#Option"/>
+        <rdfs:comment>
+            Stop the run after this many events.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasConfigFile">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Option"/>
+        <rdfs:comment>
+            Configuration file name, including complete command.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasConfigString">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Option"/>
+        <rdfs:comment>
+            Configuration String.
+        </rdfs:comment>
+    </rdf:Property>
+
+
+    <!-- =========================================================================================== -->
+    <!--                                         COMPONENT -->
+    <rdfs:Class rdf:ID="Component">
+        <rdfs:label>
+            Component
+        </rdfs:label>
+        <rdfs:comment>
+            Defines the properties for the control component.
+            Component is the clients representing agent in the Afecs platform.
+        </rdfs:comment>
+    </rdfs:Class>
+
+    <rdf:Property rdf:ID="hasName">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            The name of the component
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasClassPath">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            The name of the component class path or jar
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasClassName">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            The name of the component class name (including complete package description)
+             used to instantiate an agent object for this component
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasID">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Integer"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            Unique ID of the component ( unique in the specific configuration) required for event building.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasDescription">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            Description of the component/agent
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasHost">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            Host where agent should run
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasType">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            The type of the component.Supported types are: roc, eb, er, rc, ts, et, slc, ana, usr, and
+            sms -state machine supervisor.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasPriority">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Integer"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            The priority of the component.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasSession">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            Predicate defines a session. Session is used to define the persistant object store (database)
+            for the component, as well as to make sure that component is part of one control system
+            only, and it is not shared by many control systems.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasRunType">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            Predicate defines the name of the control (Thalamus) who will organize control.
+            Control contains state machine algorithm.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasOption">
+        <rdfs:range rdf:resource="#Option"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            Component specific configuration option.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="representsCoda2Component">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            The value is true or false. This will indicate that client is from the old coda, which will need
+            DB access.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="isCodaComponent">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            The value is true or false.
+            If true it will tell cool parser to add coda specific states to this component. 
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="usesLink">
+        <rdfs:range rdf:resource="#Link"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            Defines link details
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasReportingInterval">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Integer"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="reportsTo">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasCode">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasState">
+        <rdfs:range rdf:resource="#State"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            Defines component state.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasProcess">
+        <rdfs:range rdf:resource="#Process"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            Defines component related process.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="providesService">
+        <rdfs:range rdf:resource="#Service"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasHmi">
+        <rdfs:range rdf:resource="#HMI"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasCommunicationPlugin">
+        <rdfs:range rdf:resource="#Plugin"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="XCo">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Double"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            X position of the component image on the JCedit canvas
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="YCo">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Double"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            Y position of the component image on the JCedit canvas
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="WCo">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Double"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            Width of the component image on the JCedit canvas
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="HCo">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Double"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            Height of the component image on the JCedit canvas
+    </rdfs:comment>
+
+    <rdf:Property rdf:ID="linkedTo">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            For JCedit configuration visualization. The name of the linked component.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasUserConfig">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Component"/>
+        <rdfs:comment>
+            User configuration file specific for this component
+        </rdfs:comment>
+    </rdf:Property>
+
+
+    </rdf:Property>
+
+
+    <!-- =========================================================================================== -->
+    <!--                                          PLUGIN -->
+    <rdfs:Class rdf:ID="Plugin">
+        <rdfs:label>
+            Plugin
+        </rdfs:label>
+        <rdfs:comment>
+            Describes Client communication channel details (e.g. epics, snmp, etc.)
+        </rdfs:comment>
+    </rdfs:Class>
+
+    <rdf:Property rdf:ID="hasName">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Plugin"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasDescription">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Plugin"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+
+    <rdf:Property rdf:ID="hasClass">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Plugin"/>
+        <rdfs:comment>
+            Java class name implementing IAClientCommunication interface.
+        </rdfs:comment>
+    </rdf:Property>
+
+
+    <!-- =========================================================================================== -->
+    <!--                                          LINK -->
+    <rdfs:Class rdf:ID="Link">
+        <rdfs:label>
+            Link
+        </rdfs:label>
+        <rdfs:comment>
+            Describes end point details of the linkPoint between two components (ROC, EB, ER, et.).
+        </rdfs:comment>
+    </rdfs:Class>
+
+    <rdf:Property rdf:ID="hasName">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#LinkPoint"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasDescription">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#LinkPoint"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasTransport">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#LinkPoint"/>
+        <rdfs:comment>
+            ET or cMsg. The default is ET.
+        </rdfs:comment>
+    </rdf:Property>
+
+
+    <rdf:Property rdf:ID="sourceComponentName">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Link"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="sourceHost">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Link"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="sourcePort">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Integer"/>
+        <rdfs:domain rdf:resource="#Link"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="destinationComponentName">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Link"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="destinationHost">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Link"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="destinationPort">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Integer"/>
+        <rdfs:domain rdf:resource="#Link"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="destinationETNumberEvents">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Integer"/>
+        <rdfs:domain rdf:resource="#Link"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="destinationETEventSize">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Integer"/>
+        <rdfs:domain rdf:resource="#Link"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="startX">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Double"/>
+        <rdfs:domain rdf:resource="#Link"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="startY">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Double"/>
+        <rdfs:domain rdf:resource="#Link"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="endX">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Double"/>
+        <rdfs:domain rdf:resource="#Link"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="endY">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Double"/>
+        <rdfs:domain rdf:resource="#Link"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <!-- =========================================================================================== -->
+    <!--                                          PROCESS -->
+    <rdfs:Class rdf:ID="Process">
+        <rdfs:label>
+            Process
+        </rdfs:label>
+        <rdfs:comment>
+            Describes processes going to be executed on the physical client.
+        </rdfs:comment>
+    </rdfs:Class>
+
+    <rdf:Property rdf:ID="hasName">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Process"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasDescription">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Process"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="isCritical">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Process"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="isSync">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Process"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="before">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Process"/>
+        <rdfs:comment>
+            Process runs before the state. The string is the name of the State
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="after">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Process"/>
+        <rdfs:comment>
+            Process runs after the state is achieved. The string is the name of the State
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasPeriodicity">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Integer"/>
+        <rdfs:domain rdf:resource="#Process"/>
+        <rdfs:comment>
+            The number of the consequent executions of the command.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasDelay">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Integer"/>
+        <rdfs:domain rdf:resource="#Process"/>
+        <rdfs:comment>
+            Delay (in sec.) between consequent executions of the command.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasTimeOut">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Integer"/>
+        <rdfs:domain rdf:resource="#Process"/>
+        <rdfs:comment>
+            Predicate defines the command execution timeout.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasRequestId">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Integer"/>
+        <rdfs:domain rdf:resource="#Process"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="runs">
+        <rdfs:range rdf:resource="#Script"/>
+        <rdfs:domain rdf:resource="#Process"/>
+        <rdfs:comment>
+            Predicate define the script. This might be usefull to integrate the legacy
+            physical components /applications, where the only information is available
+            is the command line interface to this component.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="sends">
+        <rdfs:range rdf:resource="#Package"/>
+        <rdfs:domain rdf:resource="#Process"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="receives">
+        <rdfs:range rdf:resource="#Package"/>
+        <rdfs:domain rdf:resource="#Process"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="status">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Process"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="isInitiator">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Process"/>
+        <rdfs:comment>
+            Initiator = true means that process is send and get, i.e. it first sends and expects the answer.
+            In case isInitiator = false process first gets and then sends as a responce to the get.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <!-- =========================================================================================== -->
+    <!--                                          SCRIPT -->
+    <rdfs:Class rdf:ID="Script">
+        <rdfs:label>
+            Script
+        </rdfs:label>
+        <rdfs:comment>
+            Describes external scripts, programs and applications, run by Process
+        </rdfs:comment>
+    </rdfs:Class>
+
+    <rdf:Property rdf:ID="hasName">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Script"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasDescription">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Script"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasCommandString">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Script"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasExitCode">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Integer"/>
+        <rdfs:domain rdf:resource="#Script"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="isSynchronous">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Script"/>
+        <rdfs:comment>
+            String true or false
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasTimeout">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Integer"/>
+        <rdfs:domain rdf:resource="#Script"/>
+        <rdfs:comment>
+            Sync script execution timeout
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasDescription">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Script"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <!-- =========================================================================================== -->
+    <!--                                         STATE -->
+    <rdfs:Class rdf:ID="State">
+        <rdfs:label>
+            State
+        </rdfs:label>
+        <rdfs:comment>
+            Component state.
+        </rdfs:comment>
+    </rdfs:Class>
+
+    <rdf:Property rdf:ID="hasName">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#State"/>
+        <rdfs:comment>
+            The name of the state.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="achievedThrough">
+        <rdfs:range rdf:resource="#Process"/>
+        <rdfs:domain rdf:resource="#State"/>
+        <rdfs:comment>
+            Process necessary to transition to the state.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="addressedTo">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#State"/>
+        <rdfs:comment>
+            The name of the component.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasDescription">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#State"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+
+    <!-- =========================================================================================== -->
+    <!--                                         SERVICE -->
+    <rdfs:Class rdf:ID="Service">
+        <rdfs:label>
+            Service
+        </rdfs:label>
+        <rdfs:comment>
+            Component service
+        </rdfs:comment>
+    </rdfs:Class>
+
+    <rdf:Property rdf:ID="hasName">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Service"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasDescription">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Service"/>
+        <rdfs:comment>
+            The description of the service.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasOwner">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Service"/>
+        <rdfs:comment>
+            The owner of the service.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="startsStatemachine">
+        <rdfs:range rdf:resource="#Rule"/>
+        <rdfs:domain rdf:resource="#Service"/>
+        <rdfs:comment>
+            Executes the rule of the state machine.
+        </rdfs:comment>
+    </rdf:Property>
+
+
+    <!-- =========================================================================================== -->
+    <!--                                         RULE -->
+    <rdfs:Class rdf:ID="Rule">
+        <rdfs:label>
+            Rule
+        </rdfs:label>
+        <rdfs:comment>
+            Component rule, i.e. algorithm of the state machine.
+        </rdfs:comment>
+    </rdfs:Class>
+
+    <rdf:Property rdf:ID="hasName">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Rule"/>
+        <rdfs:comment>
+            The name of the Rule.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasDescription">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Rule"/>
+        <rdfs:comment>
+            The description of the Rule.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasCode">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Rule"/>
+        <rdfs:comment>
+            Actual state machine or expert system algorithm description.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <!-- =========================================================================================== -->
+    <!--                                         PACKAGE -->
+
+    <rdfs:Class rdf:ID="Package">
+        <rdfs:label>
+            Package
+        </rdfs:label>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdfs:Class>
+
+    <rdf:Property rdf:ID="hasName">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Package"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasDescription">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Package"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="isForRcClient">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Package"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="isForNativecMsg">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Package"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="isForShellClient">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Package"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasSendSubject">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Package"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasSendType">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Package"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasSendText">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Package"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasReceivedSubject">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Package"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasReceivedType">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Package"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasReceivedText">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Package"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasChannel">
+        <rdfs:range rdf:resource="#Channel"/>
+        <rdfs:domain rdf:resource="#Package"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <!-- =========================================================================================== -->
+    <!--                                         CHANNEL -->
+    <rdfs:Class rdf:ID="Channel">
+        <rdfs:label>
+            Channel
+        </rdfs:label>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdfs:Class>
+
+    <rdf:Property rdf:ID="hasName">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Channel"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasDescription">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Channel"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasValue">
+        <rdfs:range rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#object"/>
+        <rdfs:domain rdf:resource="#Channel"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasMinValue">
+        <rdfs:range rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#object"/>
+        <rdfs:domain rdf:resource="#Channel"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasMaxValue">
+        <rdfs:range rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#object"/>
+        <rdfs:domain rdf:resource="#Channel"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasSetValue">
+        <rdfs:range rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#object"/>
+        <rdfs:domain rdf:resource="#Channel"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasValueType">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Integer"/>
+        <rdfs:domain rdf:resource="#Channel"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasUnit">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Channel"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+
+    <!-- =========================================================================================== -->
+    <!--                                            HMI -->
+    <rdfs:Class rdf:ID="HMI">
+        <rdfs:label>
+            Human machine interface
+        </rdfs:label>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdfs:Class>
+
+    <rdf:Property rdf:ID="hasName">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#HMI"/>
+        <rdfs:comment>
+            The name of the human machine interface. N.B. component can have multiple hmis
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasDescription">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#HMI"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasPanel">
+        <rdfs:range rdf:resource="#Panel"/>
+        <rdfs:domain rdf:resource="#HMI"/>
+        <rdfs:comment>
+            Panel contains graphics components
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="isWebBased">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#HMI"/>
+        <rdfs:comment>
+            if it set to be "true" then the hmi will run on the web
+            using flash widgets.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasRows">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Integer"/>
+        <rdfs:domain rdf:resource="#HMI"/>
+        <rdfs:comment>
+            Grid layout number of rows.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasColumns">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Integer"/>
+        <rdfs:domain rdf:resource="#HMI"/>
+        <rdfs:comment>
+            Grid layout number of columns.
+        </rdfs:comment>
+    </rdf:Property>
+
+
+    <!-- =========================================================================================== -->
+    <!--                                            PANEL -->
+    <rdfs:Class rdf:ID="Panel">
+        <rdfs:label>
+            The panel of the HMI
+        </rdfs:label>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdfs:Class>
+
+    <rdf:Property rdf:ID="hasName">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Panel"/>
+        <rdfs:comment>
+            The name of the panel. N.B. HMI can hav e many panels.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasDescription">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Panel"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasTitle">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Panel"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasColor">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Panel"/>
+        <rdfs:comment>
+            The values can be strings that Java Color class accepts as a constructor
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasWidget">
+        <rdfs:range rdf:resource="#Widget"/>
+        <rdfs:domain rdf:resource="#Panel"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasNumber">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Integer"/>
+        <rdfs:domain rdf:resource="#Panel"/>
+        <rdfs:comment>
+            Panel number in the hmi grid layout (max 4x4 panels)
+        </rdfs:comment>
+    </rdf:Property>
+
+
+    <!-- =========================================================================================== -->
+    <!--                                         WIDGET -->
+    <rdfs:Class rdf:ID="Widget">
+        <rdfs:label>
+            Widget
+        </rdfs:label>
+        <rdfs:comment>
+            Graphical Interface widget
+        </rdfs:comment>
+    </rdfs:Class>
+
+    <rdf:Property rdf:ID="hasName">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Widget"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasDescription">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Widget"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="isEditable">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Widget"/>
+        <rdfs:comment>
+            True, False
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasNumber">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Integer"/>
+        <rdfs:domain rdf:resource="#Widget"/>
+        <rdfs:comment>
+            Widget number in the Panel (max 4x4 widgets per panel)
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasType">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Widget"/>
+        <rdfs:comment>
+            Button, TextField, Chart, Table, Tree, Slider, Gauge
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasSubType">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Widget"/>
+        <rdfs:comment>
+            For e/g/ Chart might be of subtype = bar, pie, etc.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasTitle">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Widget"/>
+        <rdfs:comment>
+            Sets title or text of the component
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="hasIcon">
+        <rdfs:range rdf:resource="http:/www.w3.org/1999/02/22-rdf-syntax-ns#Literal"/>
+        <rdfs:domain rdf:resource="#Widget"/>
+        <rdfs:comment>
+            Path to the icon file.
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="startsService">
+        <rdfs:range rdf:resource="#Service"/>
+        <rdfs:domain rdf:resource="#Widget"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="startsProcess">
+        <rdfs:range rdf:resource="#Process"/>
+        <rdfs:domain rdf:resource="#Widget"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+    <rdf:Property rdf:ID="movesToState">
+        <rdfs:range rdf:resource="#State"/>
+        <rdfs:domain rdf:resource="#Widget"/>
+        <rdfs:comment>
+        </rdfs:comment>
+    </rdf:Property>
+
+
+
+
+
+</rdf:RDF>
+

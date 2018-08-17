@@ -1,0 +1,12 @@
+#!/bin/csh -f
+
+#Starts Afecs rcgui
+# author: vhg, 29-aug-2013
+
+# set classpath
+setenv CLASSPATH "../../../build/common/jar/*"
+
+# start rcgui
+$JAVA_HOME/bin/java -Xms200m -Xmx500m  -Dsun.java2d.pmoffscreen=false  -DproxySet=true -DproxyHost=jprox.jlab.org -DproxyPort=8080 -Djava.net.preferIPv4Stack=true org.jlab.coda.afecs.ui.rcgui.RcGuiApplication $1 $2 $3 $4 $5 $6 $7 $8 $9 $10 $11 $12 $13 $14
+
+#$JAVA_HOME/bin/java -Xms200m -Xmx500m -Dcom.sun.management.jmxremote  org.jlab.coda.afecs.ui.rcgui.RcGuiApplication $1 $2 $3 $4 $5 $6 $7 $8 $9 $10 $11 $12 $13 $14

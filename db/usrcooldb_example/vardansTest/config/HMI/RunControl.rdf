@@ -1,0 +1,65 @@
+ <!--
+  ~   Copyright (c) 2016.  Jefferson Lab (JLab). All rights reserved. Permission
+  ~   to use, copy, modify, and distribute  this software and its documentation for
+  ~   educational, research, and not-for-profit purposes, without fee and without a
+  ~   signed licensing agreement.
+  ~
+  ~   IN NO EVENT SHALL JLAB BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL
+  ~   INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING
+  ~   OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF JLAB HAS
+  ~   BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  ~
+  ~   JLAB SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  ~   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  ~   PURPOSE. THE CLARA SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY,
+  ~   PROVIDED HEREUNDER IS PROVIDED "AS IS". JLAB HAS NO OBLIGATION TO PROVIDE
+  ~   MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+  ~
+  ~   This software was developed under the United States Government license.
+  ~   For more information contact author at gurjyan@jlab.org
+  ~   Department of Experimental Nuclear Physics, Jefferson Lab.
+  -->
+
+<rdf:RDF
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+   xmlns:cool="http://AFECSHOMEDB/schema/cool#" >
+
+   <rdf:Description rdf:about="http://COOLHOME/HMI/RunControl#RunControl"> 
+       <cool:hasName>RunControl</cool:hasName> 
+
+       <cool:include rdf:resource="http://COOLHOME/Panel/RCPanel_1.rdf"/> 
+       <cool:hasPanel rdf:resource="http://COOLHOME/Panel/RCPanel_1#RCPanel_1"/> 
+
+
+       <cool:include rdf:resource="http://COOLHOME/Panel/RCPanel_5.rdf"/> 
+       <cool:hasPanel rdf:resource="http://COOLHOME/Panel/RCPanel_5#RCPanel_5"/> 
+
+
+       <cool:include rdf:resource="http://COOLHOME/Panel/RCPanel_2.rdf"/> 
+       <cool:hasPanel rdf:resource="http://COOLHOME/Panel/RCPanel_2#RCPanel_2"/> 
+
+
+       <cool:include rdf:resource="http://COOLHOME/Panel/RCPanel_6.rdf"/> 
+       <cool:hasPanel rdf:resource="http://COOLHOME/Panel/RCPanel_6#RCPanel_6"/> 
+
+
+       <cool:include rdf:resource="http://COOLHOME/Panel/RCPanel_3.rdf"/> 
+       <cool:hasPanel rdf:resource="http://COOLHOME/Panel/RCPanel_3#RCPanel_3"/> 
+
+
+       <cool:include rdf:resource="http://COOLHOME/Panel/RCPanel_7.rdf"/> 
+       <cool:hasPanel rdf:resource="http://COOLHOME/Panel/RCPanel_7#RCPanel_7"/> 
+
+
+       <cool:include rdf:resource="http://COOLHOME/Panel/RCPanel_4.rdf"/> 
+       <cool:hasPanel rdf:resource="http://COOLHOME/Panel/RCPanel_4#RCPanel_4"/> 
+
+
+       <cool:include rdf:resource="http://COOLHOME/Panel/RCPanel_8.rdf"/> 
+       <cool:hasPanel rdf:resource="http://COOLHOME/Panel/RCPanel_8#RCPanel_8"/> 
+
+       <cool:hasRows>4</cool:hasRows> 
+       <cool:hasColumns>2</cool:hasColumns> 
+   </rdf:Description> 
+
+ </rdf:RDF> 

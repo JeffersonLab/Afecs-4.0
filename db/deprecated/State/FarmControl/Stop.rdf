@@ -1,0 +1,56 @@
+<!--
+  ~   Copyright (c) 2016.  Jefferson Lab (JLab). All rights reserved. Permission
+  ~   to use, copy, modify, and distribute  this software and its documentation for
+  ~   educational, research, and not-for-profit purposes, without fee and without a
+  ~   signed licensing agreement.
+  ~
+  ~   IN NO EVENT SHALL JLAB BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL
+  ~   INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING
+  ~   OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF JLAB HAS
+  ~   BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  ~
+  ~   JLAB SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  ~   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  ~   PURPOSE. THE CLARA SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY,
+  ~   PROVIDED HEREUNDER IS PROVIDED "AS IS". JLAB HAS NO OBLIGATION TO PROVIDE
+  ~   MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+  ~
+  ~   This software was developed under the United States Government license.
+  ~   For more information contact author at gurjyan@jlab.org
+  ~   Department of Experimental Nuclear Physics, Jefferson Lab.
+  -->
+
+<rdf:RDF
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+xmlns:cool="http://AFECSHOMEDB/schema/cool#"
+>
+<rdf:Description rdf:about="http://AFECSHOMEDB/State/FarmControl/Stop#Stop">
+    <cool:hasName>Stop</cool:hasName>
+    <cool:hasDescription>Stop</cool:hasDescription>
+    <cool:achievedThrough rdf:resource="#Stop_Process"/>
+</rdf:Description>
+
+<cool:Process rdf:ID="Stop_Process">
+   <cool:hasName>Stop_Process</cool:hasName>
+   <cool:hasDescription>Stop state achieved through this process</cool:hasDescription>
+   <cool:isSync>true</cool:isSync>
+   <cool:isInitiator>true</cool:isInitiator>
+   <cool:sends rdf:resource="#Stop_Send_Package"/>
+</cool:Process>
+
+<cool:Package rdf:ID="Stop_Send_Package">
+   <cool:hasName>Stop_Send_Package</cool:hasName>
+   <cool:hasDescription>Stop process send package</cool:hasDescription>
+    <isForShellClient>true</isForShellClient>
+   <cool:hasChannel rdf:resource="#Stop_Send_Channel"/>
+</cool:Package>
+
+<cool:Channel rdf:ID="Stop_Send_Channel">
+    <cool:hasName>Stop_Send_Channel</cool:hasName>
+    <cool:hasDescription>Shell Stop</cool:hasDescription>
+    <cool:hasSetValue>#kill xclock</cool:hasSetValue>
+    <cool:hasValueType>206</cool:hasValueType>
+</cool:Channel>
+
+
+</rdf:RDF>

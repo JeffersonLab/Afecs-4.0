@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~   Copyright (c) 2017.  Jefferson Lab (JLab). All rights reserved. Permission
+  ~   to use, copy, modify, and distribute  this software and its documentation for
+  ~   governmental use, educational, research, and not-for-profit purposes, without
+  ~   fee and without a signed licensing agreement.
+  ~
+  ~   IN NO EVENT SHALL JLAB BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL
+  ~   INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING
+  ~   OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF JLAB HAS
+  ~   BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  ~
+  ~   JLAB SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  ~   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  ~   PURPOSE. THE CLARA SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY,
+  ~   PROVIDED HEREUNDER IS PROVIDED "AS IS". JLAB HAS NO OBLIGATION TO PROVIDE
+  ~   MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+  ~
+  ~   This software was developed under the United States Government license.
+  ~   For more information contact author at gurjyan@jlab.org
+  ~   Department of Experimental Nuclear Physics, Jefferson Lab.
+  -->
+
+<project name="afecs" default="all">
+
+    <property environment ="env"/>
+    <property file="afecs.properties"/>
+
+    <dirname property="module.afecs.basedir" file="${ant.file}"/>
+
+    <!-- checks coda environmental variable -->
+    <target name="coda_env.check">
+        <condition property="coda_env_isSet">
+            <isset property="env.CODA"/>
+        </condition>
+    </target>
+
+
+    <!-- condition in case $CODA is set -->
+    <target name="coda_env.exist" depends="coda_env.check" if="coda_env_isSet">
+        <property name="build_dir"  value="${env.CODA}" />
+        <property name="jar_dir" value="${build_dir}/common/jar"/>
+        <property name="jena_jar_dir" value="${build_dir}/common/jar/jena"/>
+        <property name="common_bin_dir" value="${build_dir}/common/bin"/>
+        <property name="bin_dir" value="${build_dir}/Linux-i686/bin"/>
+        <property name="bin64_dir" value="${build_dir}/Linux-x86_64/bin"/>
+        <property name="img_dir" value="${build_dir}/common/images/afecs"/>
+        <property name="bin_source_dir" value="${module.afecs.basedir}/bin/coda"/>
+        <path id="afecs.module.classpath">
+             <fileset dir="${build_dir}/common/jar" >
+                <include name="*.jar" />
+            </fileset>
+             <fileset dir="${build_dir}/common/jar/jena" >
+                <include name="*.jar" />
+            </fileset>
+        </path>
+    </target>
+
+    <!-- in case $CODA is not set crete build dir in the distribution dir and install everything there-->
+    <target name="coda_env.not_exist" depends="coda_env.check" unless="coda_env_isSet">
+        <mkdir dir = "./build"/>
+        <property name="build_dir"  value="./build" />
+        <property name="jar_dir" value="${build_dir}/common/jar"/>
+        <property name="jena_jar_dir" value="${build_dir}/common/jar/jena"/>
+        <property name="common_bin_dir" value="${build_dir}/common/bin"/>
+        <property name="bin_dir" value="${build_dir}/Linux-i686/bin"/>
+        <property name="bin64_dir" value="${build_dir}/Linux-x86_64/bin"/>
+        <property name="img_dir" value="${build_dir}/common/images/afecs"/>
+        <property name="bin_source_dir" value="${module.afecs.basedir}/bin/local"/>
+        <path id="afecs.module.classpath">
+            <fileset dir="${build_dir}/common/jar" >
+                <include name="*.jar" />
+            </fileset>
+            <fileset dir="${build_dir}/common/jar/jena" >
+                <include name="*.jar" />
+            </fileset>
+        </path>
+    </target>
+
+
+    <!-- Compiler options -->
+
+    <property name="compiler.debug" value="on"/>
+    <property name="compiler.generate.no.warnings" value="off"/>
+    <property name="compiler.args" value=""/>
+    <property name="compiler.max.memory" value="128m"/>
+    <patternset id="ignored.files">
+        <exclude name="**/CVS/**"/>
+        <exclude name="**/SCCS/**"/>
+        <exclude name="**/RCS/**"/>
+        <exclude name="**/rcs/**"/>
+        <exclude name="**/.DS_Store/**"/>
+        <exclude name="**/.svn/**"/>
+        <exclude name="**/.sbas/**"/>
+        <exclude name="**/.IJI.*/**"/>
+        <exclude name="**/vssver.scc/**"/>
+        <exclude name="**/vssver2.scc/**"/>
+    </patternset>
+    <patternset id="compiler.resources">
+        <include name="**/?*.properties"/>
+        <include name="**/?*.xml"/>
+        <include name="**/?*.gif"/>
+        <include name="**/?*.png"/>
+        <include name="**/?*.jpeg"/>
+        <include name="**/?*.jpg"/>
+        <include name="**/?*.html"/>
+        <include name="**/?*.dtd"/>
+        <include name="**/?*.tld"/>
+    </patternset>
+
+    <!-- JDK definitions -->
+
+    <property name="jdk.bin" value="${jdk.home}/bin"/>
+    <path id="jdk.classpath">
+        <fileset dir="${jdk.home}">
+            <include name="jre/lib/resources.jar"/>
+            <include name="jre/lib/jsse.jar"/>
+            <include name="jre/lib/javaws.jar"/>
+            <include name="jre/lib/deploy.jar"/>
+            <include name="jre/lib/management-agent.jar"/>
+            <include name="jre/lib/plugin.jar"/>
+            <include name="jre/lib/jce.jar"/>
+            <include name="jre/lib/charsets.jar"/>
+            <include name="jre/lib/rt.jar"/>
+            <include name="jre/lib/ext/sunpkcs11.jar"/>
+            <include name="jre/lib/ext/localedata.jar"/>
+            <include name="jre/lib/ext/sunjce_provider.jar"/>
+            <include name="jre/lib/ext/dnsns.jar"/>
+        </fileset>
+    </path>
+
+    <property name="project.jdk.home" value="${jdk.home}"/>
+    <property name="project.jdk.bin" value="${jdk.bin}"/>
+    <property name="project.jdk.classpath" value="jdk.classpath"/>
+
+
+
+    <property name="module.jdk.home.afecs" value="${project.jdk.home}"/>
+    <property name="module.jdk.bin.afecs" value="${project.jdk.bin}"/>
+    <property name="module.jdk.classpath.afecs" value="${project.jdk.classpath}"/>
+
+    <property name="compiler.args.afecs" value="${compiler.args}"/>
+
+    <property name="afecs.output.dir" value="${module.afecs.basedir}/classes/production/afecs"/>
+    <property name="afecs.testoutput.dir" value="${module.afecs.basedir}/classes/test/afecs"/>
+
+    <!-- Check $CODA directory structure. Create if necessary-->
+
+    <target name = "setup">
+        <echo>"... checking installation"</echo>
+    </target>
+
+    <!-- check existence of directories -->
+    <target name="jar_dir.check">
+        <condition property="jar_dir.exists">
+            <available file="${jar_dir}" type="dir"/>
+        </condition>
+    </target>
+
+    <target name="jena.dir.check">
+        <condition property="jena.dir.exists">
+            <available file="${jena_jar_dir}" type="dir"/>
+        </condition>
+    </target>
+
+    <target name="common_bin_dir.check">
+        <condition property="common_bin_dir.exists">
+            <available file="${common_bin_dir}" type="dir"/>
+        </condition>
+    </target>
+    <target name="bin_dir.check">
+        <condition property="bin_dir.exists">
+            <available file="${bin_dir}" type="dir"/>
+        </condition>
+    </target>
+    <target name="bin64_dir.check">
+        <condition property="bin64_dir.exists">
+            <available file="${bin64_dir}" type="dir"/>
+        </condition>
+    </target>
+    <target name="img_dir.check">
+        <condition property="img_dir.exists">
+            <available file="${img_dir}" type="dir"/>
+        </condition>
+    </target>
+
+
+    <!-- check existence of required jar files -->
+    <target name="CChart_jar.check">
+        <condition property="CChart_jar.exists">
+            <available file="${jar_dir}/CChart.jar" type="file"/>
+        </condition>
+    </target>
+    <target name="fx_jar.check">
+        <condition property="fx_jar.exists">
+            <available file="${jar_dir}/jfxrt.jar" type="file"/>
+        </condition>
+    </target>
+    <target name="jena_jar.check">
+        <condition property="jena_jar.exists">
+            <available file="${jena_jar_dir}/jena.jar" type="file"/>
+        </condition>
+    </target>
+    <target name="msql_jar.check">
+        <condition property="msql_jar.exists">
+            <available file="${jar_dir}/msql-jdbc-2-0b5.jar" type="file"/>
+        </condition>
+    </target>
+    <target name="spikechart_jar.check">
+        <condition property="spikechart_jar.exists">
+            <available file="${jar_dir}/spikechart.jar" type="file"/>
+        </condition>
+    </target>
+    <target name="jas_jar.check">
+        <condition property="jas_jar.exists">
+            <available file="${jar_dir}/jas-plotter-2.2.3.jar" type="file"/>
+        </condition>
+    </target>
+    <target name="jsap_jar.check">
+        <condition property="jsap_jar.exists">
+            <available file="${jar_dir}/JSAP-2.1.jar" type="file"/>
+        </condition>
+    </target>
+
+    <target name="jsch_jar.check">
+        <condition property="jsch_jar.exists">
+            <available file="${jar_dir}/jsch-0.1.50.jar" type="file"/>
+        </condition>
+    </target>
+
+    <target name="JinFlux.check">
+        <condition property="JinFlux.exists">
+            <available file="${jar_dir}/JinFlux.jar" type="file"/>
+        </condition>
+    </target>
+
+
+    <!-- creating directories -->
+    <target name="jar_dir.create" depends="jar_dir.check" unless="jar_dir.exists">
+        <echo>... creating missing ${jar_dir}"</echo>
+        <mkdir dir = "${jar_dir}"/>
+    </target>
+
+    <target name="jena_jar_dir.create" depends="jena.dir.check" unless="jena.dir.exists">
+        <echo>... creating ${jena_jar_dir} </echo>
+        <mkdir dir="${jena_jar_dir}"/>
+    </target>
+
+     <target name="common_bin_dir.create" depends="common_bin_dir.check" unless="common_bin_dir.exists">
+        <echo>... creating missing ${common_bin_dir}"</echo>
+        <mkdir dir = "${common_bin_dir}"/>
+    </target>
+    <target name="bin_dir.create" depends="bin_dir.check" unless="bin_dir.exists">
+        <echo>... creating missing ${bin_dir}"</echo>
+        <mkdir dir = "${bin_dir}"/>
+    </target>
+    <target name="bin64_dir.create" depends="bin64_dir.check" unless="bin64_dir.exists">
+        <echo>... creating missing ${bin64_dir}"</echo>
+        <mkdir dir = "${bin64_dir}"/>
+    </target>
+    <target name="img_dir.create" depends="img_dir.check" unless="img_dir.exists">
+        <echo>... creating missing ${img_dir}"</echo>
+        <mkdir dir = "${img_dir}"/>
+    </target>
+
+    <!-- install images -->
+    <target name="image.install" depends="img_dir.check" unless="img_jar.exists">
+        <echo>... installing images"</echo>
+        <copy todir="${img_dir}" overwrite="true">
+            <fileset id="services" dir="${module.afecs.basedir}/common/images/afecs"/>
+        </copy>
+    </target>
+
+    <!-- installing necessary jar files -->
+    <target name="CChart_jar.install" depends="CChart_jar.check" unless="CChart_jar.exists">
+        <echo>... installing ${module.afecs.basedir}/lib/CChart.jar"</echo>
+        <copy file = "${module.afecs.basedir}/lib/CChart.jar" todir="${build_dir}/common/jar"/>
+    </target>
+    <target name="fx_jar.install" depends="fx_jar.check" unless="fx_jar.exists">
+        <echo>... installing ${module.afecs.basedir}/lib/jfxrt.jar"</echo>
+        <copy file = "${module.afecs.basedir}/lib/jfxrt.jar" todir="${build_dir}/common/jar"/>
+    </target>
+    <target name="jena_jar.install" depends="jena_jar.check" unless="jena_jar.exists">
+        <echo>... installing ${module.afecs.basedir}/lib/jena.jar"</echo>
+        <copy file = "${module.afecs.basedir}/lib/jena.jar" todir="${build_dir}/common/jar/jena"/>
+    </target>
+    <target name="spikechart_jar.install" depends="spikechart_jar.check" unless="spikechart_jar.exists">
+        <echo>... installing ${module.afecs.basedir}/lib/spikechart.jar"</echo>
+        <copy file = "${module.afecs.basedir}/lib/spikechart.jar" todir="${build_dir}/common/jar"/>
+    </target>
+    <target name="jas_jar.install" depends="jas_jar.check" unless="jas_jar.exists">
+        <echo>... installing ${module.afecs.basedir}/lib/jas-plotter-2.2.3.jar"</echo>
+        <copy file = "${module.afecs.basedir}/lib/jas-plotter-2.2.3.jar" todir="${build_dir}/common/jar"/>
+    </target>
+    <target name="jsap_jar.install" depends="jsap_jar.check" unless="jsap_jar.exists">
+        <echo>... installing ${module.afecs.basedir}/lib/JSAP-2.1.jar"</echo>
+        <copy file = "${module.afecs.basedir}/lib/JSAP-2.1.jar" todir="${build_dir}/common/jar"/>
+    </target>
+    <target name="jsch_jar.install" depends="jsch_jar.check" unless="jsch_jar.exists">
+        <echo>... installing ${module.afecs.basedir}/lib/jsch-0.1.50.jar"</echo>
+        <copy file = "${module.afecs.basedir}/lib/jsch-0.1.50.jar" todir="${build_dir}/common/jar"/>
+    </target>
+    <target name="msql_jar.install" depends="msql_jar.check" unless="msql_jar.exists">
+        <echo>... installing ${module.afecs.basedir}/lib/msql-jdbc-2-0b5.jar"</echo>
+        <copy file = "${module.afecs.basedir}/lib/msql-jdbc-2-0b5.jar" todir="${build_dir}/common/jar"/>
+    </target>
+    <target name="JinFlux.install" depends="JinFlux.check" unless="JinFlux.exists">
+        <echo>... installing ${module.afecs.basedir}/lib/JinFlux.jar"</echo>
+        <copy file="${module.afecs.basedir}/lib/JinFlux.jar" todir="${build_dir}/common/jar"/>
+    </target>
+
+    <target name="check_config"
+            depends="setup, jar_dir.create, jena_jar_dir.create, common_bin_dir.create, bin_dir.create, bin64_dir.create, img_dir.create, CChart_jar.install, fx_jar.install, jena_jar.install, spikechart_jar.install, jas_jar.install, jsap_jar.install, jsch_jar.install, msql_jar.install, JinFlux.install, image.install "
+            description="Check configuration"/>
+
+
+    <path id="afecs.module.bootclasspath">
+        <!-- Paths to be included in compilation bootclasspath -->
+    </path>
+
+
+
+    <patternset id="excluded.from.module.afecs">
+        <patternset refid="ignored.files"/>
+    </patternset>
+
+    <patternset id="excluded.from.compilation.afecs">
+        <patternset refid="excluded.from.module.afecs"/>
+    </patternset>
+
+    <path id="afecs.module.sourcepath">
+        <dirset dir="${module.afecs.basedir}/.">
+            <include name="src"/>
+        </dirset>
+    </path>
+
+
+    <target name="compile.module.afecs" depends="compile.module.afecs.production,compile.module.afecs.tests" description="Compile module afecs"/>
+
+    <target name="compile.module.afecs.production" description="Compile module afecs; production classes">
+        <mkdir dir="${afecs.output.dir}"/>
+
+        <javac includeantruntime = "false"  destdir="${afecs.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.afecs}/javac">
+            <compilerarg line="${compiler.args.afecs}"/>
+            <bootclasspath refid="afecs.module.bootclasspath"/>
+            <classpath refid="afecs.module.classpath"/>
+            <src refid="afecs.module.sourcepath"/>
+            <patternset refid="excluded.from.compilation.afecs"/>
+        </javac>
+
+        <copy todir="${afecs.output.dir}">
+            <fileset dir="${module.afecs.basedir}/src">
+                <patternset refid="compiler.resources"/>
+                <type type="file"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="compile.module.afecs.tests" depends="compile.module.afecs.production" description="compile module afecs; test classes" unless="skip.tests"/>
+
+    <target name="clean.module.afecs" description="cleanup module">
+        <delete dir="${afecs.output.dir}"/>
+        <delete dir="${afecs.testoutput.dir}"/>
+    </target>
+
+    <target name="build.jar" description="build jar file">
+        <jar destfile="afecs-4.0.jar" basedir="./classes/production/afecs"/>
+    </target>
+
+
+    <target name="delete.jar" description="delete distribution jar file">
+        <delete file="afecs-4.0.jar"/>
+        <delete>
+            <fileset dir="${env.CODA}/common/jar">
+                <include name="afecs-*.jar"/>
+            </fileset>
+        </delete>
+    </target>
+
+
+    <target name="change_permissions">
+        <chmod file="${common_bin_dir}/platform" perm="a+x"/>
+        <chmod file="${common_bin_dir}/rcgui" perm="a+x"/>
+        <chmod file="${common_bin_dir}/db2cool" perm="a+x"/>
+        <chmod file="${common_bin_dir}/container" perm="a+x"/>
+        <chmod file="${common_bin_dir}/plask" perm="a+x"/>
+        <chmod file="${common_bin_dir}/rcspy" perm="a+x"/>
+        <chmod file="${common_bin_dir}/influx-d" perm="a+x"/>
+        <chmod file="${bin_dir}/platform" perm="a+x"/>
+        <chmod file="${bin_dir}/rcgui" perm="a+x"/>
+        <chmod file="${bin_dir}/db2cool" perm="a+x"/>
+        <chmod file="${bin_dir}/container" perm="a+x"/>
+        <chmod file="${bin_dir}/plask" perm="a+x"/>
+        <chmod file="${bin_dir}/rcspy" perm="a+x"/>
+        <chmod file="${bin_dir}/influx-d" perm="a+x"/>
+        <chmod file="${bin64_dir}/platform" perm="a+x"/>
+        <chmod file="${bin64_dir}/rcgui" perm="a+x"/>
+        <chmod file="${bin64_dir}/db2cool" perm="a+x"/>
+        <chmod file="${bin64_dir}/container" perm="a+x"/>
+        <chmod file="${bin64_dir}/plask" perm="a+x"/>
+        <chmod file="${bin64_dir}/rcspy" perm="a+x"/>
+        <chmod file="${bin64_dir}/influx-d" perm="a+x"/>
+    </target>
+
+
+    <target name="distclean" depends="clean.module.afecs, delete.jar" description="cleanup all"/>
+
+    <target name="clean" depends="clean.module.afecs, delete.jar" description="cleanup all"/>
+
+
+    <target name="cp" description="Copies jars and executable into ${build_dir} area.">
+        <copy file = "${module.afecs.basedir}/afecs-4.0.jar" todir="${build_dir}/common/jar" overwrite="true"/>
+       <copy file = "${module.afecs.basedir}/lib/JinFlux.jar" todir="${build_dir}/common/jar" overwrite="true"/>
+
+        <copy file = "${bin_source_dir}/container" todir="${common_bin_dir}"/>
+        <copy file = "${bin_source_dir}/db2cool" todir="${common_bin_dir}"/>
+        <copy file = "${bin_source_dir}/plask" todir="${common_bin_dir}"/>
+        <copy file = "${bin_source_dir}/rcspy" todir="${common_bin_dir}"/>
+        <copy file = "${bin_source_dir}/platform" todir="${common_bin_dir}"/>
+        <copy file = "${bin_source_dir}/rcgui" todir="${common_bin_dir}"/>
+        <copy file = "${bin_source_dir}/influx-d" todir="${common_bin_dir}"/>
+
+        <copy file = "${bin_source_dir}/container" todir="${bin_dir}"/>
+        <copy file = "${bin_source_dir}/db2cool" todir="${bin_dir}"/>
+        <copy file = "${bin_source_dir}/plask" todir="${bin_dir}"/>
+        <copy file = "${bin_source_dir}/rcspy" todir="${bin_dir}"/>
+        <copy file = "${bin_source_dir}/platform" todir="${bin_dir}"/>
+        <copy file = "${bin_source_dir}/rcgui" todir="${bin_dir}"/>
+        <copy file = "${bin_source_dir}/influx-d" todir="${bin_dir}"/>
+
+        <copy file = "${bin_source_dir}/container" todir="${bin64_dir}"/>
+        <copy file = "${bin_source_dir}/db2cool" todir="${bin64_dir}"/>
+        <copy file = "${bin_source_dir}/plask" todir="${bin64_dir}"/>
+        <copy file = "${bin_source_dir}/rcspy" todir="${bin64_dir}"/>
+        <copy file = "${bin_source_dir}/platform" todir="${bin64_dir}"/>
+        <copy file = "${bin_source_dir}/rcgui" todir="${bin64_dir}"/>
+        <copy file = "${bin_source_dir}/influx-d" todir="${bin64_dir}"/>
+    </target>
+
+    <target name="jar" depends="clean, coda_env.exist, coda_env.not_exist,check_config, compile.module.afecs, build.jar" description="build jar"/>
+
+    <target name="install" depends="jar,  cp, change_permissions" description="build and install"/>
+
+    <target name="all" depends="jar" description="build"/>
+
+</project>

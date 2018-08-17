@@ -1,0 +1,67 @@
+<!--
+  ~   Copyright (c) 2016.  Jefferson Lab (JLab). All rights reserved. Permission
+  ~   to use, copy, modify, and distribute  this software and its documentation for
+  ~   educational, research, and not-for-profit purposes, without fee and without a
+  ~   signed licensing agreement.
+  ~
+  ~   IN NO EVENT SHALL JLAB BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL
+  ~   INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING
+  ~   OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF JLAB HAS
+  ~   BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  ~
+  ~   JLAB SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  ~   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  ~   PURPOSE. THE CLARA SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY,
+  ~   PROVIDED HEREUNDER IS PROVIDED "AS IS". JLAB HAS NO OBLIGATION TO PROVIDE
+  ~   MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+  ~
+  ~   This software was developed under the United States Government license.
+  ~   For more information contact author at gurjyan@jlab.org
+  ~   Department of Experimental Nuclear Physics, Jefferson Lab.
+  -->
+
+<rdf:RDF
+        xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        xmlns:cool="http://AFECSHOMEDB/schema/cool#" >
+
+    <!-- Fake supervisor 1 states -->
+    <rdf:Description rdf:about="http://COOLHOME/States/test#OK">
+        <cool:hasStateName>FSMS1_Ok</cool:hasStateName>
+        <cool:isFor rdf:resource="http://COOLHOME/Sms/test#FSMS1"/>
+        <cool:hasSeverity>1</cool:hasSeverity>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://COOLHOME/States/test#WARNING">
+        <cool:hasStateName>FSMS1_Warning</cool:hasStateName>
+        <cool:isFor rdf:resource="http://COOLHOME/Sms/test#FSMS1"/>
+        <cool:hasSeverity>5</cool:hasSeverity>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="http://COOLHOME/States/test#ERROR">
+        <cool:hasStateName>FSMS1_Error</cool:hasStateName>
+        <cool:isFor rdf:resource="http://COOLHOME/Sms/test#FSMS1"/>
+        <cool:hasSeverity>10</cool:hasSeverity>
+    </rdf:Description>
+
+    <!--FSLC1 component states-->
+        <rdf:Description rdf:about="http://COOLHOME/States/test#OFF">
+            <cool:hasStateName>off</cool:hasStateName>
+            <cool:isFor rdf:resource="http://COOLHOME/Slc/test#FSLC1"/>
+            <cool:achevedThrough rdf:resource="http://COOLHOME/Processes/test#PROCESS1"/>
+        </rdf:Description>
+
+        <rdf:Description rdf:about="http://COOLHOME/States/test#ON">
+            <cool:hasStateName>on</cool:hasStateName>
+            <cool:isFor rdf:resource="http://COOLHOME/Slc/test#FSLC1"/>
+            <cool:achevedThrough rdf:resource="http://COOLHOME/Processes/test#PROCESS2"/>
+        </rdf:Description>
+
+        <rdf:Description rdf:about="http://COOLHOME/States/test#STANDBY">
+            <cool:hasStateName>standby</cool:hasStateName>
+            <cool:isFor rdf:resource="http://COOLHOME/Slc/test#FSLC1"/>
+            <cool:achevedThrough rdf:resource="http://COOLHOME/Processes/test#PROCESS3"/>
+        </rdf:Description>
+
+
+
+</rdf:RDF>

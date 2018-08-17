@@ -1,0 +1,11 @@
+#!/bin/csh -f
+
+# kills the container
+# author: vhg, 08-aug-2009
+
+set a=`ps -ef | grep -v grep | grep AContainer | awk '{print $2}'`
+foreach i($a)
+kill -9 $i
+end
+
+exit

@@ -1,0 +1,1629 @@
+/*
+ *   Copyright (c) 2017.  Jefferson Lab (JLab). All rights reserved. Permission
+ *   to use, copy, modify, and distribute  this software and its documentation for
+ *   governmental use, educational, research, and not-for-profit purposes, without
+ *   fee and without a signed licensing agreement.
+ *
+ *   IN NO EVENT SHALL JLAB BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL
+ *   INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING
+ *   OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF JLAB HAS
+ *   BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *   JLAB SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ *   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ *   PURPOSE. THE CLARA SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY,
+ *   PROVIDED HEREUNDER IS PROVIDED "AS IS". JLAB HAS NO OBLIGATION TO PROVIDE
+ *   MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+ *
+ *   This software was developed under the United States Government license.
+ *   For more information contact author at gurjyan@jlab.org
+ *   Department of Experimental Nuclear Physics, Jefferson Lab.
+ */
+
+package org.jlab.coda.afecs.codarc;
+
+import org.jlab.coda.afecs.agent.AParent;
+import org.jlab.coda.afecs.client.AClientInfo;
+import org.jlab.coda.afecs.cool.ontology.AComponent;
+import org.jlab.coda.afecs.cool.ontology.APackage;
+import org.jlab.coda.afecs.cool.ontology.AProcess;
+import org.jlab.coda.afecs.cool.ontology.AState;
+import org.jlab.coda.afecs.fcs.FcsEngine;
+import org.jlab.coda.afecs.system.ACodaType;
+import org.jlab.coda.afecs.system.AConstants;
+import org.jlab.coda.afecs.system.AException;
+import org.jlab.coda.afecs.system.util.ALogger;
+import org.jlab.coda.afecs.system.util.AfecsTool;
+import org.jlab.coda.cMsg.*;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+
+
+/**
+ * <p>
+ * CODA run-control component agent. Contains the
+ * following subscriptions for messages coming from
+ * the CODA component, represented by this agent
+ * through the RC domain:
+ * <ul>
+ * <li> status </li>
+ * <li> daLog </li>
+ * <li> rc/response </li>
+ * </ul>
+ * As well as cMsg domain subscriptions
+ * for messages, such as:
+ * <ul>
+ * <li> agent control </li>
+ * <li>
+ * EMU reports about the
+ * ET buffer levels
+ * </li>
+ * </ul>
+ * <p>
+ * This class also creates threads for:
+ * <ul>
+ * <li>monitoring client's health</li>
+ * <li>
+ * monitoring client's transitioning
+ * to a required state
+ * </li>
+ * </ul>
+ * </p>
+ * </p>
+ *
+ * @author gurjyan
+ *         Date: 11/11/14 Time: 2:51 PM
+ * @version 3.4
+ */
+public class CodaRCAgent extends AParent {
+
+    // Subscription handler for the status
+    // messages coming from the coda component
+    private cMsgSubscriptionHandle statusSH;
+
+    // Subscription handler for the daLog
+    // messages coming from the coda component
+    private cMsgSubscriptionHandle daLogSH;
+
+    // Subscription handler for the type =
+    // rc/response messages coming from the
+    // coda component
+    private cMsgSubscriptionHandle responseSH;
+
+    // Subscription handler for agent control
+    // request messages
+    private cMsgSubscriptionHandle controlSH;
+
+    // supervisor state subscription handle
+    private cMsgSubscriptionHandle supervisorStateSH;
+
+    // Subscription handler for cMsg domain
+    // subscription that subscribes to EMU
+    // requesting client to set events per ET
+    // buffer level.
+    private cMsgSubscriptionHandle emuEventsPerEtBufferLevel;
+
+    // Client health watching thread
+    private ClientHeartBeatMonitor clientHealthMonitor;
+
+    // Transitioning to a state watching thread.
+    private StateTransitioningMonitor stateTransitionMonitor;
+
+    // Used to calculate cumulative moving average
+    // for event rate and data rate
+    public long averageCount;
+
+    // The message received time from the client
+    public AtomicLong
+            clientLastReportedTime = new AtomicLong(0);
+
+    // If this agent is configured as an FCS
+    // we need to create FcsEngine object.
+    private FcsEngine fcsEngine;
+
+    // Local instance of the logger object
+    private ALogger lg = ALogger.getInstance();
+
+    private long startTime;
+
+    private List<Float> averageRateStorage = new ArrayList<>();
+
+    private int errorThreshold = 120000;
+
+    private int warningThreshold = 20000;
+
+    /**
+     * <p>
+     * Constructor calls the parent constructor that will
+     * create cMsg domain connection object and register
+     * this agent with the platform registration services.
+     * The parent will also provide a subscription to the
+     * agent info request messages, as well as status
+     * reporting thread. For more information:
+     * {@link AParent}
+     * </p>
+     *
+     * @param comp Reference to the component object that is
+     *             going to be represented by this agent.
+     */
+    public CodaRCAgent(AComponent comp) {
+        super(comp);
+
+        boolean b = _connect2Client();
+
+        // if client connection is successful ask platform
+        // registration service to register the client
+        // This will write a record in the cool_home/ddb/clientRegistration.xml
+        if (b) {
+            // Ask platform to register client
+            try {
+                p2pSend(myConfig.getPlatformName(),
+                        AConstants.PlatformControlRegisterClient,
+                        comp.getClient(), 15000);
+            } catch (AException e) {
+                e.printStackTrace();
+                System.out.println("ERROR:" + comp.getName() + " can not register client.");
+            }
+        } else {
+            System.out.println("ERROR:" + comp.getName() + " not connected to the client.");
+        }
+
+        if (isPlatformConnected()) {
+
+            // Subscribe control messages to this agent
+            try {
+                controlSH = myPlatformConnection.subscribe(myName,
+                        AConstants.AgentControlRequest,
+                        new AgentControlCB(),
+                        null);
+            } catch (cMsgException e) {
+                lg.logger.severe(AfecsTool.stack2str(e));
+                a_println(AfecsTool.stack2str(e));
+            }
+            me.setState(AConstants.booted);
+        }
+
+    }
+
+    /**
+     * <p>
+     * Method for gracefully exiting this agent
+     * by stopping all running threads and
+     * removing subscriptions.
+     * </p>
+     */
+    public void rca_exit() throws cMsgException {
+        remove_registration();
+        _stopCommunications();
+        if (controlSH != null)
+            myPlatformConnection.unsubscribe(controlSH);
+        platformDisconnect();
+        rcClientDisconnect();
+    }
+
+    /**
+     * <p>
+     * Stops all running threads and
+     * subscriptions except agent
+     * control subscription.
+     * </p>
+     */
+    private void _stopCommunications() {
+        // Stops status reporting thread and
+        // active periodic processes (parent method)
+        stop_rpp();
+
+        // first stop dangling transition monitor threads if any
+        _stopStateTransitioningMonitor();
+
+        // un-subscribe coda client information messages
+        _codaClientUnSubscribe();
+    }
+
+    /**
+     * <p>
+     * Sets the client last reported
+     * event and  data rates to 0
+     * </p>
+     */
+    public void resetClientData() {
+        me.setEventRate(0);
+        me.setDataRate(0);
+    }
+
+    /**
+     * <p>
+     * Checks to see if agent has a proper connection
+     * to its representing client. If it has:
+     * <ul>
+     * <li>
+     * If the real world client is of the
+     * CODA type = FCS, creates an instance
+     * of the farm control supervisor engine
+     * that knows what to do for specific
+     * CODA transitions.
+     * </li>
+     * <li>
+     * Every time client boots up this method
+     * will be called. So, check if the state
+     * is connected (previously dead client was
+     * considered disconnected) report that client
+     * is restarted.
+     * </li>
+     * <li>
+     * Subscribes client status messages.
+     *
+     * @throws AException
+     * @see AConstants#RcReportStatus
+     * </li>
+     * <li>
+     * Subscribes client response messages.
+     * @see AConstants#RcResponse
+     * </li>
+     * <li>
+     * Subscribes client daLog messages.
+     * @see AConstants#RcReportDalog
+     * </li>
+     * <li>
+     * Starts status reporting thread,
+     * that will report periodically to
+     * the supervisor agent.
+     * </li>
+     * <li> Tells the client to reset</li>
+     * <li>
+     * Starts the client health monitoring
+     * thread. This Thread class will also
+     * tell client to start reporting.
+     * </li>
+     * <li> Tells the client about the configured
+     * session and the runType
+     * </li>
+     * <li>
+     * And finally tels the client to move
+     * to the state = configure
+     * </li>
+     * </ul>
+     * </p>
+     */
+    private void _setClientCommunications() throws AException {
+
+        if (isRcClientConnected() && me.getClient() != null) {
+
+            // FCS case
+            if (me.getType().equals(ACodaType.FCS.name())) {
+                if (fcsEngine == null) fcsEngine = new FcsEngine(this);
+            }
+
+            // See if this is reconnect request
+            if (me.getState().equals(AConstants.connected)) {
+                reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
+                        myName, 5,
+                        AConstants.WARN,
+                        " Client is restarted.");
+            }
+
+            // Subscribe client information
+            _codaClientSubscribe();
+
+            // move to reset state
+            boolean b = _moveToState(AConstants.reseted);
+            if (!b) {
+                throw new AException("Reset failed");
+            }
+
+            // Sleep for a 0.5 sec before issuing configure
+            AfecsTool.sleep(500);
+
+            try {
+                // Ask representing client to start reporting
+                sessionControlStartReporting();
+
+                // tell client linked component network information
+
+                sessionControlSetDestinationComponentNetworkDetails(me.getLinkedComponentNames(),
+                        me.getClient().getHostIps(),
+                        me.getClient().getHostBroadcastAddresses());
+
+            } catch (cMsgException e) {
+                lg.logger.severe(AfecsTool.stack2str(e));
+                a_println(AfecsTool.stack2str(e));
+            }
+
+            // Start agent health watching thread.
+            // This tells client to start reporting
+            _startClientHealthMonitor();
+
+            // Tell client about the session and the runType.
+            try {
+                sessionControlSetSession(me.getSession());
+                runControlSetRunType(me.getRunType());
+            } catch (cMsgException e) {
+                lg.logger.severe(AfecsTool.stack2str(e));
+                a_println(AfecsTool.stack2str(e));
+            }
+
+        } else {
+            throw new AException(" Not connected to the client. Possible restart/power-cycle of the client might be required.");
+        }
+    }
+
+    public FcsEngine getFcsEngine() {
+        return fcsEngine;
+    }
+
+    /**
+     * <p>
+     * Restarts client communications and
+     * does reset and configure.
+     *
+     * @see #_setClientCommunications()
+     * </p>
+     */
+    private boolean _setup() {
+
+        boolean stat = true;
+        _stopCommunications();
+        try {
+            _setClientCommunications();
+        } catch (AException e) {
+            a_println(AfecsTool.stack2str(e));
+            reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
+                    me.getName(),
+                    9,
+                    AConstants.ERROR,
+                    e.getMessage());
+            dalogMsg(me.getName(),
+                    9,
+                    AConstants.ERROR,
+                    e.getMessage());
+
+            me.setState(AConstants.failed);
+            stat = false;
+            send(me.getSession(), me.getRunType(), me);
+
+            // finally check to see if we lost connection
+            // with the client and set the state = disconnected.
+            if (!isRcClientConnected()) {
+                me.setState(AConstants.disconnected);
+                stat = false;
+                send(me.getSession(), me.getRunType(), me);
+            }
+        }
+        // Start thread of periodic reporting
+        // to supervisor and gui's
+        startStatusReporting();
+
+        // subscribe supervisor state messages
+        try {
+            supervisorStateSH = myPlatformConnection.subscribe(AConstants.GUI,
+                    me.getSession() + "_" + me.getRunType() + "/supervisor",
+                    new SupervisorStateCB(),
+                    null);
+        } catch (cMsgException e) {
+            e.printStackTrace();
+        }
+
+        return stat;
+    }
+
+    /**
+     * <p>
+     * Main method of this agent for transitioning
+     * to a required state. Utilizes parent's
+     * method.
+     * Does substitution of RTV = %(rn) with run
+     * number in all COOL configured processes.
+     * This substitution is done for prestarted,
+     * active and ended CODA transitions.
+     * Starts state transition monitoring thread
+     * to wait for client to transition to a
+     * required state.
+     * <p>
+     * </p>
+     *
+     * @param stateName the name of the state
+     * @return true if succeeded
+     */
+    private boolean _moveToState(String stateName) {
+        boolean b;
+
+        // First stop dangling transition
+        // monitor threads if any
+        _stopStateTransitioningMonitor();
+
+        if (stateName.equals(AConstants.reseted)) {
+
+            // Move to reset state
+            b = transition(stateName);
+            _reset();
+            AfecsTool.sleep(500);
+
+            send(me.getSession(), me.getRunType(), me);
+        } else {
+
+            // Reset rates if not request to end the run
+            if (!stateName.equals(AConstants.ended)) {
+                me.setEventRateAverage(0.0f);
+                me.setDataRateAverage(0.0);
+            } else {
+                // if the request is to end we stop periodic processes
+                stopPeriodicProcesses();
+            }
+
+            // Move to required state
+            b = transition(stateName);
+
+            // Start a new thread to monitor
+            // state transitioning process
+            _startStateTransitioningMonitor(stateName);
+        }
+        return b;
+    }
+
+    /**
+     * <p>
+     * Client reset method. Stops client health
+     * and transitioning monitoring threads.
+     * </p>
+     */
+    private void _reset() {
+        isResetting.set(true);
+
+        AfecsTool.sleep(1000);
+        _getClientState(AConstants.TIMEOUT, 1000);
+
+        stopPeriodicProcesses();
+
+        // Stop transitioning monitoring thread.
+        _stopStateTransitioningMonitor();
+
+
+    }
+
+    /**
+     * <p>
+     * Synchronously ask the state of the client.
+     * If communication with the client is broken
+     * set the state of this agent = disconnected
+     * and stop all communications with the client.
+     * </p>
+     *
+     * @param timeout int describing time in
+     *                seconds required to wait
+     *                for the response
+     * @return state of the client
+     */
+    public String _getClientState(int timeout, int stepTimeout) {
+        String tmp;
+        String status = AConstants.udf;
+
+        int to = timeout / stepTimeout;
+        for (int i = 0; i < to; i++) {
+            try {
+
+                a_println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                        myName + ": --> rc_syncGetState time=" + stepTimeout);
+
+                tmp = rcClientInfoSyncGetState(stepTimeout);
+                if (tmp != null && !tmp.equals(AConstants.failed)) {
+                    status = tmp;
+                    break;
+                }
+
+                a_println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                        myName + ": <-- rc_syncGetState = " + tmp);
+            } catch (AException e) {
+                a_println(AfecsTool.stack2str(e));
+//                e.printStackTrace();
+                if (e.getMessage() != null && e.getMessage().trim().equals("Broken pipe")) break;
+            }
+        }
+        if (status.equals(AConstants.udf)) {
+            // Stop client communications  and disconnect
+            me.setState(AConstants.disconnected);
+            send(me.getSession(), me.getRunType(), me);
+            _stopCommunications();
+            rcClientDisconnect();
+        }
+        return status;
+    }
+
+    /**
+     * <p>
+     * Returns the expected response strings described in
+     * the cool state descriptions. N.B. for the coda run
+     * control expected state name is described as the
+     * received package text. If there are more then one
+     * process described to be executed at least one must
+     * have a return text described, or all must return
+     * the same text. This text is going to be assigned as
+     * a state name for the client representing agent.
+     * </p>
+     *
+     * @param requiredState actual state name to be transitioned
+     * @return the response string
+     */
+    public ArrayList<String> getStateRequiredClientResponse(String requiredState) {
+        ArrayList<String> expectedResponses = new ArrayList<>();
+        for (AState st : me.getStates()) {
+            if (st.getName().equals(requiredState)) {
+
+                // for all processes necessary to be executed
+                // to achieve the required state
+                for (AProcess pr : st.getProcesses()) {
+                    for (APackage pk : pr.getReceivePackages()) {
+                        if (pk.getReceivedText() != null) {
+                            for (String s : pk.getReceivedText()) {
+                                expectedResponses.add(s);
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+        }
+        return expectedResponses;
+    }
+
+
+    /**
+     * Stores in the local map the values of average event rates.
+     * This is to present smoothed average event rate to GUIs.
+     *
+     * @param evtRate average event rate. the result of moving average calculation
+     */
+    public float smoothRate(float evtRate, int averageOver) {
+
+        if (averageRateStorage.size() >= AConstants.AVERAGING_SIZE) {
+            averageRateStorage.remove(0);
+            averageRateStorage.add(evtRate);
+        }
+
+        float tmpv = 0.0f;
+        int ind = 0;
+        if (averageRateStorage.size() > 0) {
+            for (int i = averageRateStorage.size() - averageOver; i < averageRateStorage.size(); i++) {
+                if (averageRateStorage.get(i) != null && averageRateStorage.get(i) > 0.0f) {
+                    tmpv += averageRateStorage.get(i);
+                    ind++;
+                }
+            }
+            if (ind != 0) tmpv = tmpv / ind;
+        }
+        return tmpv;
+    }
+
+    /**
+     * <p>
+     * Calculates average values
+     * for event rate and data rate
+     * </p>
+     */
+    private void _calculateAverages() {
+        if (startTime > 0) {
+            averageCount++;
+
+            if (me.getEventNumber() != 0 &&
+                    me.getDataRate() >= 0 &&
+                    me.getEventRate() >= 0) {
+//                float evtAv =
+//                        me.getEventRateAverage()+
+//                                ((me.getEventRate()-me.getEventRateAverage())/
+//                                        averageCount);
+//
+//                me.setEventRateAverage(evtAv);
+
+                long time = (long) ((AfecsTool.getCurrentTimeInMs() - startTime) / 1000.0);
+                if (time > 0) {
+//                    me.setEventRateAverage(me.getEventNumber()/time);
+
+                    me.setEventRateAverage(smoothRate(me.getEventNumber() / time, 10));
+                }
+                double datAv =
+                        me.getDataRateAverage() +
+                                ((me.getDataRate() - me.getDataRateAverage()) /
+                                        averageCount);
+                me.setDataRateAverage(datAv);
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Subscribes using RC domain to client messages, such as:
+     * <ul>
+     * <li>
+     * Subscribes client status messages.
+     *
+     * @see AConstants#RcReportStatus
+     * </li>
+     * <li>
+     * Subscribes client response messages.
+     * @see AConstants#RcResponse
+     * </li>
+     * <li>
+     * Subscribes client daLog messages.
+     * @see AConstants#RcReportDalog
+     * </li>
+     * </ul>
+     * Asks platform to return the linked emu name and
+     * subscribes emu direct messages, informing this
+     * agent the number events per et buffer.
+     * Note that this agent must represent ROC for this
+     * subscription to be valid.
+     * </p>
+     */
+    private void _codaClientSubscribe() {
+        if (isRcClientConnected()) {
+            try {
+                // subscribe client messages
+                statusSH = myCRCClientConnection.subscribe(myName,
+                        AConstants.RcReportStatus,
+                        new StatusMsgCB(),
+                        null);
+                responseSH = myCRCClientConnection.subscribe(myName,
+                        AConstants.RcResponse,
+                        new ResponseMsgCB(),
+                        null);
+                daLogSH = myCRCClientConnection.subscribe(myName,
+                        AConstants.RcReportDalog,
+                        new DaLogMsgCB(),
+                        null);
+
+                // Ask platform for the linked emu name
+                if (me.getType().equals(ACodaType.ROC.name()) ||
+                        me.getType().equals(ACodaType.GT.name()) ||
+                        me.getType().equals(ACodaType.TS.name())) {
+                    ArrayList<cMsgPayloadItem> l = new ArrayList<>();
+                    try {
+                        l.add(new cMsgPayloadItem(
+                                AConstants.DEFAULTOPTIONDIRS,
+                                me.getDod().toArray(new String[me.getDod().size()])));
+                    } catch (cMsgException e) {
+                        a_println(AfecsTool.stack2str(e));
+                        lg.logger.severe(AfecsTool.stack2str(e));
+                    }
+
+                    // Send the message to the platform and wait for 5sec.
+                    cMsgMessage msg = null;
+                    try {
+                        msg = p2pSend(myConfig.getPlatformName(),
+                                AConstants.PlatformInfoRequestGetRocDataLink,
+                                me.getName() + ".dat",
+                                l,
+                                AConstants.TIMEOUT);
+                    } catch (AException e) {
+                        a_println(AfecsTool.stack2str(e));
+                        lg.logger.severe(AfecsTool.stack2str(e));
+                    }
+
+                    if (msg != null && msg.getText() != null) {
+                        // Subscribe emu direct messages
+                        String emu_name = msg.getText();
+                        emuEventsPerEtBufferLevel =
+                                myPlatformConnection.subscribe(
+                                        emu_name,
+                                        "eventsPerBuffer",
+                                        new RocEvtPerBufferMsgCB(),
+                                        null);
+                    }
+                }
+
+            } catch (cMsgException e) {
+                a_println(AfecsTool.stack2str(e));
+                lg.logger.severe(AfecsTool.stack2str(e));
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Stops client and linked emu subscriptions
+     * </p>
+     */
+    private void _codaClientUnSubscribe() {
+        if (isRcClientConnected()) {
+            try {
+                if (statusSH != null) myCRCClientConnection.unsubscribe(statusSH);
+                if (responseSH != null) myCRCClientConnection.unsubscribe(responseSH);
+                if (daLogSH != null) myCRCClientConnection.unsubscribe(daLogSH);
+                if (emuEventsPerEtBufferLevel != null)
+                    myPlatformConnection.unsubscribe(emuEventsPerEtBufferLevel);
+            } catch (cMsgException e) {
+                lg.logger.severe(AfecsTool.stack2str(e));
+                a_println(AfecsTool.stack2str(e));
+            }
+        }
+    }
+
+    public void restartClientStatusSubscription() {
+        try {
+            if (statusSH != null) myCRCClientConnection.unsubscribe(statusSH);
+            // subscribe client messages
+            statusSH = myCRCClientConnection.subscribe(myName,
+                    AConstants.RcReportStatus,
+                    new StatusMsgCB(),
+                    null);
+        } catch (cMsgException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * <p>
+     * Stops client health monitoring thread.
+     * </p>
+     */
+    private void _stopClientHealthMonitor() {
+        if (clientHealthMonitor != null) {
+            clientHealthMonitor.stop();
+        }
+        if (clientLastReportedTime != null)
+            clientLastReportedTime.set(0);
+    }
+
+    /**
+     * <p>
+     * Starts client health monitoring thread.
+     * {@link ClientHeartBeatMonitor}
+     * </p>
+     */
+    private void _startClientHealthMonitor() {
+        _stopClientHealthMonitor();
+        clientHealthMonitor =
+                new ClientHeartBeatMonitor(this, errorThreshold, warningThreshold);
+        clientHealthMonitor.start();
+    }
+
+    /**
+     * <p>
+     * Stops thread monitoring the client's
+     * transitioning to a CODA state.
+     * </p>
+     */
+    private void _stopStateTransitioningMonitor() {
+        if (stateTransitionMonitor != null) {
+            stateTransitionMonitor.stop();
+        }
+    }
+
+    /**
+     * <p>
+     * Starts thread monitoring the client's
+     * transitioning to a CODA state.
+     * {@link StateTransitioningMonitor}
+     * </p>
+     */
+    private void _startStateTransitioningMonitor(String stateName) {
+        _stopStateTransitioningMonitor();
+        stateTransitionMonitor =
+                new StateTransitioningMonitor(this, stateName);
+        stateTransitionMonitor.start();
+
+    }
+
+    /**
+     * <p>
+     * Returns this agents component, as a result of
+     * differentiation to a COOL described component
+     * </p>
+     *
+     * @return reference to a AComponent object
+     */
+    public AComponent getAgentCOOLComponent() {
+        return me;
+    }
+
+    /**
+     * <p>
+     * Connect to the physical client using rcDomain server
+     * started and running in the physical world client.
+     * This method uses the list of host IPs sent by the
+     * client in the case client has multiple network
+     * interface cards.
+     * This is so called 3rd leg of the rcDomain connection.
+     * </p>
+     *
+     * @return status of the connection
+     */
+    private boolean _connect2Client() {
+        boolean stat;
+
+        if (me != null && me.getClient() != null) {
+
+            me.setState(AConstants.checking);
+
+            if (me.getClient().getHostIps() != null &&
+                    me.getClient().getHostIps().length > 0 &&
+                    me.getClient().getPortNumber() > 0 &&
+                    me.getClient().getHostBroadcastAddresses() != null &&
+                    me.getClient().getHostBroadcastAddresses().length > 0 &&
+                    me.getClient().getHostIps().length == me.getClient().getHostBroadcastAddresses().length
+                    ) {
+
+                // Disconnect from the client if connected
+                rcClientDisconnect();
+
+                // Connect to the physical client
+                String validHost;
+                String udl = AConstants.udf;
+                StringBuilder ul = new StringBuilder();
+                for (int i = 0; i < me.getClient().getHostIps().length; i++) {
+                    validHost = me.getClient().getHostIps()[i];
+                    ul.append("rcs://");
+                    ul.append(validHost);
+                    ul.append(":");
+                    ul.append(me.getClient().getPortNumber());
+                    ul.append("/");
+                    ul.append(me.getClient().getHostBroadcastAddresses()[i]);
+                    ul.append(";");
+                }
+                if (ul.length() > 1) {
+                    String tmp = ul.toString();
+                    udl = tmp.substring(0, tmp.length() - 1);
+                }
+
+                if (!udl.equals(AConstants.udf)) {
+                    if (!rcClientConnect(udl)) {
+                        lg.logger.warning(myName +
+                                " Cannot connect to the physical component using udl = " +
+                                udl);
+                        reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
+                                me.getName(),
+                                7,
+                                AConstants.ERROR,
+                                "Cannot connect to the physical component using udl = " +
+                                        udl);
+                        me.setState(AConstants.disconnected);
+                        stat = false;
+                    } else {
+
+                        System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                                myName + ":Info - connected to the client " + udl);
+
+                        stat = true;
+                        me.setState(AConstants.connected);
+
+                        // getString() returns host and port of a client that made a successful connection
+                        String x = myCRCClientConnection.getInfo(null);
+                        if (x != null) {
+                            String[] tokens = x.split(":");
+                            me.getClient().setHostName(tokens[0]);
+                        }
+                    }
+                } else {
+                    lg.logger.warning(myName +
+                            " Undefined client udl = " + udl);
+                    reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
+                            me.getName(),
+                            7,
+                            AConstants.ERROR,
+                            "Undefined client udl = " +
+                                    udl);
+                    me.setState(AConstants.disconnected);
+                    stat = false;
+                }
+
+            } else {
+                stat = false;
+                lg.logger.severe("Undefined host and port for the client.");
+                reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
+                        me.getName(),
+                        9,
+                        AConstants.ERROR,
+                        "Undefined host and port for the client.");
+            }
+        } else {
+            stat = false;
+        }
+        return stat;
+    }
+
+    /**
+     * <p>
+     * This method is called as a result of the container's
+     * send-and-get request to reconnect to the client.
+     * The message is triggered by the "join platform"
+     * request from a client at it's boot process.
+     * This method will check to see if this agent
+     * has a proper client connected and will reject
+     * connections in case it's client is active, otherwise
+     * this agent will establish connection to a new client.
+     * </p>
+     *
+     * @param msg cMsgMessage object reference.
+     */
+    private void _reconnect2Client(cMsgMessage msg) {
+
+        // Get requesting client info
+        AClientInfo cInfo = null;
+        String clientHost = AConstants.udf;
+        try {
+            cInfo = (AClientInfo) AfecsTool.B2O(msg.getByteArray());
+            clientHost = cInfo.getHostName();
+        } catch (IOException | ClassNotFoundException e) {
+            a_println(AfecsTool.stack2str(e));
+            lg.logger.severe(AfecsTool.stack2str(e));
+        }
+
+        if (cInfo != null) {
+
+            // Check if client is active
+            if (!_getClientState(AConstants.TIMEOUT, 1000).equalsIgnoreCase(AConstants.udf)) {
+                lg.logger.severe(myName +
+                        ": Client collision. My current client is healthy.");
+                reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
+                        myName,
+                        7,
+                        AConstants.WARN,
+                        " Attempt to join the platform from the host = " +
+                                clientHost +
+                                ", using currently active client identity.");
+                lg.logger.info(" Connection request from the host = " +
+                        clientHost +
+                        " is denied.");
+                try {
+                    sendResponse(msg, AConstants.no);
+                } catch (cMsgException e) {
+                    a_println(AfecsTool.stack2str(e));
+                    lg.logger.severe(AfecsTool.stack2str(e));
+                }
+
+                // If after timeout we don't get a response
+            } else {
+
+                // The old client is dead. This is a new client network info. Store it.
+                me.setClient(cInfo);
+
+
+                _stopCommunications();
+                _stopClientHealthMonitor();
+                _reconnectResponse(cInfo);
+                try {
+                    sendResponse(msg, AConstants.yes);
+                } catch (cMsgException e) {
+                    a_println(AfecsTool.stack2str(e));
+                    lg.logger.severe(AfecsTool.stack2str(e));
+                }
+            }
+        }
+    }
+
+
+    private void _reconnectResponse(AClientInfo cInfo) {
+
+        boolean b = _connect2Client();
+
+        // if client connection is successful ask platform
+        // registration service to register the client
+        // This will write a record in the cool_home/ddb/clientRegistration.xml
+        if (b) {
+            // Ask platform to register client
+            try {
+                p2pSend(myConfig.getPlatformName(),
+                        AConstants.PlatformControlRegisterClient,
+                        cInfo, 15000);
+            } catch (AException e) {
+                e.printStackTrace();
+                System.out.println("ERROR:" + cInfo.getName() + " can not register client.");
+            }
+
+            // Differentiate agent
+            differentiate(me);
+
+            // Establish connections, reset
+            // specific client  and configure
+            _setup();
+
+        } else {
+            System.out.println("ERROR:" + cInfo.getName() + " can not complete connection to the client.");
+        }
+
+    }
+
+    /**
+     * <p>
+     * Private inner class for responding to the status
+     * messages from the RC client, represented by this
+     * agent in the Afecs platform.
+     * </p>
+     */
+    private class StatusMsgCB extends cMsgCallbackAdapter {
+
+        public void callback(cMsgMessage msg, Object userObject) {
+
+            if (msg != null) {
+
+                // Define reporting time
+                if (clientLastReportedTime != null) {
+                    clientLastReportedTime.set(new Date().getTime());
+                }
+
+                // If we are not in a middle of transitioning to a CODA state
+                // then update agent-component parameters based on the client
+                // data.
+                if (!isTransitioning.get()) {
+                    try {
+                        if (msg.getPayloadItem(AConstants.CODACLASS) != null) {
+                            String tp = msg.getPayloadItem(AConstants.CODACLASS).getString().trim();
+                            if (tp.equals(me.getType())) {
+                                me.setType(tp);
+                            }
+                        }
+                        if (msg.getPayloadItem(AConstants.OBJECTTYPE) != null)
+                            me.setObjectType(msg.getPayloadItem(AConstants.OBJECTTYPE).getString());
+
+                        if (msg.getPayloadItem(AConstants.STATE) != null) {
+                            String st = msg.getPayloadItem(AConstants.STATE).getString();
+                            me.setState(st);
+
+                        }
+                        if (msg.getPayloadItem(AConstants.EVENTNUMBER64) != null) {
+                            me.setEventNumber(msg.getPayloadItem(AConstants.EVENTNUMBER64).getLong());
+                        } else if (msg.getPayloadItem(AConstants.EVENTNUMBER) != null) {
+                            me.setEventNumber(msg.getPayloadItem(AConstants.EVENTNUMBER).getInt());
+                        }
+
+                        if (msg.getPayloadItem(AConstants.EVENTRATE) != null)
+                            me.setEventRate(msg.getPayloadItem(AConstants.EVENTRATE).getFloat());
+
+                        if (msg.getPayloadItem(AConstants.DATARATE) != null) {
+                            me.setDataRate((msg.getPayloadItem(AConstants.DATARATE).getDouble() * 4.0) / 1000.0);
+
+                        }
+                        if (msg.getPayloadItem(AConstants.NUMBEROFLONGS) != null)
+                            me.setNumberOfLongs(msg.getPayloadItem(AConstants.NUMBEROFLONGS).getLong());
+
+                        if (msg.getPayloadItem(AConstants.LIVETIME) != null)
+                            me.setLiveTime(msg.getPayloadItem(AConstants.LIVETIME).getFloat());
+
+                        if (msg.getPayloadItem(AConstants.FILENAME) != null)
+                            me.setFileName(msg.getPayloadItem(AConstants.FILENAME).getString());
+
+                        if (msg.getPayloadItem("minEventSize") != null)
+                            me.setMinEventSize(msg.getPayloadItem("minEventSize").getInt());
+
+                        if (msg.getPayloadItem("maxEventSize") != null)
+                            me.setMaxEventSize(msg.getPayloadItem("maxEventSize").getInt());
+
+                        if (msg.getPayloadItem("avgEventSize") != null)
+                            me.setAvgEventSize(msg.getPayloadItem("avgEventSize").getInt());
+
+                        if (msg.getPayloadItem("timeToBuild") != null) {
+                            int[] d = msg.getPayloadItem("timeToBuild").getIntArray();
+                            if (d.length > 5) {
+                                me.setMinTimeToBuild(d[3]);
+                                me.setMaxTimeToBuild(d[4]);
+                                me.setMeanTimeToBuild(d[2]);
+                            }
+                        }
+
+                        if (msg.getPayloadItem("chunk_X_EtBuf") != null) {
+                            me.setChunkXEtBuffer(msg.getPayloadItem("chunk_X_EtBuf").getInt());
+                        }
+
+                        // input/output buffers
+                        // Input buffers
+                        if (msg.getPayloadItem("inputChanNames") != null && msg.getPayloadItem("inputChanLevels") != null) {
+                            int[] values = msg.getPayloadItem("inputChanLevels").getIntArray();
+                            String[] names = msg.getPayloadItem("inputChanNames").getStringArray();
+                            me.getInBuffers().clear();
+                            for (int i = 0; i < values.length; i++) {
+                                me.getInBuffers().put(me.getName() + "." + names[i], values[i]);
+                            }
+
+                        }
+
+                        // Output buffers
+                        if (msg.getPayloadItem("outputChanNames") != null && msg.getPayloadItem("outputChanLevels") != null) {
+                            int[] values = msg.getPayloadItem("outputChanLevels").getIntArray();
+                            String[] names = msg.getPayloadItem("outputChanNames").getStringArray();
+                            me.getOutBuffers().clear();
+                            for (int i = 0; i < values.length; i++) {
+                                me.getOutBuffers().put(me.getName() + "." + names[i], values[i]);
+                            }
+
+                        }
+
+                        // check the output buffer level from the ROC
+                        if (msg.getPayloadItem("outputLevel") != null) {
+                            String v = msg.getPayloadItem("outputLevel").getString();
+                            String[] value = v.split("\\.");
+                            me.getOutBuffers().put(me.getName() + "." + value[0], Integer.valueOf(value[1]));
+                        }
+
+                    } catch (cMsgException e) {
+                        a_println(AfecsTool.stack2str(e));
+                        lg.logger.severe(AfecsTool.stack2str(e));
+                    }
+
+                    // If we are in the active state calculate averages
+                    if (me.getState().equals(AConstants.active)) {
+                        _calculateAverages();
+                    }
+                }
+            }
+
+        }
+    }
+
+    /**
+     * <p>
+     * Private inner class for responding to the daLog
+     * messages from the RC client, represented by this
+     * agent in the Afecs platform.
+     * Client's daLog message contains following payload
+     * items with proper names:
+     * <ul>
+     * <li>codaid: component ID (int 0-255)</li>
+     * <li>runType: config ID (int)</li>
+     * <li>severity: severity text (INFO, WARN, ERROR, SERROR)</li>
+     * <li>state: client state</li>
+     * <li>codaClass: client type (ROC, EB, etc.)</li>
+     * </ul>
+     * </p>
+     */
+    private class DaLogMsgCB extends cMsgCallbackAdapter {
+        public void callback(cMsgMessage msg, Object userObject) {
+            if (msg != null) {
+
+                String severityString = AConstants.udf;
+                try {
+
+                    if (msg.getPayloadItem(AConstants.DALOGSEVERITY) != null) {
+                        severityString = msg.getPayloadItem(AConstants.DALOGSEVERITY).getString();
+                    }
+                    // Here agent adds some additional payload items to the message
+                    if (msg.getText() != null) {
+                        msg.addPayloadItem(
+                                new cMsgPayloadItem(AConstants.DALOGTEXT,
+                                        msg.getText()));
+                    }
+                    msg.addPayloadItem(
+                            new cMsgPayloadItem(AConstants.DALOGSEVERITYID,
+                                    msg.getUserInt()));
+
+                    msg.addPayloadItem(
+                            new cMsgPayloadItem(AConstants.EXPID,
+                                    me.getExpid()));
+                    msg.addPayloadItem(
+                            new cMsgPayloadItem(AConstants.CODANAME,
+                                    me.getName()));
+                    msg.addPayloadItem(
+                            new cMsgPayloadItem(AConstants.CLIENTHOST,
+                                    me.getClient().getHostName()));
+                    msg.addPayloadItem(
+                            new cMsgPayloadItem(AConstants.USERNAME,
+                                    "afecs"));
+                    msg.addPayloadItem(
+                            new cMsgPayloadItem(AConstants.SESSION,
+                                    me.getSession()));
+                    msg.addPayloadItem(
+                            new cMsgPayloadItem(AConstants.RUNTYPE,
+                                    me.getRunType()));
+                    msg.addPayloadItem(
+                            new cMsgPayloadItem(AConstants.RUNNUMBER,
+                                    me.getRunNumber()));
+                    msg.addPayloadItem(
+                            new cMsgPayloadItem("tod",
+                                    AfecsTool.getCurrentTimeInH()));
+
+                    // Forward message to the cMsg domain
+                    msgForward(msg);
+
+                    // NOTE: as a severity ID the userInt is used set by clients
+                    // Check to see if severity ID is error and above ( 9 and above )
+                    // if so, tell rcGui to show it on the message board.
+                    if (msg.getUserInt() >= 9) {
+                        reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
+                                myName, msg.getUserInt(),
+                                severityString,
+                                msg.getText() + " (client msg)");
+                    }
+                } catch (cMsgException e) {
+                    a_println(AfecsTool.stack2str(e));
+                    lg.logger.severe(AfecsTool.stack2str(e));
+                } catch (NullPointerException ignored) {
+                }
+            }
+        }
+
+    }
+
+    /**
+     * <p>
+     * Private inner class for responding to the rc/response messages
+     * from the RC client. This is to a aSync requests to the client
+     * such as coda/info/get... requests.
+     * Warning messages will generated in case request results are
+     * not consistent with the agent data.
+     * </p>
+     */
+    private class ResponseMsgCB extends cMsgCallbackAdapter {
+        public void callback(cMsgMessage msg, Object userObject) {
+
+            if (msg != null) {
+
+                // Data comes as a message text
+                String txt = msg.getText();
+
+                if (txt != null) {
+
+                    if (msg.getType().equals(AConstants.RcResponseGetState)) {
+                        me.setState(txt);
+
+                    } else if (msg.getType().equals(AConstants.RcResponseGetCodaClass)) {
+                        if (!me.getType().equals(AConstants.udf) && !me.getType().equals(txt)) {
+                            reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
+                                    myName,
+                                    7,
+                                    AConstants.WARN,
+                                    "Conflict with the clients CodaClass. client-codaClass = " +
+                                            txt +
+                                            " vs. " +
+                                            myName + "-codaClass = " +
+                                            me.getType());
+                            dalogMsg(myName,
+                                    7,
+                                    AConstants.WARN,
+                                    "Conflict with the clients CodaClass. client-codaClass = " +
+                                            txt +
+                                            " vs. " +
+                                            myName +
+                                            "-codaClass = " +
+                                            me.getType());
+                        }
+                        me.setType(txt);
+
+                    } else if (msg.getType().equals(AConstants.RcResponseGetSession)) {
+                        if (!me.getSession().equals(txt)) {
+                            reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
+                                    myName,
+                                    9,
+                                    AConstants.ERROR,
+                                    "Conflict with the clients session. client-session = " +
+                                            txt +
+                                            " vs. " +
+                                            myName +
+                                            "-session = " +
+                                            me.getSession());
+                            dalogMsg(myName, 9, AConstants.ERROR,
+                                    "Conflict with the clients session. client-session = " +
+                                            txt +
+                                            " vs. " +
+                                            myName +
+                                            "-session = " +
+                                            me.getSession());
+                        }
+
+                    } else if (msg.getType().equals(AConstants.RcResponseGetRunNumber)) {
+                        if (me.getRunNumber() != Integer.parseInt(txt)) {
+                            reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
+                                    myName,
+                                    9,
+                                    AConstants.ERROR,
+                                    "Conflict with the clients runnumber. client-runnumber = " +
+                                            txt +
+                                            " vs. " +
+                                            myName +
+                                            "-runnumber = " +
+                                            me.getRunNumber());
+                            dalogMsg(myName,
+                                    9,
+                                    AConstants.ERROR,
+                                    "Conflict with the clients runnumber. client-runnumber = " +
+                                            txt +
+                                            " vs. " +
+                                            myName +
+                                            "-runnumber = " +
+                                            me.getRunNumber());
+                        }
+
+                    } else if (msg.getType().equals(AConstants.RcResponseGetRunType)) {
+                        if (!me.getRunType().equals(txt)) {
+                            reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
+                                    myName,
+                                    9,
+                                    AConstants.ERROR,
+                                    "Conflict with the clients runType. client-runType = " +
+                                            txt +
+                                            " vs. " +
+                                            myName +
+                                            "-runType = " +
+                                            me.getRunType());
+                            dalogMsg(myName,
+                                    9,
+                                    AConstants.ERROR,
+                                    "Conflict with the clients runType. client-runType = " +
+                                            txt +
+                                            " vs. " +
+                                            myName +
+                                            "-runType = " +
+                                            me.getRunType());
+                        }
+
+                    } else if (msg.getType().equals(AConstants.RcResponseGetConfigId)) {
+                        try {
+                            if (me.getConfigID() == Integer.parseInt(txt)) {
+                                reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
+                                        myName,
+                                        9,
+                                        AConstants.ERROR,
+                                        "Conflict with the clients configID. client-configID = " +
+                                                txt +
+                                                " vs. " +
+                                                myName +
+                                                "-configID = " +
+                                                me.getConfigID());
+                                dalogMsg(myName,
+                                        9,
+                                        AConstants.ERROR,
+                                        "Conflict with the clients configID. client-configID = " +
+                                                txt +
+                                                " vs. " +
+                                                myName + "-configID = " +
+                                                me.getConfigID());
+                            }
+                        } catch (NumberFormatException e) {
+                            a_println(AfecsTool.stack2str(e));
+                            lg.logger.severe(AfecsTool.stack2str(e));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Private inner class for responding to the messages
+     * from the EMU client, asking to set proper number of
+     * events per ET buffer. This info is passed to the
+     * representative client (type = ROC) through rc domain.
+     * </p>
+     */
+    private class RocEvtPerBufferMsgCB extends cMsgCallbackAdapter {
+        public void callback(cMsgMessage msg, Object userObject) {
+            if (msg != null) {
+
+                try {
+                    if (msg.getUserInt() > 0 && isRcClientConnected()) {
+                        msg.setSubject(myName);
+                        msg.setType(AConstants.RunControlSetRocBufferLevel);
+                        msg.setText("setRocBufferLevel");
+                        myCRCClientConnection.send(msg);
+                    }
+                } catch (cMsgException e) {
+                    a_println(AfecsTool.stack2str(e));
+                    lg.logger.severe(AfecsTool.stack2str(e));
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Private class representing callback   that listens state messages from the supervisor
+     */
+    private class SupervisorStateCB extends cMsgCallbackAdapter {
+
+        @Override
+        public void callback(cMsgMessage msg, Object userObject) {
+            if (msg != null && msg.getText() != null) {
+                String supervisorState = msg.getText();
+                switch (supervisorState) {
+                    case AConstants.active:
+                        startTime = AfecsTool.getCurrentTimeInMs();
+                        for (int i = 0; i < AConstants.AVERAGING_SIZE; i++) {
+                            averageRateStorage.add(0F);
+                        }
+                        break;
+                    case "ending":
+                        startTime = 0;
+                        break;
+                }
+            }
+        }
+    }
+
+
+    /**
+     * <p>
+     * Private inner class for responding to control
+     * messages addressed to this agent. Note that
+     * requests will be serviced in a separate threads.
+     * </p>
+     */
+    private class AgentControlCB extends cMsgCallbackAdapter {
+        public void callback(cMsgMessage msg, Object userObject) {
+            if (msg != null) {
+
+                // Run every control request in the separate thread
+                new AgentControlThread(msg).start();
+            }
+        }
+    }
+
+    /**
+     * <p>
+     * Private thread for running agent addressed
+     * control requests
+     * </p>
+     */
+    private class AgentControlThread extends Thread {
+        private cMsgMessage msg;
+
+        public AgentControlThread(cMsgMessage m) {
+            msg = m;
+        }
+
+        public void run() {
+
+            String clientState = AConstants.udf;
+
+            if (msg != null) {
+                String type = msg.getType();
+                String txt = msg.getText();
+                String sender = msg.getSender();
+
+                a_println("DDD -----| Info: agentControl " +
+                        myName + ": --> type = " + type + " text = " + txt);
+
+                switch (type) {
+                    case AConstants.AgentControlRequestSetup:
+                        AComponent ac = null;
+                        try {
+                            ac = (AComponent) AfecsTool.B2O(msg.getByteArray());
+                        } catch (IOException | ClassNotFoundException e) {
+                            a_println(AfecsTool.stack2str(e));
+                            lg.logger.severe(AfecsTool.stack2str(e));
+                        }
+                        if (ac != null) {
+                            // differentiate agent
+                            differentiate(ac);
+
+                            // start communications with the
+                            // client, reset and configure
+                            boolean stat = _setup();
+                            if (stat) {
+                                // Move to configured
+                                me.setFileName(AConstants.udf);
+                                isResetting.set(false);
+                                _moveToState(AConstants.configured);
+                            }
+                        }
+
+                        break;
+                    case AConstants.AgentControlRequestClientState:
+                        clientState = _getClientState(AConstants.TIMEOUT, 1000);
+                        break;
+
+                    case AConstants.AgentControlRequestClientReconnect:
+                        _reconnect2Client(msg);
+                        break;
+
+                    case AConstants.AgentControlRequestPlatformDisconnect:
+
+                        // Gracefully exit
+                        try {
+                            rca_exit();
+                        } catch (cMsgException e) {
+                            a_println(AfecsTool.stack2str(e));
+                            lg.logger.severe(AfecsTool.stack2str(e));
+                        }
+
+                        break;
+                    case AConstants.AgentControlRequestExecuteProcess:
+                        if (txt != null) {
+                            requestStartProcess(txt);
+                        }
+
+                        break;
+                    case AConstants.AgentControlRequestMoveToState:
+                        if (txt != null) {
+                            isResetting.set(false);
+                            _moveToState(txt);
+                        }
+
+                        break;
+                    case AConstants.AgentControlRequestReset:
+                        isResetting.set(true);
+                        _reset();
+
+                        break;
+                    case AConstants.AgentControlRequestSetRunNumber:
+                        if (msg.getPayloadItem(AConstants.RUNNUMBER) != null) {
+                            try {
+                                int rn = msg.getPayloadItem(AConstants.RUNNUMBER).getInt();
+                                me.setPrevious_runNumber(me.getRunNumber());
+                                me.setRunNumber(rn);
+                                if (msg.getPayloadItem("ForAgentOnly") == null) {
+                                    runControlSetRunNumber(rn);
+                                }
+                            } catch (cMsgException e) {
+                                a_println(AfecsTool.stack2str(e));
+                                lg.logger.severe(AfecsTool.stack2str(e));
+                            }
+                        }
+
+                        break;
+                    case AConstants.AgentControlRequestReleaseAgent:
+                        try {
+                            // send client to stop reporting
+                            sessionControlStopReporting();
+
+                            // update session and runType info
+                            // in the platform registration agent
+                            me.setSession(AConstants.udf);
+                            me.setRunType(AConstants.udf);
+                            update_registration();
+
+                            // set session of the client undefined
+                            sessionControlSetSession(me.getSession());
+                        } catch (cMsgException e) {
+                            a_println(AfecsTool.stack2str(e));
+                            lg.logger.severe(AfecsTool.stack2str(e));
+                        }
+                        _reset();
+                        _stopCommunications();
+                        me.setState(AConstants.disconnected);
+
+
+                        break;
+                    case AConstants.AgentControlRequestStartReporting:
+
+                        // start reporting thread. If reporting interval
+                        // is not defined in cool, default interval = 1sec.
+                        startStatusReporting();
+
+                        break;
+                    case AConstants.AgentControlRequestStopReporting:
+                        // stop if reporting thread is active
+                        stopStatusReporting();
+
+                    case AConstants.AgentControlRequestNetworkDetails:
+                        // store linked component network information
+                        try {
+                            if (msg.getPayloadItem(AConstants.IPADDRESSLIST) != null) {
+                                me.addLinkedIp(sender, msg.getPayloadItem(AConstants.IPADDRESSLIST).getStringArray());
+                            }
+                            if (msg.getPayloadItem(AConstants.BROADCASTADDRESSLIST) != null) {
+                                me.addLinkedBa(sender, msg.getPayloadItem(AConstants.BROADCASTADDRESSLIST).getStringArray());
+                            }
+                        } catch (cMsgException e) {
+                            a_println(AfecsTool.stack2str(e));
+                            lg.logger.severe(AfecsTool.stack2str(e));
+                        }
+
+                        break;
+                    case AConstants.AgentControlRequestSetFileWriting:
+                        if (txt.equals("disabled")) {
+                            me.setFileWriting(0);
+                        } else {
+                            me.setFileWriting(1);
+                        }
+                        break;
+                }
+                if (msg.isGetRequest()) {
+                    try {
+                        cMsgMessage mr = msg.response();
+                        mr.setSubject(AConstants.udf);
+                        mr.setType(AConstants.udf);
+                        mr.setUserInt(me.getRunNumber());
+                        mr.setText(clientState);
+                        myPlatformConnection.send(mr);
+                    } catch (cMsgException e) {
+                        a_println(AfecsTool.stack2str(e));
+                        lg.logger.severe(AfecsTool.stack2str(e));
+                    }
+                }
+            }
+        }
+    }
+
+}

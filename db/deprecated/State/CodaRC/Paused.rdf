@@ -1,0 +1,58 @@
+<!--
+  ~   Copyright (c) 2016.  Jefferson Lab (JLab). All rights reserved. Permission
+  ~   to use, copy, modify, and distribute  this software and its documentation for
+  ~   educational, research, and not-for-profit purposes, without fee and without a
+  ~   signed licensing agreement.
+  ~
+  ~   IN NO EVENT SHALL JLAB BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL
+  ~   INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING
+  ~   OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF JLAB HAS
+  ~   BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  ~
+  ~   JLAB SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  ~   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  ~   PURPOSE. THE CLARA SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY,
+  ~   PROVIDED HEREUNDER IS PROVIDED "AS IS". JLAB HAS NO OBLIGATION TO PROVIDE
+  ~   MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+  ~
+  ~   This software was developed under the United States Government license.
+  ~   For more information contact author at gurjyan@jlab.org
+  ~   Department of Experimental Nuclear Physics, Jefferson Lab.
+  -->
+
+<rdf:RDF
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+xmlns:cool="http://AFECSHOMEDB/schema/cool#"
+>
+<rdf:Description rdf:about="http://AFECSHOMEDB/State/CodaRC/Paused#Paused">
+    <cool:hasName>Paused</cool:hasName>
+    <cool:hasDescription>Coda state transition Paused state</cool:hasDescription>
+    <cool:achievedThrough rdf:resource="#Pause_Process"/>
+</rdf:Description>
+
+<cool:Process rdf:ID="Pause_Process">
+   <cool:hasName>Pause_Process</cool:hasName>
+   <cool:hasDescription>Pause transition achieved through this process</cool:hasDescription>
+   <cool:isInitiator>true</cool:isInitiator>
+   <cool:sends rdf:resource="#Pause_Send_Package"/>
+   <cool:receives rdf:resource="#Pause_Receive_Package"/>
+</cool:Process>
+
+<cool:Package rdf:ID="Pause_Send_Package">
+   <cool:hasName>Pause_Send_Package</cool:hasName>
+   <cool:hasDescription>Pause process send package</cool:hasDescription>
+    <cool:isForRcClient>true</cool:isForRcClient>
+    <cool:hasSendType>run/transition/pause</cool:hasSendType>
+     <!--If subject is not defined it will be sent to the name of the sending agent (representing the same name client)-->
+   <cool:hasSendText>pause</cool:hasSendText>
+</cool:Package>
+
+<cool:Package rdf:ID="Pause_Receive_Package">
+   <cool:hasName>Pause_Receive_Package</cool:hasName>
+   <cool:hasDescription>Pause process receive package</cool:hasDescription>
+    <!--missing subject means subject = the name of the agent-->
+   <cool:hasReceivedType>rc/report/status</cool:hasReceivedType>
+   <cool:hasReceivedText>paused</cool:hasReceivedText>
+</cool:Package>
+
+</rdf:RDF>

@@ -1,0 +1,11 @@
+Afecs Coda Component for RC clients written in C.
+
+Synopsis:  ACodaCC [-n <name> | -m <plugin-name>| -h ]
+                  -h synopsis
+                  -n sets the client name
+                  -m sets the client shared library name
+                  -e sets an experiment ID: EXPID
+
+
+Find an example of the client written in C in the $AFECS_HOME/CClinet dir. Client must be compiled as
+a shared library and be presented as a value to the -m parameter. 

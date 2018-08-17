@@ -1,0 +1,71 @@
+<!--
+  ~   Copyright (c) 2016.  Jefferson Lab (JLab). All rights reserved. Permission
+  ~   to use, copy, modify, and distribute  this software and its documentation for
+  ~   educational, research, and not-for-profit purposes, without fee and without a
+  ~   signed licensing agreement.
+  ~
+  ~   IN NO EVENT SHALL JLAB BE LIABLE TO ANY PARTY FOR DIRECT, INDIRECT, SPECIAL
+  ~   INCIDENTAL, OR CONSEQUENTIAL DAMAGES, INCLUDING LOST PROFITS, ARISING
+  ~   OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF JLAB HAS
+  ~   BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  ~
+  ~   JLAB SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  ~   THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  ~   PURPOSE. THE CLARA SOFTWARE AND ACCOMPANYING DOCUMENTATION, IF ANY,
+  ~   PROVIDED HEREUNDER IS PROVIDED "AS IS". JLAB HAS NO OBLIGATION TO PROVIDE
+  ~   MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+  ~
+  ~   This software was developed under the United States Government license.
+  ~   For more information contact author at gurjyan@jlab.org
+  ~   Department of Experimental Nuclear Physics, Jefferson Lab.
+  -->
+
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:cool="http://AFECSHOMEDB/schema/cool#" >
+
+    <!--DO NOT MODIFY... CRITICAL STATE MACHINE CONFIGURATION!-->
+    <!---->
+  <rdf:Description rdf:about="http://AFECSHOMEDB/Service/CodaRC/CodaRcConfigure#CodaRcConfigure">
+      <cool:hasName>CodaRcConfigure</cool:hasName>
+      <cool:hasDescription>Coda configure state transition</cool:hasDescription>
+      <cool:startsStatemachine rdf:resource="#RC_Configure"/>
+  </rdf:Description>
+
+    <cool:Rule rdf:ID="RC_Configure">
+        <!--used for supervisor final state definition '+ed'-->
+       <cool:hasName>configur</cool:hasName>
+       <cool:hasDescription>Description of the Coda configure transition</cool:hasDescription>
+       <cool:hasCode>
+
+           if ( (type_EMU in_state configured) ||
+           (type_EMU in_state booted) ||
+           (type_USER in_state configured) ||
+           (type_USER in_state booted) ||
+           (type_SLC in_state configured) ||
+           (type_SLC in_state booted) ||
+           (type_WNC in_state configured) ||
+           (type_WNC in_state booted) ||
+           (type_ER in_state configured) ||
+           (type_ER in_state booted) ||
+           (type_CDEB in_state configured) ||
+           (type_CDEB in_state booted) ||
+           (type_ROC in_state configured) ||
+           (type_ROC in_state booted) ||
+           (type_TS in_state configured) ||
+           (type_TS in_state booted))  {
+           type_EMU move_to configured;
+           type_USER move_to configured;
+           type_SLC move_to configured;
+           type_WNC move_to configured;
+           type_ER move_to configured;
+           type_CDEB move_to configured;
+           type_ROC move_to configured;
+           type_TS move_to configured;
+           }
+
+
+       </cool:hasCode>
+    </cool:Rule>
+
+</rdf:RDF>
