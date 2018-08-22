@@ -38,7 +38,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  *
  * @author gurjyan
  *         Date: 12/4/14 Time: 1:57 PM
- * @version 3.x
+ * @version 4.x
  */
 public class LinkedConcurrentHashMap<K, V> {
 

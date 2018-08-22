@@ -85,7 +85,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author gurjyan
  *         Date: 11/16/14 Time: 2:51 PM
- * @version 3.x
+ * @version 4.x
  */
 public class APlatformRegistrar {
     private ConcurrentHashMap<String, AClientInfo>  ClientDir  = new ConcurrentHashMap<>();

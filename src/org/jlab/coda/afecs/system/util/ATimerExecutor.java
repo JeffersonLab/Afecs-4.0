@@ -31,7 +31,7 @@ import java.util.TimerTask;
  *
  * @author gurjyan
  *         Date: 11/5/15 Time: 8:59 AM
- * @version 3.x
+ * @version 4.x
  */
 public abstract class ATimerExecutor extends TimerTask {
 

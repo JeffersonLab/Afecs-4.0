@@ -31,7 +31,7 @@ import java.util.ArrayList;
  *
  * @author gurjyan
  *         Date: 1/6/14 Time: 1:48 PM
- * @version 2
+ * @version 4.x
  */
 public class FCSConfigData {
     private String commandTemplate = AConstants.udf;

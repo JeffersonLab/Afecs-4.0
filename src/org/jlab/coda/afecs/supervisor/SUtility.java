@@ -38,7 +38,7 @@ import java.util.List;
  *
  * @author gurjyan
  *         Date: 11/11/14 Time: 2:51 PM
- * @version 3.x
+ * @version 4.x
  */
 public class SUtility {
 
@@ -152,8 +152,7 @@ public class SUtility {
             return rocComponents.get(rocComponents.size() - 1);
         }
 
-        // No trigger source
-        // component was found
+        // No trigger source component was found
         return null;
     }
 

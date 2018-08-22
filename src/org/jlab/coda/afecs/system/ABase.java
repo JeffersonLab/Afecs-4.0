@@ -56,7 +56,7 @@ import java.util.concurrent.TimeoutException;
  *
  * @author gurjyan
  *         Date: 11/7/14 Time: 2:51 PM
- * @version 3.x
+ * @version 4.x
  */
 
 
@@ -250,7 +250,7 @@ public class ABase implements Serializable {
      *
      * @return status of the disconnect operation
      */
-    public boolean platformDisconnect() {
+    protected boolean platformDisconnect() {
         boolean stat = true;
         try {
             if (isPlatformConnected()) {

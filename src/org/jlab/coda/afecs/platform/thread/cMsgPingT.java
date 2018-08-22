@@ -9,7 +9,7 @@ import org.jlab.coda.cMsg.cMsg;
  *
  * @author gurjyan
  *         Date 11/10/16
- * @version 3.x
+ * @version 4.x
  */
 public class cMsgPingT extends Thread {
 

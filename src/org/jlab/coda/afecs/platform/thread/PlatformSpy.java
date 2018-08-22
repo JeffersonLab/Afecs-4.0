@@ -38,7 +38,7 @@ import org.jlab.coda.cMsg.common.cMsgServerFinder;
  *
  * @author gurjyan
  *         Date: 4/27/15 Time: 11:49 AM
- * @version 3.x
+ * @version 4.x
  */
 public class PlatformSpy extends ABase implements Runnable {
     cMsgServerFinder finder;

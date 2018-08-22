@@ -46,7 +46,7 @@ import java.util.HashMap;
  *
  * @author gurjyan
  *         Date: 7/14/14 Time: 3:19 PM
- * @version 3.x
+ * @version 4.x
  */
 public class FxAnimatedBarChart extends JFrame {
     private int width, height;

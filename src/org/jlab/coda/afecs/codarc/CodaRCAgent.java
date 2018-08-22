@@ -77,7 +77,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @author gurjyan
  *         Date: 11/11/14 Time: 2:51 PM
- * @version 3.4
+ * @version 4.x
  */
 public class CodaRCAgent extends AParent {
 

@@ -14,7 +14,7 @@ import java.util.Map;
  *
  * @author gurjyan
  *         Date 4/19/16
- * @version 3.x
+ * @version 4.x
  */
 public class JinFluxTest extends JinFlux {
 

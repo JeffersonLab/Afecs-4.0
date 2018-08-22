@@ -45,7 +45,7 @@ import java.util.ArrayList;
  *
  * @author gurjyan
  *         Date: 11/11/14 Time: 2:51 PM
- * @version 3.x
+ * @version 4.x
  */
 public class CoolServiceAnalyser {
 

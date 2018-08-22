@@ -6,7 +6,7 @@ package org.jlab.coda.afecs.container;
  *
  * @author gurjyan
  *         Date 11/8/16
- * @version 3.x
+ * @version 4.x
  */
 public class ClientJoinRequestPacket {
     private int packetCount;

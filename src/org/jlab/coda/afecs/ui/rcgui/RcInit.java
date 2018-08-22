@@ -45,7 +45,7 @@ import java.util.concurrent.ExecutionException;
  *
  * @author gurjyan
  *         Date: 11/20/14 Time: 2:51 PM
- * @version 3.x
+ * @version 4.x
  */
 public class RcInit extends SwingWorker<String, Void> {
 

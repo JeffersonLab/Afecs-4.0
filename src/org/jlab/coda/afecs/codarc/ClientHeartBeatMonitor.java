@@ -36,7 +36,7 @@ import java.util.Date;
  *
  * @author gurjyan
  *         Date: 11/12/14 Time: 2:51 PM
- * @version 3.x
+ * @version 4.x
  * @see CodaRCAgent#clientLastReportedTime variable
  * to report warning or error messages to supervisor
  * and GUIs. In case of missing reporting more than

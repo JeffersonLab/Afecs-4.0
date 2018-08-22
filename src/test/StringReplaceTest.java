@@ -29,7 +29,7 @@ package test;
  *
  * @author gurjyan
  *         Date: 3/12/15 Time: 1:51 PM
- * @version 3.x
+ * @version 4.x
  */
 public class StringReplaceTest {
     public static void main(String[] args) {

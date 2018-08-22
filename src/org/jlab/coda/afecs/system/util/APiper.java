@@ -30,7 +30,7 @@ package org.jlab.coda.afecs.system.util;
  *
  * @author gurjyan
  *         Date: 1/7/14 Time: 2:42 PM
- * @version 3.x
+ * @version 4.x
  */
 public class APiper implements java.lang.Runnable {
 

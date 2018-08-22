@@ -39,7 +39,7 @@ import java.util.ArrayList;
  * </p>
  * @author gurjyan
  *         Date: 11/12/14 Time: 2:51 PM
- * @version 3.x
+ * @version 4.x
  */
 public class StateTransitioningMonitor extends Thread {
 

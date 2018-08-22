@@ -39,7 +39,7 @@ import org.jlab.coda.afecs.system.util.AfecsTool;
  *
  * @author gurjyan
  *         Date: 11/12/13 Time: 1:51 PM
- * @version 2
+ * @version 4.x
  */
 
 public class ReportStatus implements Runnable {

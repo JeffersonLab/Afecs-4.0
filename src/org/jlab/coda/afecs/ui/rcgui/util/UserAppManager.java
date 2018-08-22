@@ -47,7 +47,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author gurjyan
  *         Date: 11/20/14 Time: 2:51 PM
- * @version 3.x
+ * @version 4.x
  */public class UserAppManager {
     private AConfig sysConfig = AConfig.getInstance();
 

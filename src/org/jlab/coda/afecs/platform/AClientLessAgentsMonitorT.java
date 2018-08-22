@@ -42,7 +42,7 @@ import java.util.Map;
  *
  * @author gurjyan
  *         Date: 4/6/15 Time: 8:53 AM
- * @version 3.x
+ * @version 4.x
  */
 public class AClientLessAgentsMonitorT extends ABase implements Runnable {
 

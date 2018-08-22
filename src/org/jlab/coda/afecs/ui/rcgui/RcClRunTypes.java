@@ -39,7 +39,7 @@ import javax.swing.*;
  *
  * @author gurjyan
  *         Date: 11/21/14 Time: 1:51 PM
- * @version 2
+ * @version 4.x
  */
 public class RcClRunTypes extends SwingWorker<Void , Void> {
 

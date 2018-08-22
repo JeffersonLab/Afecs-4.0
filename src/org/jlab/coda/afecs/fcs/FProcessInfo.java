@@ -29,7 +29,7 @@ import org.jlab.coda.afecs.system.AConstants;
  *
  * @author gurjyan
  *         Date: 1/2/14 Time: 4:55 PM
- * @version 2
+ * @version 4.x
  */
 public class FProcessInfo {
     private int    id                  = -1;

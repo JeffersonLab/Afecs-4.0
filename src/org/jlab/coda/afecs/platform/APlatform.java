@@ -49,7 +49,7 @@ import java.util.*;
  *
  * @author gurjyan
  *         Date: 11/7/14 Time: 2:51 PM
- * @version 3.x
+ * @version 4.x
  */
 public class APlatform extends ABase {
 
@@ -107,7 +107,7 @@ public class APlatform extends ABase {
         }
 
         if (cMsgConstants.version <= 3) {
-            System.out.println("Afecs-3.x requires cMsg-4.0 and above to operate properly. " +
+            System.out.println("Afecs-4.x requires cMsg-4.0 and above to operate properly. " +
                     "Found cMsg version = " + cMsgConstants.version + " Exiting...");
             System.exit(1);
         }

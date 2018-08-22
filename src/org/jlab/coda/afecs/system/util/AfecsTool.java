@@ -55,7 +55,7 @@ import java.util.*;
  *
  * @author gurjyan
  *         Date: 11/12/13 Time: 1:51 PM
- * @version 3.x
+ * @version 4.x
  */
 public class AfecsTool {
 

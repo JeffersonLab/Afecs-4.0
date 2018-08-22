@@ -44,7 +44,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * </p>
  *
  * @author gurjyan
- * @version 3.x
+ * @version 4.x
  * @since 11/24/14
  */
 public class AFxChart extends JFrame {

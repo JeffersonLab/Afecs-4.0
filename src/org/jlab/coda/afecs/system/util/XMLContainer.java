@@ -33,7 +33,7 @@ import java.util.List;
  *
  * @author gurjyan
  *         Date: 3/18/14 Time: 1:52 PM
- * @version 3.x
+ * @version 4.x
  */
 public class XMLContainer {
     private List<XMLTagValue> container;

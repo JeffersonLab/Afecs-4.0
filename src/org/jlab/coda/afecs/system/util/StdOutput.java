@@ -30,7 +30,7 @@ package org.jlab.coda.afecs.system.util;
  *
  * @author gurjyan
  *         Date: 11/12/13 Time: 2:07 PM
- * @version 3.x
+ * @version 4.x
  */
 public class StdOutput {
     private String stdio = "";

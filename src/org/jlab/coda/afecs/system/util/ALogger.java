@@ -39,7 +39,7 @@ import java.util.logging.SimpleFormatter;
  *
  * @author gurjyan
  *         Date: 3/27/14 Time: 10:29 AM
- * @version 3.x
+ * @version 4.x
  */
 public class ALogger {
 

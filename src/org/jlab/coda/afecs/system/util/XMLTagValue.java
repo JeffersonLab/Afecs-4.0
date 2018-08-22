@@ -29,7 +29,7 @@ package org.jlab.coda.afecs.system.util;
  *
  * @author gurjyan
  *         Date: 2/28/14 Time: 9:30 AM
- * @version 3.x
+ * @version 4.x
  */
 public class XMLTagValue {
     private String tag;
