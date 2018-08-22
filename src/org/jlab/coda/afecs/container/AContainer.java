@@ -26,6 +26,7 @@ import org.jlab.coda.afecs.client.AClientInfo;
 import org.jlab.coda.afecs.codarc.CodaRCAgent;
 import org.jlab.coda.afecs.cool.ontology.AComponent;
 import org.jlab.coda.afecs.cool.ontology.AControl;
+import org.jlab.coda.afecs.platform.APlatform;
 import org.jlab.coda.afecs.supervisor.SupervisorAgent;
 import org.jlab.coda.afecs.system.*;
 import org.jlab.coda.afecs.system.util.AClassLoader;
@@ -118,12 +119,14 @@ public class AContainer extends ABase {
     private static HashMap<String, ClientJoinRequestPacket>
             requestPacketCounts = new HashMap<>();
 
-    public static void main(String[] args) {
-        if (args[0].equalsIgnoreCase("-multicast")) {
-            new AContainer(true);
-        } else {
-            new AContainer(false);
-        }
+    public APlatform myPlatform;
+
+    public ConcurrentHashMap<String, CodaRCAgent> getContainerAgents() {
+        return containerAgents;
+    }
+
+    public ConcurrentHashMap<String, SupervisorAgent> getContainerSupervisors() {
+        return containerSupervisors;
     }
 
     /**
@@ -134,8 +137,10 @@ public class AContainer extends ABase {
      * @param isMultiCast indicates if we need to connect
      *                    to the platform through multiCast
      */
-    public AContainer(boolean isMultiCast) {
+    public AContainer(boolean isMultiCast, APlatform platform) {
         super();
+
+        myPlatform = platform;
         this.isMultiCast = isMultiCast;
         me = new AComponent();
         myConfig = AConfig.getInstance();
@@ -183,13 +188,10 @@ public class AContainer extends ABase {
                 doSubscriptions();
 
                 // Register with the platform
-                if (!register()) {
-                    lg.logger.warning(AfecsTool.getCurrentTime("HH:mm:ss") +
-                            " " + myName + ": Failed to register with the platform.");
-                    System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") +
-                            " " + myName + ": Failed to register with the platform.");
-                }
+                register();
+
             } else {
+                register();
                 lg.logger.severe(AfecsTool.getCurrentTime("HH:mm:ss") +
                         " Severe: " + myName + ": Can not connect to the platform.");
                 System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") +
@@ -236,12 +238,9 @@ public class AContainer extends ABase {
                     new cMsg(myConfig.getPlatformRcMulticastServerUdl(),
                             myConfig.getPlatformRcDomainServerName(),
                             myConfig.getPlatformRcDomainServerDescription());
-//            rcMultiCastServer.setDebug(cMsgConstants.debugInfo);
             rcMultiCastServer.connect();
             rcMultiCastServer.start();
         } catch (cMsgException e) {
-//            lg.logger.severe(AfecsTool.stack2str(e));
-//            a_println(AfecsTool.stack2str(e));
             e.printStackTrace();
             status = false;
         }
@@ -254,12 +253,9 @@ public class AContainer extends ABase {
      * control agent with the platform
      * </p>
      *
-     * @return status of the operation
      */
-    private boolean register() {
-        return send(myConfig.getPlatformName(),
-                AConstants.PlatformRegistrationRequestAdd,
-                me);
+    private void register() {
+        myPlatform.platformRegistrationRequestAdd(me);
     }
 
     /**
@@ -341,7 +337,7 @@ public class AContainer extends ABase {
             boolean stat = true;
             CodaRCAgent agent = null;
                 if (a.getClassName().equals(AConstants.udf)) {
-                    agent = new CodaRCAgent(a);
+                    agent = new CodaRCAgent(a, this);
                 } else {
 
                     // Dynamically load the requested agent class
@@ -370,7 +366,7 @@ public class AContainer extends ABase {
                 c.getSupervisor().getType() != null) {
             if ((c.getSupervisor().getType().equalsIgnoreCase(ACodaType.SMS.name())) ||
                     (c.getSupervisor().getType().equalsIgnoreCase(ACodaType.RCS.name()))) {
-                sup = new SupervisorAgent(c.getSupervisor());
+                sup = new SupervisorAgent(c.getSupervisor(), this);
             }
         } else {
             stat = false;
@@ -518,39 +514,25 @@ public class AContainer extends ABase {
             if (!clHost.equals(AConstants.udf) && clPort > 0) {
 
                 if (containerAgents.containsKey(sender)) {
-                    String clientState;
-                    try {
-                        cMsgMessage pmsg = p2pSend(sender,
-                                AConstants.AgentControlRequestClientState,
-                                "", 2000);
-                        if (pmsg != null) {
-                            clientState = pmsg.getText();
-                            if (!clientState.equals(AConstants.udf)) {
-                                System.out.println("DDD =============== Rejecting (state = " +
-                                        clientState + ") " +
-                                        sender +
-                                        " request to connect...");
-                                return;
-                            }
-                        }
-                    } catch (AException e) {
-                        e.printStackTrace();
+                    CodaRCAgent _agent = containerAgents.get(sender);
+                    String clientState = _agent._getClientState(AConstants.TIMEOUT, 1000);
+                    if (!clientState.equals(AConstants.udf)) {
+                        System.out.println("DDD =============== Rejecting (state = " +
+                                clientState + ") " +
+                                sender +
+                                " request to connect...");
+                        return;
                     }
 
-                    if (containerAgents.get(sender).me.getClient() != null &&
-                            containerAgents.get(sender).me.getClient().getRequestId() != cif.getRequestId()) {
+                    if (_agent.me.getClient() != null &&
+                            _agent.me.getClient().getRequestId() != cif.getRequestId()) {
                         System.out.println("DDD ===== Reconnecting to the client = " + sender);
-
-                        // Client was registered previously,
-                        // and has an agent assigned ask already
-                        // existing representative agent reconnect
-                        containerAgents.get(sender).me.setClient(cif);
-                        send(sender, AConstants.AgentControlRequestClientReconnect, cif);
-                    } else {
-                        // agent is created at GUI configure, NOT by the client request
-                        containerAgents.get(sender).me.setClient(cif);
-                        send(sender, AConstants.AgentControlRequestClientReconnect, cif);
                     }
+                    _agent.me.setClient(cif);
+                    _agent._stopCommunications();
+                    _agent._stopClientHealthMonitor();
+                    _agent._reconnectResponse(_agent.me.getClient());
+
                 } else {
                     // Create AComponent object for this client
                     AComponent comp = new AComponent();
@@ -746,14 +728,8 @@ public class AContainer extends ABase {
                     doSubscriptions();
 
                     // Register with the platform
-                    if (!register()) {
-                        System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") +
-                                " " + myName +
-                                ": Failed to register with the platform.");
-                        lg.logger.warning(AfecsTool.getCurrentTime("HH:mm:ss") +
-                                " " + myName +
-                                ": Failed to register with the platform.");
-                    }
+                    register();
+
                 }
 
                 try {

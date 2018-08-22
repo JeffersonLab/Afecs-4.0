@@ -246,17 +246,6 @@ public class ABase implements Serializable {
     }
 
     /**
-     * See if the agent is connected to the platform
-     * through cMsg native connection
-     *
-     * @return true if connected to the platform
-     */
-    public boolean isPlatformConnected() {
-        return (myPlatformConnection != null &&
-                myPlatformConnection.isConnected());
-    }
-
-    /**
      * Disconnects from the platform
      *
      * @return status of the disconnect operation
@@ -273,6 +262,19 @@ public class ABase implements Serializable {
             stat = false;
         }
         return stat;
+    }
+
+
+
+    /**
+     * See if the agent is connected to the platform
+     * through cMsg native connection
+     *
+     * @return true if connected to the platform
+     */
+    public boolean isPlatformConnected() {
+        return (myPlatformConnection != null &&
+                myPlatformConnection.isConnected());
     }
 
     /**
@@ -1042,9 +1044,8 @@ public class ABase implements Serializable {
             al.add(new cMsgPayloadItem(AConstants.DALOGSEVERITYID, severityId));
             al.add(new cMsgPayloadItem(AConstants.DALOGTEXT, text));
         } catch (cMsgException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
-            a_println(AfecsTool.stack2str(e));
-        }
+            e.printStackTrace();
+         }
         return send(s, AConstants.AgentReportAlarm, al);
     }
 
@@ -1148,27 +1149,6 @@ public class ABase implements Serializable {
         rcSend(myName, AConstants.SessionControlStartReporting, "startReporting");
     }
 
-    protected void sessionControlSetDestinationComponentNetworkDetails(ArrayList<String> linkedComponentNames,
-                                                                       String[] myIPs,
-                                                                       String[] myBroadcastAddresses)
-            throws cMsgException {
-
-        ArrayList<cMsgPayloadItem> al = new ArrayList<>();
-        try {
-            if (myIPs != null) {
-                al.add(new cMsgPayloadItem(AConstants.IPADDRESSLIST, myIPs));
-            }
-            if (myBroadcastAddresses != null) {
-                al.add(new cMsgPayloadItem(AConstants.BROADCASTADDRESSLIST, myBroadcastAddresses));
-            }
-        } catch (cMsgException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
-        }
-
-        for (String linkedCompName : linkedComponentNames) {
-            send(linkedCompName, AConstants.AgentControlRequestNetworkDetails, "linkedNetworkDetails", al);
-        }
-    }
 
     public void sessionControlStopReporting() throws cMsgException {
         rcSend(myName, AConstants.SessionControlStopReporting, "stopReporting");

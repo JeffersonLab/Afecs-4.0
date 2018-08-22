@@ -23,13 +23,13 @@
 package org.jlab.coda.afecs.supervisor;
 
 import org.jlab.coda.afecs.agent.AReportingTime;
+import org.jlab.coda.afecs.codarc.CodaRCAgent;
 import org.jlab.coda.afecs.cool.ontology.*;
 import org.jlab.coda.afecs.cool.parser.ACondition;
 import org.jlab.coda.afecs.cool.parser.AStatement;
 import org.jlab.coda.afecs.cool.parser.CCompiler;
 import org.jlab.coda.afecs.system.ACodaType;
 import org.jlab.coda.afecs.system.AConstants;
-import org.jlab.coda.afecs.system.AException;
 import org.jlab.coda.afecs.system.util.ALogger;
 import org.jlab.coda.afecs.system.util.AfecsTool;
 
@@ -185,23 +185,10 @@ public class CoolServiceAnalyser {
                     if (st.getLeft() != null) {
                         switch (st.getActionOperator()) {
                             case "move_to":
-//                                try {
-                                    owner.send(st.getLeft(),
-                                            AConstants.AgentControlRequestMoveToState,
-                                            st.getRight(), 5000);
-//                                } catch (AException e) {
-//                                    owner.reportAlarmMsg(owner.me.getSession() +
-//                                                    "/" + owner.me.getRunType(),
-//                                            owner.me.getName(),
-//                                            7,
-//                                            AConstants.WARN,
-//                                            " Lost communication. Please reset and try again.");
-//                                }
+                                owner.myComponents.get(st.getLeft())._moveToState(st.getRight());
                                 break;
                             case "do":
-                                owner.send(st.getLeft(),
-                                        AConstants.AgentControlRequestExecuteProcess,
-                                        st.getRight());
+                                owner.myComponents.get(st.getLeft()).requestStartProcess( st.getRight());
                                 break;
                             default:
                                 owner.reportAlarmMsg(owner.me.getSession() +
@@ -245,23 +232,10 @@ public class CoolServiceAnalyser {
         for (String s : agents) {
             switch (st.getActionOperator()) {
                 case "move_to":
-//                    try {
-                        owner.send(s,
-                                AConstants.AgentControlRequestMoveToState,
-                                st.getRight());
-//                    } catch (AException e) {
-//                        owner.reportAlarmMsg(owner.me.getSession() +
-//                                        "/" + owner.me.getRunType(),
-//                                owner.me.getName(),
-//                                7,
-//                                AConstants.WARN,
-//                                " Lost communication. Please reset and try again.");
-//                    }
+                    owner.myComponents.get(s)._moveToState(st.getRight());
                     break;
                 case "do":
-                    owner.send(s,
-                            AConstants.AgentControlRequestExecuteProcess,
-                            st.getRight());
+                    owner.myComponents.get(s).requestStartProcess( st.getRight());
                     break;
                 default:
                     owner.reportAlarmMsg(owner.me.getSession() +
@@ -302,7 +276,7 @@ public class CoolServiceAnalyser {
         boolean stat = true;
         if (stmt.getActionOperator().equals("in_state")) {
             if (owner.myComponents.containsKey(stmt.getLeft())) {
-                stat = owner.myComponents.get(stmt.getLeft()).getState().equals(stmt.getRight());
+                stat = owner.myComponents.get(stmt.getLeft()).me.getState().equals(stmt.getRight());
 
                 // type based sm
             } else if (stmt.getLeft().contains("type")) {
@@ -313,7 +287,7 @@ public class CoolServiceAnalyser {
                     return false;
                 }
                 for (String s : n) {
-                    if (!owner.myComponents.get(s).getState().equals(stmt.getRight())) stat = false;
+                    if (!owner.myComponents.get(s).me.getState().equals(stmt.getRight())) stat = false;
                 }
 
                 // priority based sm
@@ -322,7 +296,7 @@ public class CoolServiceAnalyser {
                 ArrayList<String> cn = getAgentNamesByPriority(p);
                 if (cn != null && cn.size() > 0) {
                     for (String aName : cn) {
-                        stat = owner.myComponents.get(aName).getState().equals(stmt.getRight());
+                        stat = owner.myComponents.get(aName).me.getState().equals(stmt.getRight());
                     }
                 }
             } else {
@@ -348,7 +322,7 @@ public class CoolServiceAnalyser {
             }
         } else if (stmt.getActionOperator().equals("not_in_state")) {
             if (owner.myComponents.containsKey(stmt.getLeft())) {
-                stat = !owner.myComponents.get(stmt.getLeft()).getState().equals(stmt.getRight());
+                stat = !owner.myComponents.get(stmt.getLeft()).me.getState().equals(stmt.getRight());
 
                 // type based sm
             } else if (stmt.getLeft().contains("type")) {
@@ -360,7 +334,7 @@ public class CoolServiceAnalyser {
                     return false;
                 }
                 for (String s : n) {
-                    if (owner.myComponents.get(s).getState().equals(stmt.getRight())) stat = false;
+                    if (owner.myComponents.get(s).me.getState().equals(stmt.getRight())) stat = false;
                 }
 
                 // priority based sm
@@ -369,7 +343,7 @@ public class CoolServiceAnalyser {
                 ArrayList<String> cn = getAgentNamesByPriority(p);
                 if (cn != null && cn.size() > 0) {
                     for (String aName : cn) {
-                        stat = owner.myComponents.get(aName).getState().equals(stmt.getRight());
+                        stat = owner.myComponents.get(aName).me.getState().equals(stmt.getRight());
                     }
                 }
             } else {
@@ -501,7 +475,7 @@ public class CoolServiceAnalyser {
         boolean stat = true;
         for (AStatement stmt : condition.getActionStatements()) {
             if (owner.myComponents.containsKey(stmt.getLeft())) {
-                stat = owner.myComponents.get(stmt.getLeft()).getState().equals(stmt.getRight());
+                stat = owner.myComponents.get(stmt.getLeft()).me.getState().equals(stmt.getRight());
                 if (!stat) return false;
             } else if (stmt.getLeft().contains("type")) {
                 ArrayList<String> n = getAgentNamesByCoolType(stmt.getLeft());
@@ -554,14 +528,14 @@ public class CoolServiceAnalyser {
                                                  String aName) {
         ArrayList<String> expectedStateNames;
         // Look all the states of the component
-        AComponent com = owner.myComponents.get(aName);
+        AComponent com = owner.myComponents.get(aName).me;
         for (AState st : com.getStates()) {
             if (st.getName().equals(stmt.getRight())) {
                 for (AProcess pr : st.getProcesses()) {
                     for (APackage pk : pr.getReceivePackages()) {
                         if (pk.getReceivedText() != null && !pk.getReceivedText().isEmpty()) {
                             expectedStateNames = pk.getReceivedText();
-                            if (expectedStateNames.contains(owner.myComponents.get(aName).getState()))
+                            if (expectedStateNames.contains(owner.myComponents.get(aName).me.getState()))
                                 return aName;
                         }
                     }
@@ -662,10 +636,10 @@ public class CoolServiceAnalyser {
         ArrayList<String> names = new ArrayList<>();
 
         String type = coolType.substring(coolType.indexOf("type_") + 5);
-        for (AComponent com : owner.myComponents.values()) {
-            if (com.getType().equals(type)) {
-                if (!names.contains(com.getName())) {
-                    names.add(com.getName());
+        for (CodaRCAgent com : owner.myComponents.values()) {
+            if (com.me.getType().equals(type)) {
+                if (!names.contains(com.me.getName())) {
+                    names.add(com.me.getName());
                 }
             }
         }
@@ -683,19 +657,16 @@ public class CoolServiceAnalyser {
      */
     public ArrayList<String> getAgentNamesByPriority(int p) {
         ArrayList<String> names = new ArrayList<>();
-        for (AComponent cp : owner.myComponents.values()) {
-            if (cp.getPriority() == p) {
-                names.add(cp.getName());
+        for (CodaRCAgent cp : owner.myComponents.values()) {
+            if (cp.me.getPriority() == p) {
+                names.add(cp.me.getName());
             }
         }
         return names;
     }
-
-    /**
-     *
-     * @param c AControl object as a result parsing rdf configuration
-     * file for the control.
-     */
+//     *
+//     * @param c AControl object as a result parsing rdf configuration
+//     * file for the control.
     /**
      * <p>
      * Basic differentiation of the supervisor agent.
@@ -707,7 +678,7 @@ public class CoolServiceAnalyser {
      *
      * @param c COOL Control ontology object
      */
-    public void differentiate(AControl c) {
+    void differentiate(AControl c) {
         owner.haveCoda2Component.set(false);
         // Store locally all registered components for this supervisor
         if (c.getComponents() != null && !c.getComponents().isEmpty()) {
@@ -716,7 +687,8 @@ public class CoolServiceAnalyser {
                     if (comp.getCoda2Component().equals(AConstants.seton)) {
                         owner.haveCoda2Component.set(true);
                     }
-                    owner.myComponents.put(comp.getName(), comp);
+                    owner.myComponents.put(comp.getName(), owner.myContainer.getContainerAgents().get(comp.getName()));
+//                    owner.myComponents.put(comp.getName(), comp);
                     owner.myCompReportingTimes.put(comp.getName(), new AReportingTime());
                 }
             }
@@ -724,21 +696,8 @@ public class CoolServiceAnalyser {
             sortForOutputFile();
         }
 
-        // Subscribe supervisor specific subscriptions
-        if (!owner.agentSubscribe()) {
-            owner.reportAlarmMsg(owner.me.getSession() + "/" +
-                            owner.me.getRunType(),
-                    owner.me.getName(),
-                    9,
-                    AConstants.ERROR,
-                    " Failed to complete supervisor specific subscriptions.");
-            owner.dalogMsg(owner.me,
-                    9,
-                    "ERROR",
-                    " Failed to complete supervisor specific subscriptions.");
-            lg.logger.severe(owner.myName +
-                    " Failed to complete supervisor specific subscriptions.");
-        }
+        // Start thread that monitors owned agents
+        owner.agentSubscribe();
 
         // For all registered service compile
         // and get cool specified rule conditions
@@ -768,33 +727,33 @@ public class CoolServiceAnalyser {
      * Sorting components for reporting to UIs
      * </p>
      */
-    public void sortForReporting() {
+    private void sortForReporting() {
 
         int count;
         owner.sortedComponentList.clear();
-        for (AComponent c : owner.myComponents.values()) {
-            if (c.getType().equals(ACodaType.USR.name())) {
-                owner.sortedComponentList.put(c.getName(), c);
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.USR.name())) {
+                owner.sortedComponentList.put(c.me.getName(), c.me);
             }
         }
 
-        for (AComponent c : owner.myComponents.values()) {
-            if (c.getType().equals(ACodaType.SMS.name())) {
-                owner.sortedComponentList.put(c.getName(), c);
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.SMS.name())) {
+                owner.sortedComponentList.put(c.me.getName(), c.me);
             }
         }
 
-        for (AComponent c : owner.myComponents.values()) {
-            if (c.getType().equals(ACodaType.SLC.name())) {
-                owner.sortedComponentList.put(c.getName(), c);
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.SLC.name())) {
+                owner.sortedComponentList.put(c.me.getName(), c.me);
             }
         }
 
         // ER sorting
         count = 0;
-        for (AComponent c : owner.myComponents.values()) {
-            if (c.getType().equals(ACodaType.ER.name())) {
-                owner.sortedComponentList.put(c.getName(), c);
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.ER.name())) {
+                owner.sortedComponentList.put(c.me.getName(), c.me);
                     count++;
             }
         }
@@ -808,17 +767,17 @@ public class CoolServiceAnalyser {
         }
         // End ER sorting
 
-        for (AComponent c : owner.myComponents.values()) {
-            if (c.getType().equals(ACodaType.FCS.name())) {
-                owner.sortedComponentList.put(c.getName(), c);
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.FCS.name())) {
+                owner.sortedComponentList.put(c.me.getName(), c.me);
             }
         }
 
         // PEB sorting
         count = 0;
-        for (AComponent c : owner.myComponents.values()) {
-            if (c.getType().equals(ACodaType.PEB.name())) {
-                owner.sortedComponentList.put(c.getName(), c);
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.PEB.name())) {
+                owner.sortedComponentList.put(c.me.getName(), c.me);
                 count++;
             }
         }
@@ -834,9 +793,9 @@ public class CoolServiceAnalyser {
 
         // SEB sorting
         count = 0;
-        for (AComponent c : owner.myComponents.values()) {
-            if (c.getType().equals(ACodaType.SEB.name())) {
-                owner.sortedComponentList.put(c.getName(), c);
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.SEB.name())) {
+                owner.sortedComponentList.put(c.me.getName(), c.me);
                 count++;
             }
         }
@@ -850,39 +809,39 @@ public class CoolServiceAnalyser {
         }
         // End of SEB sorting
 
-        for (AComponent c : owner.myComponents.values()) {
-            if (c.getType().equals(ACodaType.EB.name())) {
-                owner.sortedComponentList.put(c.getName(), c);
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.EB.name())) {
+                owner.sortedComponentList.put(c.me.getName(), c.me);
             }
         }
 
-        for (AComponent c : owner.myComponents.values()) {
-            if (c.getType().equals(ACodaType.CDEB.name())) {
-                owner.sortedComponentList.put(c.getName(), c);
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.CDEB.name())) {
+                owner.sortedComponentList.put(c.me.getName(), c.me);
             }
         }
 
-        for (AComponent c : owner.myComponents.values()) {
-            if (c.getType().equals(ACodaType.DC.name())) {
-                owner.sortedComponentList.put(c.getName(), c);
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.DC.name())) {
+                owner.sortedComponentList.put(c.me.getName(), c.me);
             }
         }
 
-        for (AComponent c : owner.myComponents.values()) {
-            if (c.getType().equals(ACodaType.ROC.name())) {
-                owner.sortedComponentList.put(c.getName(), c);
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.ROC.name())) {
+                owner.sortedComponentList.put(c.me.getName(), c.me);
             }
         }
 
-        for (AComponent c : owner.myComponents.values()) {
-            if (c.getType().equals(ACodaType.GT.name())) {
-                owner.sortedComponentList.put(c.getName(), c);
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.GT.name())) {
+                owner.sortedComponentList.put(c.me.getName(), c.me);
             }
         }
 
-        for (AComponent c : owner.myComponents.values()) {
-            if (c.getType().equals(ACodaType.TS.name())) {
-                owner.sortedComponentList.put(c.getName(), c);
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.TS.name())) {
+                owner.sortedComponentList.put(c.me.getName(), c.me);
             }
         }
 
@@ -894,54 +853,54 @@ public class CoolServiceAnalyser {
      * being allowed to write an output file
      * </p>
      */
-    public void sortForOutputFile() {
+    private void sortForOutputFile() {
 
         owner.sortedByOutputList.clear();
-        for (AComponent c : owner.myComponents.values()) {
-            if (c.getType().equals(ACodaType.ER.name())) {
-                owner.sortedByOutputList.put(c.getName(), c);
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.ER.name())) {
+                owner.sortedByOutputList.put(c.me.getName(), c.me);
             }
         }
 
-        for (AComponent c : owner.myComponents.values()) {
-            if (c.getType().equals(ACodaType.SEB.name())) {
-                owner.sortedByOutputList.put(c.getName(), c);
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.SEB.name())) {
+                owner.sortedByOutputList.put(c.me.getName(), c.me);
             }
         }
 
-        for (AComponent c : owner.myComponents.values()) {
-            if (c.getType().equals(ACodaType.PEB.name())) {
-                owner.sortedByOutputList.put(c.getName(), c);
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.PEB.name())) {
+                owner.sortedByOutputList.put(c.me.getName(), c.me);
             }
         }
 
-        for (AComponent c : owner.myComponents.values()) {
-            if (c.getType().equals(ACodaType.EB.name())) {
-                owner.sortedByOutputList.put(c.getName(), c);
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.EB.name())) {
+                owner.sortedByOutputList.put(c.me.getName(), c.me);
             }
         }
 
-        for (AComponent c : owner.myComponents.values()) {
-            if (c.getType().equals(ACodaType.CDEB.name())) {
-                owner.sortedByOutputList.put(c.getName(), c);
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.CDEB.name())) {
+                owner.sortedByOutputList.put(c.me.getName(), c.me);
             }
         }
 
-        for (AComponent c : owner.myComponents.values()) {
-            if (c.getType().equals(ACodaType.DC.name())) {
-                owner.sortedByOutputList.put(c.getName(), c);
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.DC.name())) {
+                owner.sortedByOutputList.put(c.me.getName(), c.me);
             }
         }
 
-        for (AComponent c : owner.myComponents.values()) {
-            if (c.getType().equals(ACodaType.USR.name())) {
-                owner.sortedByOutputList.put(c.getName(), c);
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.USR.name())) {
+                owner.sortedByOutputList.put(c.me.getName(), c.me);
             }
         }
 
-        for (AComponent c : owner.myComponents.values()) {
-            if (c.getType().equals(ACodaType.ROC.name())) {
-                owner.sortedByOutputList.put(c.getName(), c);
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.ROC.name())) {
+                owner.sortedByOutputList.put(c.me.getName(), c.me);
             }
         }
     }

@@ -22,16 +22,15 @@
 
 package org.jlab.coda.afecs.supervisor.thread;
 
-import org.jlab.coda.afecs.cool.ontology.AComponent;
+import org.jlab.coda.afecs.codarc.CodaRCAgent;
 import org.jlab.coda.afecs.cool.ontology.AProcess;
 import org.jlab.coda.afecs.cool.parser.ACondition;
 import org.jlab.coda.afecs.cool.parser.AStatement;
 import org.jlab.coda.afecs.supervisor.SupervisorAgent;
 import org.jlab.coda.afecs.system.AConstants;
-import org.jlab.coda.afecs.system.AException;
 import org.jlab.coda.afecs.system.util.ALogger;
 import org.jlab.coda.afecs.system.util.AfecsTool;
-import org.jlab.coda.cMsg.cMsgMessage;
+import org.jlab.coda.cMsg.cMsgException;
 import org.jlab.coda.cMsg.cMsgPayloadItem;
 
 import java.util.*;
@@ -163,108 +162,39 @@ public class ServiceExecutionT extends Thread {
 
                 // Ask platform to increment run number,
                 // and update platform xml file
-                ArrayList<cMsgPayloadItem> al = new ArrayList<>();
-                try {
-                    al.add(new cMsgPayloadItem(AConstants.RUNTYPE, owner.me.getRunType()));
-                    al.add(new cMsgPayloadItem(AConstants.SESSION, owner.me.getSession()));
-                    if (owner.haveCoda2Component.get()) {
-                        al.add(new cMsgPayloadItem(AConstants.CODA2, AConstants.seton));
-                    } else {
-                        al.add(new cMsgPayloadItem(AConstants.CODA2, AConstants.setoff));
-                    }
-                } catch (Exception e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
-                }
-                cMsgMessage msg_p = null;
-                try {
-                    msg_p = owner.p2pSend(owner.myConfig.getPlatformName(),
-                            AConstants.PlatformRegistrationRequestIncrementRunNum,
-                            " ",
-                            al,
-                            AConstants.TIMEOUT);
-                } catch (AException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
-                }
+                int rn = owner.myContainer.myPlatform.platformRegistrationRequestIncrementRunNum(
+                        owner.me.getSession(),
+                        owner.me.getRunType());
 
-                // Message txt = incremented-run-number.
-                // Run number <= 0 indicates failure
-                // incrementing the run number
-                if (msg_p != null && msg_p.getText() != null) {
-                    int rn = 0;
+                if (rn > 0) {
+                    owner.me.setPrevious_runNumber(owner.me.getRunNumber());
+                    owner.me.setRunNumber(rn);
+
+                    ArrayList<cMsgPayloadItem> nl = new ArrayList<>();
                     try {
-                        rn = Integer.parseInt(msg_p.getText());
-                    } catch (NumberFormatException e) {
+                        nl.add(new cMsgPayloadItem(AConstants.RUNNUMBER, rn));
+                        nl.add(new cMsgPayloadItem("ForAgentOnly", AConstants.seton));
+                    } catch (Exception e) {
                         lg.logger.severe(AfecsTool.stack2str(e));
                     }
-                    if (rn > 0) {
-                        owner.me.setPrevious_runNumber(owner.me.getRunNumber());
-                        owner.me.setRunNumber(rn);
 
-                        ArrayList<cMsgPayloadItem> nl = new ArrayList<>();
-                        try {
-                            nl.add(new cMsgPayloadItem(AConstants.RUNNUMBER, rn));
-                            nl.add(new cMsgPayloadItem("ForAgentOnly", AConstants.seton));
-                        } catch (Exception e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
+                    // Send all gui's to update their run-numbers
+                    owner.send(owner.me.getSession() + "/" + owner.me.getRunType(),
+                            AConstants.UIControlRequestSetRunNumber,
+                            nl);
+
+                    try {
+
+                        // Ask all components to set their run-numbers
+                        for (CodaRCAgent cn : owner.myComponents.values()) {
+                            cn.runControlSetRunNumber(rn);
                         }
-
-                        // Send all gui's to update their run-numbers
-                        owner.send(owner.me.getSession() + "/" + owner.me.getRunType(),
-                                AConstants.UIControlRequestSetRunNumber,
-                                nl);
-
-
-                        // Send all components to set their run-numbers
-                        cMsgMessage msg_a = null;
-                        for (String cn : owner.myComponents.keySet()) {
-
-                            try {
-                                msg_a = owner.p2pSend(cn,
-                                        AConstants.AgentControlRequestSetRunNumber,
-                                        "",
-                                        nl,
-                                        AConstants.TIMEOUT);
-                            } catch (AException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                            }
-                            if (msg_a != null && msg_a.getUserInt() != rn) {
-                                owner.send(AConstants.GUI,
-                                        owner.me.getSession() + "_" + owner.me.getRunType() + "/supervisor",
-                                        owner.me.getRunTimeDataAsPayload());
-                                owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
-                                        owner.myName,
-                                        9,
-                                        AConstants.ERROR,
-                                        " " + serviceName + " service failed. Agent = " +
-                                                cn + " run number update error.");
-                                owner.dalogMsg(owner.myName,
-                                        9,
-                                        AConstants.ERROR,
-                                        " " + serviceName + " service aborted. Agent = " +
-                                                cn + " run number update error.");
-                                return;
-                            }
-                        }
-
-                        // Platform request to increment
-                        // run-number failed. Fail the transition.
-                    } else {
-                        owner.send(AConstants.GUI,
-                                owner.me.getSession() + "_" + owner.me.getRunType() + "/supervisor",
-                                owner.me.getRunTimeDataAsPayload());
-                        owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
-                                owner.myName,
-                                9,
-                                AConstants.ERROR,
-                                " " + serviceName + " service failed. Platform run-number increment failed.");
-                        owner.dalogMsg(owner.myName,
-                                9,
-                                AConstants.ERROR,
-                                " " + serviceName + " service failed. Platform run-number increment failed.");
-                        return;
+                    } catch (cMsgException e) {
+                        e.printStackTrace();
                     }
 
-                    // Platform communication failed
+                    // Platform request to increment
+                    // run-number failed. Fail the transition.
                 } else {
                     owner.send(AConstants.GUI,
                             owner.me.getSession() + "_" + owner.me.getRunType() + "/supervisor",
@@ -273,13 +203,14 @@ public class ServiceExecutionT extends Thread {
                             owner.myName,
                             9,
                             AConstants.ERROR,
-                            " " + serviceName + " service failed. Platform run-number request failed.");
+                            " " + serviceName + " service failed. Platform run-number increment failed.");
                     owner.dalogMsg(owner.myName,
                             9,
                             AConstants.ERROR,
-                            " " + serviceName + " service failed. Platform run-number request failed.");
+                            " " + serviceName + " service failed. Platform run-number increment failed.");
                     return;
                 }
+
 
                 // For configure, download as well as go service requests we
                 // p2p ask platform to report the run-number. Block and wait
@@ -288,33 +219,19 @@ public class ServiceExecutionT extends Thread {
             } else if (serviceName.equals("CodaRcConfigure") ||
                     serviceName.equals("CodaRcDownload") ||
                     serviceName.equals("CodaRcGo")) {
-                cMsgMessage msg_p = null;
-                try {
-                    msg_p = owner.p2pSend(owner.myConfig.getPlatformName(),
-                            AConstants.PlatformRegistrationRequestReportRunNum,
-                            owner.me.getSession(),
-                            AConstants.TIMEOUT);
-                } catch (AException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
-                }
-                if (msg_p != null && msg_p.getText() != null) {
-                    try {
-                        owner.me.setRunNumber(Integer.parseInt(msg_p.getText()));
-                    } catch (NumberFormatException e) {
-                        lg.logger.severe(AfecsTool.stack2str(e));
-                    }
-                    ArrayList<cMsgPayloadItem> nl = new ArrayList<>();
-                    try {
-                        nl.add(new cMsgPayloadItem(AConstants.RUNNUMBER, owner.me.getRunNumber()));
-                    } catch (Exception e) {
-                        lg.logger.severe(AfecsTool.stack2str(e));
-                    }
 
-                    // Inform GUIs the received run-number
-                    owner.send(owner.me.getSession() + "/" + owner.me.getRunType(),
-                            AConstants.UIControlRequestSetRunNumber,
-                            nl);
+                owner.me.setRunNumber(owner.myContainer.myPlatform.platformRegistrationRequestReportRunNum(owner.me.getSession()));
+                ArrayList<cMsgPayloadItem> nl = new ArrayList<>();
+                try {
+                    nl.add(new cMsgPayloadItem(AConstants.RUNNUMBER, owner.me.getRunNumber()));
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+
+                // Inform GUIs the received run-number
+                owner.send(owner.me.getSession() + "/" + owner.me.getRunType(),
+                        AConstants.UIControlRequestSetRunNumber,
+                        nl);
             }
 
             // See if we have processes scheduled to be executed
@@ -369,8 +286,8 @@ public class ServiceExecutionT extends Thread {
 
                 // create component priority list
                 TreeSet<Integer> _priorities = new TreeSet<>();
-                for(AComponent c:owner.getMyComponents().values()){
-                    _priorities.add(c.getPriority());
+                for (CodaRCAgent c : owner.getMyComponents().values()) {
+                    _priorities.add(c.me.getPriority());
                 }
 
                 long startTime = AfecsTool.getCurrentTimeInMs();
@@ -405,15 +322,15 @@ public class ServiceExecutionT extends Thread {
                         // Descending priority
                         case "priority--":
                             Iterator it = _priorities.descendingIterator();
-                            while(it.hasNext()){
-                                int p = (Integer)it.next();
+                            while (it.hasNext()) {
+                                int p = (Integer) it.next();
                                 // Check to see if we have registered
                                 // component with that priority
                                 ArrayList<String> tmp_a =
                                         owner.coolServiceAnalyser.getAgentNamesByPriority(p);
                                 failed = executePriority(p, tmp_a, cond);
                                 if (failed) break;
-                             }
+                            }
 
 
                             // Restore the original state machine description,
@@ -484,19 +401,8 @@ public class ServiceExecutionT extends Thread {
                         // update run-end log
                         if (stateName.equals("end")) {
                             owner.me.setRunEndTime(owner.startEndFormatter.format(new Date()));
-
-                            ArrayList<cMsgPayloadItem> al = new ArrayList<>();
-                            try {
-                                al.add(new cMsgPayloadItem(AConstants.RUNTYPE, owner.myRunType));
-                                al.add(new cMsgPayloadItem(AConstants.SESSION, owner.mySession));
-                            } catch (Exception e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                            }
                             String xmlLog = owner.createRunLogXML(true);
-                            owner.send(owner.myConfig.getPlatformName(),
-                                    AConstants.PlatformControlRunLogEnd,
-                                    xmlLog,
-                                    al);
+                            owner.myPlatform.registrar.createRunLog(xmlLog, owner.mySession, false);
                         }
 
                         // See if we have processes scheduled to be executed
@@ -522,37 +428,14 @@ public class ServiceExecutionT extends Thread {
                             // We are just prestarted the run send a message to the platform
                             // registrar asking to copy last run run_log (i.e. current_run_log) file to previous_run_log.
                             // note: this is in case previous run was not ended properly.
-                            ArrayList<cMsgPayloadItem> al = new ArrayList<>();
-                            try {
-                                al.add(new cMsgPayloadItem(AConstants.RUNTYPE, owner.myRunType));
-                                al.add(new cMsgPayloadItem(AConstants.SESSION, owner.mySession));
-                                al.add(new cMsgPayloadItem(AConstants.CP_PREVIOUS_LOG, "on"));
-                            } catch (Exception e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                            }
                             String xmlLog = owner.createRunLogXML(false);
-                            owner.send(owner.myConfig.getPlatformName(),
-                                    AConstants.PlatformControlRunLogEnd,
-                                    xmlLog,
-                                    al);
+                            owner.myPlatform.registrar.createRunLog(xmlLog, owner.mySession, true);
 
                         }
                         if (owner.me.getState().equals(AConstants.ended)) {
                             owner.me.setRunEndTime(owner.startEndFormatter.format(new Date()));
-
-                            ArrayList<cMsgPayloadItem> al = new ArrayList<>();
-                            try {
-                                al.add(new cMsgPayloadItem(AConstants.RUNTYPE, owner.myRunType));
-                                al.add(new cMsgPayloadItem(AConstants.SESSION, owner.mySession));
-                            } catch (Exception e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                            }
                             String xmlLog = owner.createRunLogXML(true);
-                            owner.send(owner.myConfig.getPlatformName(),
-                                    AConstants.PlatformControlRunLogEnd,
-                                    xmlLog,
-                                    al);
-
+                            owner.myPlatform.registrar.createRunLog(xmlLog, owner.mySession, false);
 
                             owner.send(AConstants.GUI,
                                     owner.me.getSession() + "_" + owner.me.getRunType() + "/supervisor",
@@ -714,7 +597,7 @@ public class ServiceExecutionT extends Thread {
                                 owner.myName,
                                 1,
                                 AConstants.INFO,
-                                " Starting process = "+ bp.getName());
+                                " Starting process = " + bp.getName());
                         // execute scripts before the state transition
                         owner.pm.executeProcess(bp, owner.myPlugin, owner.me);
                     }
@@ -722,7 +605,7 @@ public class ServiceExecutionT extends Thread {
                             owner.myName,
                             1,
                             AConstants.INFO,
-                            " Done process = "+ bp.getName());
+                            " Done process = " + bp.getName());
                 }
             }
         }
@@ -750,7 +633,7 @@ public class ServiceExecutionT extends Thread {
                                 owner.myName,
                                 1,
                                 AConstants.INFO,
-                                " Starting process = "+ bp.getName());
+                                " Starting process = " + bp.getName());
 
                         // execute scripts before the state transition
                         owner.pm.executeProcess(bp, owner.myPlugin, owner.me);
@@ -760,8 +643,7 @@ public class ServiceExecutionT extends Thread {
                             owner.myName,
                             1,
                             AConstants.INFO,
-                            " Done process = "+ bp.getName());
-
+                            " Done process = " + bp.getName());
                 }
             }
         }

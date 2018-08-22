@@ -24,6 +24,7 @@ package org.jlab.coda.afecs.codarc;
 
 import org.jlab.coda.afecs.agent.AParent;
 import org.jlab.coda.afecs.client.AClientInfo;
+import org.jlab.coda.afecs.container.AContainer;
 import org.jlab.coda.afecs.cool.ontology.AComponent;
 import org.jlab.coda.afecs.cool.ontology.APackage;
 import org.jlab.coda.afecs.cool.ontology.AProcess;
@@ -32,7 +33,6 @@ import org.jlab.coda.afecs.fcs.FcsEngine;
 import org.jlab.coda.afecs.system.ACodaType;
 import org.jlab.coda.afecs.system.AConstants;
 import org.jlab.coda.afecs.system.AException;
-import org.jlab.coda.afecs.system.util.ALogger;
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.*;
 
@@ -94,13 +94,6 @@ public class CodaRCAgent extends AParent {
     // coda component
     private cMsgSubscriptionHandle responseSH;
 
-    // Subscription handler for agent control
-    // request messages
-    private cMsgSubscriptionHandle controlSH;
-
-    // supervisor state subscription handle
-    private cMsgSubscriptionHandle supervisorStateSH;
-
     // Subscription handler for cMsg domain
     // subscription that subscribes to EMU
     // requesting client to set events per ET
@@ -115,26 +108,19 @@ public class CodaRCAgent extends AParent {
 
     // Used to calculate cumulative moving average
     // for event rate and data rate
-    public long averageCount;
+    long averageCount;
 
     // The message received time from the client
-    public AtomicLong
+    AtomicLong
             clientLastReportedTime = new AtomicLong(0);
 
     // If this agent is configured as an FCS
     // we need to create FcsEngine object.
     private FcsEngine fcsEngine;
 
-    // Local instance of the logger object
-    private ALogger lg = ALogger.getInstance();
-
-    private long startTime;
-
     private List<Float> averageRateStorage = new ArrayList<>();
 
-    private int errorThreshold = 120000;
-
-    private int warningThreshold = 20000;
+    private AContainer myContainer;
 
     /**
      * <p>
@@ -150,43 +136,42 @@ public class CodaRCAgent extends AParent {
      * @param comp Reference to the component object that is
      *             going to be represented by this agent.
      */
-    public CodaRCAgent(AComponent comp) {
+    public CodaRCAgent(AComponent comp, AContainer container) {
         super(comp);
-
+        myContainer = container;
+        setMyPlatform(myContainer.myPlatform);
         boolean b = _connect2Client();
-
         // if client connection is successful ask platform
         // registration service to register the client
         // This will write a record in the cool_home/ddb/clientRegistration.xml
         if (b) {
-            // Ask platform to register client
-            try {
-                p2pSend(myConfig.getPlatformName(),
-                        AConstants.PlatformControlRegisterClient,
-                        comp.getClient(), 15000);
-            } catch (AException e) {
-                e.printStackTrace();
-                System.out.println("ERROR:" + comp.getName() + " can not register client.");
+
+            // Check to see if any other DB registered client
+            // share the same host and port, remove if there is.
+            myPlatform.registrar.checkDeleteClientDB(
+                    me.getClient().getName(),
+                    me.getClient().getHostName(),
+                    me.getClient().getPortNumber());
+
+            if (myPlatform.registrar.getClientDir().containsKey(me.getClient().getName())) {
+                myPlatform.registrar.getClient(
+                        me.getClient().getName()).setHostName(me.getClient().getHostName());
+                myPlatform.registrar.getClient(
+                        me.getClient().getName()).setPortNumber(me.getClient().getPortNumber());
+                myPlatform.registrar.getClient(
+                        me.getClient().getName()).setContainerHost(me.getClient().getContainerHost());
+            } else {
+
+                // This is the first JoinThePlatform request
+                myPlatform.registrar.addClient(me.getClient());
             }
-        } else {
-            System.out.println("ERROR:" + comp.getName() + " not connected to the client.");
         }
+        // Open a file in the CoolHome and
+        // write ClientDir hash table content
+        myPlatform.registrar.dumpClientDatabase();
 
-        if (isPlatformConnected()) {
-
-            // Subscribe control messages to this agent
-            try {
-                controlSH = myPlatformConnection.subscribe(myName,
-                        AConstants.AgentControlRequest,
-                        new AgentControlCB(),
-                        null);
-            } catch (cMsgException e) {
-                lg.logger.severe(AfecsTool.stack2str(e));
-                a_println(AfecsTool.stack2str(e));
-            }
-            me.setState(AConstants.booted);
-        }
-
+        // Subscribe control messages to this agent
+        me.setState(AConstants.booted);
     }
 
     /**
@@ -199,9 +184,6 @@ public class CodaRCAgent extends AParent {
     public void rca_exit() throws cMsgException {
         remove_registration();
         _stopCommunications();
-        if (controlSH != null)
-            myPlatformConnection.unsubscribe(controlSH);
-        platformDisconnect();
         rcClientDisconnect();
     }
 
@@ -212,7 +194,7 @@ public class CodaRCAgent extends AParent {
      * control subscription.
      * </p>
      */
-    private void _stopCommunications() {
+    public void _stopCommunications() {
         // Stops status reporting thread and
         // active periodic processes (parent method)
         stop_rpp();
@@ -230,7 +212,7 @@ public class CodaRCAgent extends AParent {
      * event and  data rates to 0
      * </p>
      */
-    public void resetClientData() {
+    void resetClientData() {
         me.setEventRate(0);
         me.setDataRate(0);
     }
@@ -257,7 +239,6 @@ public class CodaRCAgent extends AParent {
      * <li>
      * Subscribes client status messages.
      *
-     * @throws AException
      * @see AConstants#RcReportStatus
      * </li>
      * <li>
@@ -324,13 +305,17 @@ public class CodaRCAgent extends AParent {
 
                 // tell client linked component network information
 
-                sessionControlSetDestinationComponentNetworkDetails(me.getLinkedComponentNames(),
-                        me.getClient().getHostIps(),
-                        me.getClient().getHostBroadcastAddresses());
+                for (String com : me.getLinkedComponentNames()) {
+                    if (myContainer.getContainerAgents().containsKey(com)) {
+                        myContainer.getContainerAgents().get(com).agentControlRequestNetworkDetails(
+                                myName,
+                                me.getClient().getHostIps(),
+                                me.getClient().getHostBroadcastAddresses());
+                    }
+                }
 
             } catch (cMsgException e) {
-                lg.logger.severe(AfecsTool.stack2str(e));
-                a_println(AfecsTool.stack2str(e));
+                e.printStackTrace();
             }
 
             // Start agent health watching thread.
@@ -342,8 +327,7 @@ public class CodaRCAgent extends AParent {
                 sessionControlSetSession(me.getSession());
                 runControlSetRunType(me.getRunType());
             } catch (cMsgException e) {
-                lg.logger.severe(AfecsTool.stack2str(e));
-                a_println(AfecsTool.stack2str(e));
+                e.printStackTrace();
             }
 
         } else {
@@ -351,7 +335,7 @@ public class CodaRCAgent extends AParent {
         }
     }
 
-    public FcsEngine getFcsEngine() {
+    FcsEngine getFcsEngine() {
         return fcsEngine;
     }
 
@@ -370,7 +354,7 @@ public class CodaRCAgent extends AParent {
         try {
             _setClientCommunications();
         } catch (AException e) {
-            a_println(AfecsTool.stack2str(e));
+            e.printStackTrace();
             reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
                     me.getName(),
                     9,
@@ -397,16 +381,6 @@ public class CodaRCAgent extends AParent {
         // to supervisor and gui's
         startStatusReporting();
 
-        // subscribe supervisor state messages
-        try {
-            supervisorStateSH = myPlatformConnection.subscribe(AConstants.GUI,
-                    me.getSession() + "_" + me.getRunType() + "/supervisor",
-                    new SupervisorStateCB(),
-                    null);
-        } catch (cMsgException e) {
-            e.printStackTrace();
-        }
-
         return stat;
     }
 
@@ -428,7 +402,7 @@ public class CodaRCAgent extends AParent {
      * @param stateName the name of the state
      * @return true if succeeded
      */
-    private boolean _moveToState(String stateName) {
+    public boolean _moveToState(String stateName) {
         boolean b;
 
         // First stop dangling transition
@@ -517,7 +491,7 @@ public class CodaRCAgent extends AParent {
                 a_println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
                         myName + ": <-- rc_syncGetState = " + tmp);
             } catch (AException e) {
-                a_println(AfecsTool.stack2str(e));
+                e.printStackTrace();
 //                e.printStackTrace();
                 if (e.getMessage() != null && e.getMessage().trim().equals("Broken pipe")) break;
             }
@@ -547,7 +521,7 @@ public class CodaRCAgent extends AParent {
      * @param requiredState actual state name to be transitioned
      * @return the response string
      */
-    public ArrayList<String> getStateRequiredClientResponse(String requiredState) {
+    ArrayList<String> getStateRequiredClientResponse(String requiredState) {
         ArrayList<String> expectedResponses = new ArrayList<>();
         for (AState st : me.getStates()) {
             if (st.getName().equals(requiredState)) {
@@ -557,9 +531,7 @@ public class CodaRCAgent extends AParent {
                 for (AProcess pr : st.getProcesses()) {
                     for (APackage pk : pr.getReceivePackages()) {
                         if (pk.getReceivedText() != null) {
-                            for (String s : pk.getReceivedText()) {
-                                expectedResponses.add(s);
-                            }
+                            expectedResponses.addAll(pk.getReceivedText());
                         }
                     }
                 }
@@ -576,8 +548,9 @@ public class CodaRCAgent extends AParent {
      *
      * @param evtRate average event rate. the result of moving average calculation
      */
-    public float smoothRate(float evtRate, int averageOver) {
+    private float smoothRate(float evtRate) {
 
+        int averageOver = 10;
         if (averageRateStorage.size() >= AConstants.AVERAGING_SIZE) {
             averageRateStorage.remove(0);
             averageRateStorage.add(evtRate);
@@ -604,31 +577,22 @@ public class CodaRCAgent extends AParent {
      * </p>
      */
     private void _calculateAverages() {
-        if (startTime > 0) {
-            averageCount++;
+        averageCount++;
 
-            if (me.getEventNumber() != 0 &&
-                    me.getDataRate() >= 0 &&
-                    me.getEventRate() >= 0) {
-//                float evtAv =
-//                        me.getEventRateAverage()+
-//                                ((me.getEventRate()-me.getEventRateAverage())/
-//                                        averageCount);
-//
-//                me.setEventRateAverage(evtAv);
+        if (me.getEventNumber() != 0 &&
+                me.getDataRate() >= 0 &&
+                me.getEventRate() >= 0) {
 
-                long time = (long) ((AfecsTool.getCurrentTimeInMs() - startTime) / 1000.0);
-                if (time > 0) {
-//                    me.setEventRateAverage(me.getEventNumber()/time);
+            long time = (long) ((AfecsTool.getCurrentTimeInMs()) / 1000.0);
+            if (time > 0) {
 
-                    me.setEventRateAverage(smoothRate(me.getEventNumber() / time, 10));
-                }
-                double datAv =
-                        me.getDataRateAverage() +
-                                ((me.getDataRate() - me.getDataRateAverage()) /
-                                        averageCount);
-                me.setDataRateAverage(datAv);
+                me.setEventRateAverage(smoothRate(me.getEventNumber() / time));
             }
+            double datAv =
+                    me.getDataRateAverage() +
+                            ((me.getDataRate() - me.getDataRateAverage()) /
+                                    averageCount);
+            me.setDataRateAverage(datAv);
         }
     }
 
@@ -684,8 +648,7 @@ public class CodaRCAgent extends AParent {
                                 AConstants.DEFAULTOPTIONDIRS,
                                 me.getDod().toArray(new String[me.getDod().size()])));
                     } catch (cMsgException e) {
-                        a_println(AfecsTool.stack2str(e));
-                        lg.logger.severe(AfecsTool.stack2str(e));
+                        e.printStackTrace();
                     }
 
                     // Send the message to the platform and wait for 5sec.
@@ -697,8 +660,7 @@ public class CodaRCAgent extends AParent {
                                 l,
                                 AConstants.TIMEOUT);
                     } catch (AException e) {
-                        a_println(AfecsTool.stack2str(e));
-                        lg.logger.severe(AfecsTool.stack2str(e));
+                        e.printStackTrace();
                     }
 
                     if (msg != null && msg.getText() != null) {
@@ -714,8 +676,7 @@ public class CodaRCAgent extends AParent {
                 }
 
             } catch (cMsgException e) {
-                a_println(AfecsTool.stack2str(e));
-                lg.logger.severe(AfecsTool.stack2str(e));
+                e.printStackTrace();
             }
         }
     }
@@ -734,13 +695,12 @@ public class CodaRCAgent extends AParent {
                 if (emuEventsPerEtBufferLevel != null)
                     myPlatformConnection.unsubscribe(emuEventsPerEtBufferLevel);
             } catch (cMsgException e) {
-                lg.logger.severe(AfecsTool.stack2str(e));
-                a_println(AfecsTool.stack2str(e));
+                e.printStackTrace();
             }
         }
     }
 
-    public void restartClientStatusSubscription() {
+    void restartClientStatusSubscription() {
         try {
             if (statusSH != null) myCRCClientConnection.unsubscribe(statusSH);
             // subscribe client messages
@@ -759,7 +719,7 @@ public class CodaRCAgent extends AParent {
      * Stops client health monitoring thread.
      * </p>
      */
-    private void _stopClientHealthMonitor() {
+    public void _stopClientHealthMonitor() {
         if (clientHealthMonitor != null) {
             clientHealthMonitor.stop();
         }
@@ -775,6 +735,8 @@ public class CodaRCAgent extends AParent {
      */
     private void _startClientHealthMonitor() {
         _stopClientHealthMonitor();
+        int errorThreshold = 120000;
+        int warningThreshold = 20000;
         clientHealthMonitor =
                 new ClientHeartBeatMonitor(this, errorThreshold, warningThreshold);
         clientHealthMonitor.start();
@@ -870,7 +832,7 @@ public class CodaRCAgent extends AParent {
 
                 if (!udl.equals(AConstants.udf)) {
                     if (!rcClientConnect(udl)) {
-                        lg.logger.warning(myName +
+                        System.out.println(myName +
                                 " Cannot connect to the physical component using udl = " +
                                 udl);
                         reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
@@ -897,7 +859,7 @@ public class CodaRCAgent extends AParent {
                         }
                     }
                 } else {
-                    lg.logger.warning(myName +
+                    System.out.println(myName +
                             " Undefined client udl = " + udl);
                     reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
                             me.getName(),
@@ -911,7 +873,7 @@ public class CodaRCAgent extends AParent {
 
             } else {
                 stat = false;
-                lg.logger.severe("Undefined host and port for the client.");
+                System.out.println("Undefined host and port for the client.");
                 reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
                         me.getName(),
                         9,
@@ -947,15 +909,14 @@ public class CodaRCAgent extends AParent {
             cInfo = (AClientInfo) AfecsTool.B2O(msg.getByteArray());
             clientHost = cInfo.getHostName();
         } catch (IOException | ClassNotFoundException e) {
-            a_println(AfecsTool.stack2str(e));
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
 
         if (cInfo != null) {
 
             // Check if client is active
             if (!_getClientState(AConstants.TIMEOUT, 1000).equalsIgnoreCase(AConstants.udf)) {
-                lg.logger.severe(myName +
+                System.out.println(myName +
                         ": Client collision. My current client is healthy.");
                 reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
                         myName,
@@ -964,14 +925,13 @@ public class CodaRCAgent extends AParent {
                         " Attempt to join the platform from the host = " +
                                 clientHost +
                                 ", using currently active client identity.");
-                lg.logger.info(" Connection request from the host = " +
+                System.out.println(" Connection request from the host = " +
                         clientHost +
                         " is denied.");
                 try {
                     sendResponse(msg, AConstants.no);
                 } catch (cMsgException e) {
-                    a_println(AfecsTool.stack2str(e));
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
 
                 // If after timeout we don't get a response
@@ -987,15 +947,14 @@ public class CodaRCAgent extends AParent {
                 try {
                     sendResponse(msg, AConstants.yes);
                 } catch (cMsgException e) {
-                    a_println(AfecsTool.stack2str(e));
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
         }
     }
 
 
-    private void _reconnectResponse(AClientInfo cInfo) {
+    public void _reconnectResponse(AClientInfo cInfo) {
 
         boolean b = _connect2Client();
 
@@ -1138,8 +1097,7 @@ public class CodaRCAgent extends AParent {
                         }
 
                     } catch (cMsgException e) {
-                        a_println(AfecsTool.stack2str(e));
-                        lg.logger.severe(AfecsTool.stack2str(e));
+                        e.printStackTrace();
                     }
 
                     // If we are in the active state calculate averages
@@ -1226,8 +1184,7 @@ public class CodaRCAgent extends AParent {
                                 msg.getText() + " (client msg)");
                     }
                 } catch (cMsgException e) {
-                    a_println(AfecsTool.stack2str(e));
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 } catch (NullPointerException ignored) {
                 }
             }
@@ -1370,8 +1327,7 @@ public class CodaRCAgent extends AParent {
                                                 me.getConfigID());
                             }
                         } catch (NumberFormatException e) {
-                            a_println(AfecsTool.stack2str(e));
-                            lg.logger.severe(AfecsTool.stack2str(e));
+                            e.printStackTrace();
                         }
                     }
                 }
@@ -1399,230 +1355,61 @@ public class CodaRCAgent extends AParent {
                         myCRCClientConnection.send(msg);
                     }
                 } catch (cMsgException e) {
-                    a_println(AfecsTool.stack2str(e));
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
         }
     }
 
 
-    /**
-     * Private class representing callback   that listens state messages from the supervisor
-     */
-    private class SupervisorStateCB extends cMsgCallbackAdapter {
+    public void agentControlRequestReleaseAgent() {
+        try {
+            // send client to stop reporting
+            sessionControlStopReporting();
 
-        @Override
-        public void callback(cMsgMessage msg, Object userObject) {
-            if (msg != null && msg.getText() != null) {
-                String supervisorState = msg.getText();
-                switch (supervisorState) {
-                    case AConstants.active:
-                        startTime = AfecsTool.getCurrentTimeInMs();
-                        for (int i = 0; i < AConstants.AVERAGING_SIZE; i++) {
-                            averageRateStorage.add(0F);
-                        }
-                        break;
-                    case "ending":
-                        startTime = 0;
-                        break;
-                }
-            }
+            // update session and runType info
+            // in the platform registration agent
+            me.setSession(AConstants.udf);
+            me.setRunType(AConstants.udf);
+            update_registration();
+
+            // set session of the client undefined
+            sessionControlSetSession(me.getSession());
+        } catch (cMsgException e) {
+            e.printStackTrace();
+        }
+        _reset();
+        _stopCommunications();
+        me.setState(AConstants.disconnected);
+    }
+
+    private void agentControlRequestNetworkDetails(String sender, String[] ip, String[] br) {
+        // store linked component network information
+        me.addLinkedIp(sender, ip);
+        me.addLinkedBa(sender, br);
+    }
+
+    public void agentControlRequestSetFileWriting(String control) {
+        if (control.equals("disabled")) {
+            me.setFileWriting(0);
+        } else {
+            me.setFileWriting(1);
         }
     }
 
 
-    /**
-     * <p>
-     * Private inner class for responding to control
-     * messages addressed to this agent. Note that
-     * requests will be serviced in a separate threads.
-     * </p>
-     */
-    private class AgentControlCB extends cMsgCallbackAdapter {
-        public void callback(cMsgMessage msg, Object userObject) {
-            if (msg != null) {
+    public void agentControlRequestSetup() {
+        // differentiate agent
+        differentiate(me);
 
-                // Run every control request in the separate thread
-                new AgentControlThread(msg).start();
-            }
-        }
-    }
-
-    /**
-     * <p>
-     * Private thread for running agent addressed
-     * control requests
-     * </p>
-     */
-    private class AgentControlThread extends Thread {
-        private cMsgMessage msg;
-
-        public AgentControlThread(cMsgMessage m) {
-            msg = m;
-        }
-
-        public void run() {
-
-            String clientState = AConstants.udf;
-
-            if (msg != null) {
-                String type = msg.getType();
-                String txt = msg.getText();
-                String sender = msg.getSender();
-
-                a_println("DDD -----| Info: agentControl " +
-                        myName + ": --> type = " + type + " text = " + txt);
-
-                switch (type) {
-                    case AConstants.AgentControlRequestSetup:
-                        AComponent ac = null;
-                        try {
-                            ac = (AComponent) AfecsTool.B2O(msg.getByteArray());
-                        } catch (IOException | ClassNotFoundException e) {
-                            a_println(AfecsTool.stack2str(e));
-                            lg.logger.severe(AfecsTool.stack2str(e));
-                        }
-                        if (ac != null) {
-                            // differentiate agent
-                            differentiate(ac);
-
-                            // start communications with the
-                            // client, reset and configure
-                            boolean stat = _setup();
-                            if (stat) {
-                                // Move to configured
-                                me.setFileName(AConstants.udf);
-                                isResetting.set(false);
-                                _moveToState(AConstants.configured);
-                            }
-                        }
-
-                        break;
-                    case AConstants.AgentControlRequestClientState:
-                        clientState = _getClientState(AConstants.TIMEOUT, 1000);
-                        break;
-
-                    case AConstants.AgentControlRequestClientReconnect:
-                        _reconnect2Client(msg);
-                        break;
-
-                    case AConstants.AgentControlRequestPlatformDisconnect:
-
-                        // Gracefully exit
-                        try {
-                            rca_exit();
-                        } catch (cMsgException e) {
-                            a_println(AfecsTool.stack2str(e));
-                            lg.logger.severe(AfecsTool.stack2str(e));
-                        }
-
-                        break;
-                    case AConstants.AgentControlRequestExecuteProcess:
-                        if (txt != null) {
-                            requestStartProcess(txt);
-                        }
-
-                        break;
-                    case AConstants.AgentControlRequestMoveToState:
-                        if (txt != null) {
-                            isResetting.set(false);
-                            _moveToState(txt);
-                        }
-
-                        break;
-                    case AConstants.AgentControlRequestReset:
-                        isResetting.set(true);
-                        _reset();
-
-                        break;
-                    case AConstants.AgentControlRequestSetRunNumber:
-                        if (msg.getPayloadItem(AConstants.RUNNUMBER) != null) {
-                            try {
-                                int rn = msg.getPayloadItem(AConstants.RUNNUMBER).getInt();
-                                me.setPrevious_runNumber(me.getRunNumber());
-                                me.setRunNumber(rn);
-                                if (msg.getPayloadItem("ForAgentOnly") == null) {
-                                    runControlSetRunNumber(rn);
-                                }
-                            } catch (cMsgException e) {
-                                a_println(AfecsTool.stack2str(e));
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                            }
-                        }
-
-                        break;
-                    case AConstants.AgentControlRequestReleaseAgent:
-                        try {
-                            // send client to stop reporting
-                            sessionControlStopReporting();
-
-                            // update session and runType info
-                            // in the platform registration agent
-                            me.setSession(AConstants.udf);
-                            me.setRunType(AConstants.udf);
-                            update_registration();
-
-                            // set session of the client undefined
-                            sessionControlSetSession(me.getSession());
-                        } catch (cMsgException e) {
-                            a_println(AfecsTool.stack2str(e));
-                            lg.logger.severe(AfecsTool.stack2str(e));
-                        }
-                        _reset();
-                        _stopCommunications();
-                        me.setState(AConstants.disconnected);
-
-
-                        break;
-                    case AConstants.AgentControlRequestStartReporting:
-
-                        // start reporting thread. If reporting interval
-                        // is not defined in cool, default interval = 1sec.
-                        startStatusReporting();
-
-                        break;
-                    case AConstants.AgentControlRequestStopReporting:
-                        // stop if reporting thread is active
-                        stopStatusReporting();
-
-                    case AConstants.AgentControlRequestNetworkDetails:
-                        // store linked component network information
-                        try {
-                            if (msg.getPayloadItem(AConstants.IPADDRESSLIST) != null) {
-                                me.addLinkedIp(sender, msg.getPayloadItem(AConstants.IPADDRESSLIST).getStringArray());
-                            }
-                            if (msg.getPayloadItem(AConstants.BROADCASTADDRESSLIST) != null) {
-                                me.addLinkedBa(sender, msg.getPayloadItem(AConstants.BROADCASTADDRESSLIST).getStringArray());
-                            }
-                        } catch (cMsgException e) {
-                            a_println(AfecsTool.stack2str(e));
-                            lg.logger.severe(AfecsTool.stack2str(e));
-                        }
-
-                        break;
-                    case AConstants.AgentControlRequestSetFileWriting:
-                        if (txt.equals("disabled")) {
-                            me.setFileWriting(0);
-                        } else {
-                            me.setFileWriting(1);
-                        }
-                        break;
-                }
-                if (msg.isGetRequest()) {
-                    try {
-                        cMsgMessage mr = msg.response();
-                        mr.setSubject(AConstants.udf);
-                        mr.setType(AConstants.udf);
-                        mr.setUserInt(me.getRunNumber());
-                        mr.setText(clientState);
-                        myPlatformConnection.send(mr);
-                    } catch (cMsgException e) {
-                        a_println(AfecsTool.stack2str(e));
-                        lg.logger.severe(AfecsTool.stack2str(e));
-                    }
-                }
-            }
+        // start communications with the
+        // client, reset and configure
+        boolean stat = _setup();
+        if (stat) {
+            // Move to configured
+            me.setFileName(AConstants.udf);
+            isResetting.set(false);
+            _moveToState(AConstants.configured);
         }
     }
 

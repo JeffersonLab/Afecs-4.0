@@ -26,13 +26,13 @@ import org.jlab.coda.afecs.cool.ontology.AComponent;
 import org.jlab.coda.afecs.cool.ontology.APlugin;
 import org.jlab.coda.afecs.cool.ontology.AProcess;
 import org.jlab.coda.afecs.cool.ontology.AState;
+import org.jlab.coda.afecs.platform.APlatform;
 import org.jlab.coda.afecs.plugin.IAClientCommunication;
 import org.jlab.coda.afecs.system.ABase;
 import org.jlab.coda.afecs.system.AConstants;
 import org.jlab.coda.afecs.system.AException;
 import org.jlab.coda.afecs.system.process.ProcessManager;
 import org.jlab.coda.afecs.system.thread.ReportStatus;
-import org.jlab.coda.afecs.system.util.ALogger;
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.*;
 
@@ -41,7 +41,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -144,57 +143,8 @@ public class AParent extends ABase implements Serializable {
     // Subscription handler for AgentInfoRequest messages
     transient private cMsgSubscriptionHandle infoSH;
 
-    // Local instance of the logger object
-    transient private ALogger lg = ALogger.getInstance();
 
-    transient private int pingDelay;
-
-    /**
-     * <p>
-     * Constructor that creates a component
-     * with default parameters.
-     * Connects to the platform cMsg server.
-     * Creates ProcessManager object.
-     * </p>
-     *
-     * @param name The name of the agent
-     */
-    public AParent(String name) {
-        super();
-        if (name != null) {
-            me = new AComponent();
-            me.setName(name);
-            myName = me.getName();
-            mySession = me.getSession();
-            myRunType = me.getRunType();
-            me.setStartTime(AfecsTool.getCurrentTime());
-            me.setHost(myConfig.getLocalHost());
-            me.setExpid(myConfig.getPlatformExpid());
-            // connect to platform cMsg server
-            myPlatformConnection = platformConnect();
-            if (isPlatformConnected()) {
-                // register with the platform
-                _register();
-
-                // Subscribe agent info request messages
-                try {
-                    // un-subscribe first
-                    if (myPlatformConnection != null) {
-                        if (infoSH != null) myPlatformConnection.unsubscribe(infoSH);
-                    }
-
-                    // subscribe messages asking information about this agent
-                    infoSH = myPlatformConnection.subscribe(myName,
-                            AConstants.AgentInfoRequest,
-                            new AgentInfoCB(),
-                            null);
-                } catch (cMsgException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
-                }
-            }
-        }
-        pm = new ProcessManager(this);
-    }
+    public APlatform myPlatform;
 
     /**
      * <p>
@@ -238,7 +188,7 @@ public class AParent extends ABase implements Serializable {
                             new AgentInfoCB(),
                             null);
                 } catch (cMsgException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
 
             }
@@ -246,18 +196,18 @@ public class AParent extends ABase implements Serializable {
         pm = new ProcessManager(this);
     }
 
+    protected void setMyPlatform(APlatform platform) {
+        myPlatform = platform;
+    }
+
     /**
      * <p>
      * Register with the platform
      * registration services
      * </p>
-     *
-     * @return status of the registration
      */
-    private boolean _register() {
-        return me != null && send(myConfig.getPlatformName(),
-                AConstants.PlatformRegistrationRequestAdd,
-                me);
+    private void _register() {
+        myPlatform.platformRegistrationRequestAdd(me);
     }
 
 
@@ -266,13 +216,9 @@ public class AParent extends ABase implements Serializable {
      * Removes registration with the
      * platform registration services.
      * <p/>
-     *
-     * @return status of the registration
      */
-    public boolean remove_registration() {
-        return me != null && send(myConfig.getPlatformName(),
-                AConstants.PlatformRegistrationRequestRemove,
-                me.getName());
+    protected void remove_registration() {
+        myPlatform.registrar.removeAgent(me.getName());
     }
 
     /**
@@ -280,13 +226,9 @@ public class AParent extends ABase implements Serializable {
      * Update/re-register with the
      * platform registration services
      * <p/>
-     *
-     * @return status of the registration
      */
-    public boolean update_registration() {
-        return me != null && send(myConfig.getPlatformName(),
-                AConstants.PlatformRegistrationRequestUpdate,
-                me);
+    public void update_registration() {
+        myPlatform.platformRegistrationRequestUpdate(me);
     }
 
     /**
@@ -326,7 +268,7 @@ public class AParent extends ABase implements Serializable {
      * all active periodic processes.
      * </p>
      */
-    public void stop_rpp() {
+    protected void stop_rpp() {
         stopStatusReporting();
         pm.stopAllPeriodicProcesses();
     }
@@ -344,22 +286,19 @@ public class AParent extends ABase implements Serializable {
      * plugin (defined at the differentiation process)
      *
      * @param pName the name of the process
-     * @return true if the process is successfully executed.
      * @see #differentiate(org.jlab.coda.afecs.cool.ontology.AComponent)
      * to execute the process.
      * </p>
      */
-    public boolean requestStartProcess(String pName) {
-        boolean b = false;
+    public void requestStartProcess(String pName) {
         if (me.getProcesses() != null && !me.getProcesses().isEmpty()) {
             for (AProcess p : me.getProcesses()) {
                 if (p != null && p.getName().equals(pName)) {
-                    b = pm.executeProcess(p, myPlugin, me);
+                    pm.executeProcess(p, myPlugin, me);
                     break;
                 }
             }
         }
-        return b;
     }
 
     /**
@@ -369,12 +308,12 @@ public class AParent extends ABase implements Serializable {
      *
      * @param ad AComponent object reference
      */
-    public void differentiate(AComponent ad) {
+    protected void differentiate(AComponent ad) {
 
         // cCheck if the request is addressed to this agent
         if (!myName.equals(ad.getName())) {
             dalogMsg(me, 9, "ERROR", " Wrong agent name.");
-            lg.logger.severe(myName + ": Wrong agent name. ");
+            System.out.println(myName + ": Wrong agent name. ");
             return;
         }
 
@@ -394,10 +333,13 @@ public class AParent extends ABase implements Serializable {
             // Send to the old supervisor a message
             // informing that this agent has been
             // requested to change the configuration/supervisor
+
             if (!me.getSupervisor().equals(AConstants.udf)) {
-                send(me.getSupervisor(),
-                        AConstants.SupervisorControlRequestReleaseAgent,
-                        myName);
+//                myPlatform.container.getContainerSupervisors().get("sms_" + myRunType).supervisorControlRequestReleaseAgent(myName);
+                myPlatform.container
+                        .getContainerSupervisors()
+                        .get(me.getSupervisor())
+                        .supervisorControlRequestReleaseAgent(myName);
             }
         }
 
@@ -427,7 +369,7 @@ public class AParent extends ABase implements Serializable {
                         9,
                         AConstants.ERROR,
                         myPlugin.getDescription() + ". Plugin error.");
-                lg.logger.severe(myPlugin.getDescription() +
+                System.out.println(myPlugin.getDescription() +
                         ". Failure" +
                         AfecsTool.stack2str(e));
                 dalogMsg(me,
@@ -471,7 +413,7 @@ public class AParent extends ABase implements Serializable {
                     }
 
                     // Report to the supervisor that we are transitioning
-                    send(me.getSession(), me.getRunType(), me);
+//                    send(me.getSession(), me.getRunType(), me);
 
                     // See if we have processes scheduled to be executed
                     // before the state transition. Note that agent supports
@@ -498,7 +440,7 @@ public class AParent extends ABase implements Serializable {
                                     me.setState(AConstants.failed);
 
                                     // Report to the supervisor that we failed to transitions
-                                    send(me.getSession(), me.getRunType(), me);
+//                                    send(me.getSession(), me.getRunType(), me);
                                     isTransitioning.set(false);
                                     return false;
                                 }
@@ -512,23 +454,21 @@ public class AParent extends ABase implements Serializable {
                     // had successfully transitioned
                     ExecutorService executorService = Executors.newSingleThreadExecutor();
                     executorService.submit(
-                            new Callable<Boolean>() {
-                                public Boolean call() throws Exception {
-                                    for (AProcess ap : me.getProcesses()) {
-                                        if (ap != null &&
-                                                ap.getAfter() != null &&
-                                                ap.getAfter().equals(sn)) {
+                            () -> {
+                                for (AProcess ap : me.getProcesses()) {
+                                    if (ap != null &&
+                                            ap.getAfter() != null &&
+                                            ap.getAfter().equals(sn)) {
 
-                                            // wait until client transitions
-                                            while (me.getState().contains("ing")) {
-                                                AfecsTool.sleep(300);
-                                            }
-
-                                            pm.executeProcess(ap, myPlugin, me);
+                                        // wait until client transitions
+                                        while (me.getState().contains("ing")) {
+                                            AfecsTool.sleep(300);
                                         }
+
+                                        pm.executeProcess(ap, myPlugin, me);
                                     }
-                                    return true;
                                 }
+                                return true;
                             }
                     );
                     if (executorService.isTerminated()) throw new Error("unexpected");
@@ -604,53 +544,48 @@ public class AParent extends ABase implements Serializable {
                     }
                 } else {
 
-                    ArrayList<cMsgPayloadItem> cdl = new ArrayList<>();
-                    try {
-                        cdl.add(new cMsgPayloadItem(AConstants.DEFAULTOPTIONDIRS,
-                                comp.getDod().toArray(new String[comp.getDod().size()])));
-                    } catch (cMsgException e) {
-                        lg.logger.severe(AfecsTool.stack2str(e));
-                    }
-
-                    cMsgMessage msg = p2pSend(myConfig.getPlatformName(),
-                            AConstants.PlatformInfoRequestReadConfgiFile,
-                            conf,
-                            cdl,
-                            AConstants.TIMEOUT);
-                    if (msg != null) {
-                        if (msg.getPayloadItem(AConstants.FILEDATE) != null) {
-                            al.add(msg.getPayloadItem(AConstants.FILEDATE));
-                            long lmd = msg.getPayloadItem(AConstants.FILEDATE).getLong();
-
-                            if (msg.getPayloadItem(AConstants.FILECONTENT) != null) {
+                    List<cMsgPayloadItem> res = myPlatform.platformInfoRequestReadConfgiFile(conf, comp.getDod());
+                    if (res != null && !res.isEmpty()) {
+                        long lmd = 0;
+                        String fileContent = AConstants.udf;
+                        for (cMsgPayloadItem pi : res) {
+                            if (pi.getName().equals(AConstants.FILEDATE)) {
+                                al.add(pi);
+                                lmd = pi.getLong();
+                            }
+                            if (pi.getName().equals(AConstants.FILECONTENT)) {
+                                fileContent = pi.getString();
                                 if (isSystem) {
-                                    al.add(msg.getPayloadItem(AConstants.FILECONTENT));
-                                    // check to see if file was changed
-                                    if (_sysConfigFileReadDate != lmd) {
-                                        fileChanged = 1;
-                                        _sysConfigFileReadDate = lmd;
-                                    }
-                                    al.add(new cMsgPayloadItem(AConstants.ISCHANGED, fileChanged));
-                                } else {
-                                    al.add(new cMsgPayloadItem(AConstants.USRFILECONTENT,
-                                            msg.getPayloadItem(AConstants.FILECONTENT).getString()));
-                                    // check to see if file was changed
-                                    if (_userConfigFileReadDate != lmd) {
-                                        fileChanged = 1;
-                                        _userConfigFileReadDate = lmd;
-                                    }
-                                    al.add(new cMsgPayloadItem(AConstants.USRFILEISCHANGED, fileChanged));
+                                    al.add(pi);
                                 }
                             }
+                            if (pi.getName().equals(AConstants.EMUROCCONFIG)) {
+                                al.add(pi);
+                            }
                         }
-                        if (msg.getPayloadItem(AConstants.EMUROCCONFIG) != null) {
-                            al.add(msg.getPayloadItem(AConstants.EMUROCCONFIG));
+                        if (!fileContent.equals(AConstants.udf)) {
+                            if (isSystem) {
+                                // check to see if file was changed
+                                if (_sysConfigFileReadDate != lmd) {
+                                    fileChanged = 1;
+                                    _sysConfigFileReadDate = lmd;
+                                }
+                                al.add(new cMsgPayloadItem(AConstants.ISCHANGED, fileChanged));
+                            } else {
+                                al.add(new cMsgPayloadItem(AConstants.USRFILECONTENT, fileContent));
+                                // check to see if file was changed
+                                if (_userConfigFileReadDate != lmd) {
+                                    fileChanged = 1;
+                                    _userConfigFileReadDate = lmd;
+                                }
+                                al.add(new cMsgPayloadItem(AConstants.USRFILEISCHANGED, fileChanged));
+                            }
                         }
                     }
                 }
             }
-        } catch (IOException | cMsgException | AException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+        } catch (IOException | cMsgException e) {
+            e.printStackTrace();
         }
         return al;
     }
@@ -668,26 +603,31 @@ public class AParent extends ABase implements Serializable {
     public List<cMsgPayloadItem> getPlatformAddress() {
 
         List<cMsgPayloadItem> al = new ArrayList<>();
-
-        // Request platform host IPs ( possibly a list of ips)
-        // this will come with two payloads: list of IP addresses
-        // and the port where platform cMsg server is running.
-        cMsgMessage msg = null;
+        String[] hs = myPlatform.getPlatform_ips().toArray(new String[myPlatform.getPlatform_ips().size()]);
         try {
-            msg = p2pSend(myConfig.getPlatformName(),
-                    AConstants.PlatformHostNameRequest,
-                    " ",
-                    AConstants.TIMEOUT);
-        } catch (AException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
-        }
-        if (msg != null) {
-            if (msg.getPayloadItem(AConstants.PLATFORMHOST) != null)
-                al.add(msg.getPayloadItem(AConstants.PLATFORMHOST));
-            if (msg.getPayloadItem(AConstants.PLATFORMPORT) != null)
-                al.add(msg.getPayloadItem(AConstants.PLATFORMPORT));
+            al.add(new cMsgPayloadItem(AConstants.PLATFORMHOST, hs));
+            al.add(new cMsgPayloadItem(AConstants.PLATFORMPORT, myConfig.getPlatformTcpPort()));
+        } catch (cMsgException e) {
+            e.printStackTrace();
         }
         return al;
+    }
+
+    public String agentInfoRequestState(String sender) {
+        try {
+            if (sender.contains(AConstants.ORPHANAGENTMONITOR)) {
+                String tmp = rcClientInfoSyncGetState(1000);
+                if (tmp != null && !tmp.equals(AConstants.failed)) {
+                    me.setState(tmp);
+                } else {
+                    me.setState(AConstants.udf);
+                }
+            }
+        } catch (AException e) {
+            me.setState(AConstants.disconnected);
+            e.printStackTrace();
+        }
+        return me.getState();
     }
 
     /**
@@ -705,20 +645,17 @@ public class AParent extends ABase implements Serializable {
                 switch (type) {
                     case AConstants.AgentInfoRequestState:
                         if (msg.isGetRequest()) {
-                            pingDelay++;
                             cMsgMessage mr = null;
                             try {
                                 mr = msg.response();
                             } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
-                            try {
+                            if (mr != null) {
+                                try {
+                                    mr.setSubject(AConstants.udf);
+                                    mr.setType(AConstants.udf);
 
-                                mr.setSubject(AConstants.udf);
-                                mr.setType(AConstants.udf);
-
-                                // ping real client every 60 seconds
-                                if (pingDelay >= 60) {
                                     if (sender.contains(AConstants.ORPHANAGENTMONITOR)) {
                                         String tmp = rcClientInfoSyncGetState(1000);
                                         if (tmp != null && !tmp.equals(AConstants.failed)) {
@@ -727,20 +664,18 @@ public class AParent extends ABase implements Serializable {
                                             me.setState(AConstants.udf);
                                         }
                                     }
-                                    pingDelay = 0;
+
+                                } catch (AException e) {
+                                    me.setState(AConstants.disconnected);
+                                    e.printStackTrace();
                                 }
 
-                            } catch (AException e) {
-                                me.setState(AConstants.disconnected);
-                                pingDelay = 0;
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                            }
-
-                            mr.setText(me.getState());
-                            try {
-                                myPlatformConnection.send(mr);
-                            } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
+                                mr.setText(me.getState());
+                                try {
+                                    myPlatformConnection.send(mr);
+                                } catch (cMsgException e) {
+                                    e.printStackTrace();
+                                }
                             }
 
                         } else {
@@ -800,7 +735,7 @@ public class AParent extends ABase implements Serializable {
                                         me.getSession()));
                                 myPlatformConnection.send(mr);
                             } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                         }
                         break;

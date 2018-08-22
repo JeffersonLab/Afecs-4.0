@@ -30,7 +30,6 @@ import org.jlab.coda.afecs.platform.thread.PlatformSpy;
 import org.jlab.coda.afecs.platform.thread.cMsgPingT;
 import org.jlab.coda.afecs.system.ABase;
 import org.jlab.coda.afecs.system.AConstants;
-import org.jlab.coda.afecs.system.util.ALogger;
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.*;
 import org.jlab.coda.cMsg.cMsgDomain.server.cMsgNameServer;
@@ -58,13 +57,13 @@ public class APlatform extends ABase {
     private String startTime;
 
     // Platform registrar object
-    public static APlatformRegistrar registrar;
+    public APlatformRegistrar registrar;
 
     // Platform container object
-    public static AContainer container;
+    public AContainer container;
 
     // Platform control designer object
-    public static AControlDesigner designer;
+    public AControlDesigner designer;
 
     private static boolean DaLogArchiveRequest = false;
     private static String DaLogArchivePath = "default";
@@ -74,9 +73,6 @@ public class APlatform extends ABase {
     // the list of host ips in case multiple
     // network cards of a local host
     private Collection<String> platform_ips;
-
-    // Local instance of the logger object
-    private ALogger lg = ALogger.getInstance();
 
     private static boolean influxDb = false;
 
@@ -211,7 +207,7 @@ public class APlatform extends ABase {
             // Complete platform specific subscriptions
             doSubscriptions();
         } else {
-            lg.logger.severe(AfecsTool.getCurrentTime("HH:mm:ss") +
+            System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") +
                     " " + myName +
                     ": Platform admin connection exception. Exiting ...");
             System.exit(1);
@@ -238,13 +234,13 @@ public class APlatform extends ABase {
         System.out.println("Searching for conflicting platforms. Please wait.....");
 
         // start FE container administrator
-        container = new AContainer(false);
+        container = new AContainer(false, this);
 
         // start daLogMsgArchive
         if (DaLogArchiveRequest) daLogArchive = new ADaLogArchive(DaLogArchivePath);
 
         // Start Platform Control Designer
-        designer = new AControlDesigner();
+        designer = new AControlDesigner(this);
 
         // Start a thread that periodically checks to see if other platform exists.
         // This is done by monitoring rcMulitcast servers with the same EXPID in the network.
@@ -297,12 +293,6 @@ public class APlatform extends ABase {
     private void doSubscriptions() {
         try {
 
-            // Subscribe PlatformRegistration messages from the platform agents
-            myPlatformConnection.subscribe(myConfig.getPlatformName(),
-                    AConstants.PlatformRegistrationRequest,
-                    new AgentRegistrationCB(),
-                    null);
-
             // Subscribe messages asking information about the platform
             myPlatformConnection.subscribe(myConfig.getPlatformName(),
                     AConstants.PlatformInfoRequest,
@@ -317,8 +307,7 @@ public class APlatform extends ABase {
 
 
         } catch (cMsgException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
-            a_println(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
     }
 
@@ -374,183 +363,85 @@ public class APlatform extends ABase {
                     }
                 }
             } catch (IOException e) {
-                lg.logger.severe(AfecsTool.stack2str(e));
-                a_println(AfecsTool.stack2str(e));
+                e.printStackTrace();
             }
         }
         return s.toString();
     }
 
 
-    /**
-     * <p>
-     * Private inner class for responding
-     * to messages from Afecs platform agents
-     * </p>
-     */
-    private class AgentRegistrationCB extends cMsgCallbackAdapter {
-        public void callback(cMsgMessage msg, Object userObject) {
-            if (msg != null) {
-
-                String type = msg.getType();
-
-                // Text is the name of the agent
-                String txt = msg.getText();
-                switch (type) {
-                    case AConstants.PlatformRegistrationRequestAdd:
-                        try {
-                            AComponent ar = (AComponent) AfecsTool.B2O(msg.getByteArray());
-                            if (ar != null) {
-                                System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") +
-                                        " " + myName +
-                                        ": Info -  Registration request from " +
-                                        ar.getName() +
-                                        " agent running at " +
-                                        ar.getHost());
-                                registrar.addAgent(ar);
-                            }
-                        } catch (IOException | ClassNotFoundException e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
-                            a_println(AfecsTool.stack2str(e));
-                        }
-                        break;
-
-                    case AConstants.PlatformRegistrationRequestUpdate:
-                        try {
-                            AComponent ar = (AComponent) AfecsTool.B2O(msg.getByteArray());
-                            if (ar != null) {
-                                if (AConstants.debug.get())
-                                    System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") +
-                                            " " + myName +
-                                            ": Info -  Registration update request from " +
-                                            ar.getName() +
-                                            " agent");
-                                registrar.addAgent(ar);
-                            }
-                        } catch (IOException | ClassNotFoundException e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
-                            a_println(AfecsTool.stack2str(e));
-                        }
-                        break;
-
-                    case AConstants.PlatformRegistrationRequestRemove:
-                        registrar.removeAgent(txt);
-                        break;
-
-                    case AConstants.PlatformRegistrationRequestSetRunNum:
-
-                        if (msg.getPayloadItem(AConstants.SESSION) != null &&
-                                msg.getPayloadItem(AConstants.RUNTYPE) != null &&
-                                msg.getPayloadItem(AConstants.RUNNUMBER) != null) {
-                            try {
-
-                                String session = msg.getPayloadItem(AConstants.SESSION).getString();
-                                String runType = msg.getPayloadItem(AConstants.RUNTYPE).getString();
-                                int runNumber = msg.getPayloadItem(AConstants.RUNNUMBER).getInt();
-
-                                int cd = registrar.setSessionRunNumber(session, runNumber);
-                                if (cd < 0) {
-                                    reportAlarmMsg(session +
-                                                    "/" + runType,
-                                            myName,
-                                            9,
-                                            AConstants.ERROR,
-                                            " Error updating run number in the Cool DB.");
-                                    send("sms_" +
-                                                    runType,
-                                            AConstants.SupervisorControlRequestFailTransition,
-                                            "");
-                                }
-                                registrar.dumpSessionsDatabase();
-                            } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
-                            }
-                        }
-                        break;
-
-                    case AConstants.PlatformRegistrationRequestIncrementRunNum:
-                        if (msg.getPayloadItem(AConstants.SESSION) != null &&
-                                msg.getPayloadItem(AConstants.RUNTYPE) != null &&
-                                msg.getPayloadItem(AConstants.CODA2) != null) {
-                            if (msg.isGetRequest()) {
-
-                                try {
-                                    cMsgMessage mr = msg.response();
-                                    mr.setSubject(AConstants.udf);
-                                    mr.setType(AConstants.udf);
-
-                                    String session = msg.getPayloadItem(AConstants.SESSION).getString();
-                                    String runType = msg.getPayloadItem(AConstants.RUNTYPE).getString();
-                                    int cd = registrar.incrementSessionRunNumber(session);
-                                    if (cd < 0) {
-                                        reportAlarmMsg(session + "/" +
-                                                        runType,
-                                                myName,
-                                                9,
-                                                AConstants.ERROR,
-                                                " Error incrementing run number in the Cool DB.");
-                                        send("sms_" +
-                                                        runType,
-                                                AConstants.SupervisorControlRequestFailTransition,
-                                                "");
-                                        mr.setText(Integer.toString(cd));
-                                    } else {
-                                        registrar.updateSessionRunType(session, runType);
-                                        registrar.dumpSessionsDatabase();
-                                        mr.setText(Integer.toString(registrar.getSessionRunNumber(session)));
-
-                                    }
-
-                                    myPlatformConnection.send(mr);
-                                } catch (cMsgException e) {
-                                    lg.logger.severe(AfecsTool.stack2str(e));
-                                    a_println(AfecsTool.stack2str(e));
-                                }
-                            }
-                        }
-
-                        break;
-                    case AConstants.PlatformRegistrationRequestReportRunNum:
-                        if (msg.isGetRequest()) {
-                            try {
-                                cMsgMessage mr = msg.response();
-                                mr.setSubject(AConstants.udf);
-                                mr.setType(AConstants.udf);
-                                mr.setText(Integer.toString(registrar.getSessionRunNumber(txt)));
-                                myPlatformConnection.send(mr);
-                            } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
-                            }
-                        }
-
-                        break;
-                    case AConstants.PlatformHostNameRequest:
-                        if (msg.isGetRequest()) {
-                            try {
-                                cMsgMessage mr = msg.response();
-                                mr.setSubject(AConstants.udf);
-                                mr.setType(AConstants.udf);
-
-                                String[] hs = platform_ips.toArray(new String[platform_ips.size()]);
-
-                                mr.addPayloadItem(new cMsgPayloadItem(AConstants.PLATFORMHOST, hs));
-                                mr.addPayloadItem(new cMsgPayloadItem(AConstants.PLATFORMPORT,
-                                        myConfig.getPlatformTcpPort()));
-
-                                myPlatformConnection.send(mr);
-                            } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
-                            }
-                        }
-
-                        break;
-                }
-            }
+    public void platformRegistrationRequestAdd(AComponent ar) {
+        if (ar != null) {
+            System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") +
+                    " " + myName +
+                    ": Info -  Registration request from " +
+                    ar.getName() +
+                    " agent running at " +
+                    ar.getHost());
+            registrar.addAgent(ar);
         }
     }
+
+    public void platformRegistrationRequestUpdate(AComponent ar) {
+        System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") +
+                " " + myName +
+                ": Info -  Registration update request from " +
+                ar.getName() +
+                " agent");
+        registrar.addAgent(ar);
+    }
+
+    public void platformRegistrationRequestRemove(String name) {
+        registrar.removeAgent(name);
+    }
+
+    public void platformRegistrationRequestSetRunNum(String session,
+                                                     String runType,
+                                                     int runNumber) {
+        int cd = registrar.setSessionRunNumber(session, runNumber);
+        if (cd < 0) {
+            reportAlarmMsg(session +
+                            "/" + runType,
+                    myName,
+                    9,
+                    AConstants.ERROR,
+                    " Error updating run number in the Cool DB.");
+            if (container.getContainerSupervisors().containsKey("sms_" + runType)) {
+                container.getContainerSupervisors().get("sms_" + runType).supervisorControlRequestFailTransition();
+            }
+        }
+        registrar.dumpSessionsDatabase();
+    }
+
+    public int platformRegistrationRequestIncrementRunNum(String session,
+                                                          String runType) {
+        int cd = registrar.incrementSessionRunNumber(session);
+        if (cd < 0) {
+            reportAlarmMsg(session + "/" +
+                            runType,
+                    myName,
+                    9,
+                    AConstants.ERROR,
+                    " Error incrementing run number in the Cool DB.");
+            if (container.getContainerSupervisors().containsKey("sms_" + runType)) {
+                container.getContainerSupervisors().get("sms_" + runType).supervisorControlRequestFailTransition();
+            }
+            return cd;
+        } else {
+            registrar.updateSessionRunType(session, runType);
+            registrar.dumpSessionsDatabase();
+            return registrar.getSessionRunNumber(session);
+        }
+    }
+
+    public int platformRegistrationRequestReportRunNum(String session) {
+        return registrar.getSessionRunNumber(session);
+    }
+
+    public Collection<String> getPlatform_ips() {
+        return platform_ips;
+    }
+
 
     /**
      * <p>
@@ -576,8 +467,7 @@ public class APlatform extends ABase {
                                 mr.setByteArray(AfecsTool.O2B(registrar.getAgentDir()));
                                 myPlatformConnection.send(mr);
                             } catch (cMsgException | IOException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                         } else {
                             send(requester,
@@ -595,8 +485,7 @@ public class APlatform extends ABase {
                                 mr.setByteArray(AfecsTool.O2B(registrar.getClientDir()));
                                 myPlatformConnection.send(mr);
                             } catch (cMsgException | IOException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                         } else {
                             send(requester,
@@ -667,8 +556,7 @@ public class APlatform extends ABase {
 
                             }
                         } catch (IOException | ClassNotFoundException | cMsgException e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
-                            a_println(AfecsTool.stack2str(e));
+                            e.printStackTrace();
                         }
                         break;
 
@@ -682,8 +570,7 @@ public class APlatform extends ABase {
                                 registrar.updateOptionsEventLimit(rt, evl);
 
                             } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                         }
 
@@ -729,8 +616,7 @@ public class APlatform extends ABase {
                                 registrar.createRunLog(msg.getText(), session, false);
                             }
                         } catch (cMsgException e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
-                            a_println(AfecsTool.stack2str(e));
+                            e.printStackTrace();
                         }
 
                         break;
@@ -747,8 +633,7 @@ public class APlatform extends ABase {
 
                             }
                         } catch (cMsgException e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
-                            a_println(AfecsTool.stack2str(e));
+                            e.printStackTrace();
                         }
 
                         break;
@@ -768,8 +653,7 @@ public class APlatform extends ABase {
                                 password = msg.getPayloadItem(AConstants.PASSWORD).getString();
                             }
                         } catch (cMsgException e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
-                            a_println(AfecsTool.stack2str(e));
+                            e.printStackTrace();
                         }
 
                         if (node != null && userName != null && password != null) {
@@ -800,8 +684,7 @@ public class APlatform extends ABase {
                                     }
                                 }
                             } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                         }
                         break;
@@ -829,8 +712,7 @@ public class APlatform extends ABase {
                                     }
                                 }
                             } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                         }
                         break;
@@ -840,6 +722,37 @@ public class APlatform extends ABase {
         }
     }
 
+    public List<cMsgPayloadItem> platformInfoRequestReadConfgiFile(String txt,
+                                                                   ArrayList<String> cif)
+            throws IOException, cMsgException {
+
+        List<cMsgPayloadItem> out = new ArrayList<>();
+        for (String cfd : cif) {
+
+            // Read emu based roc component configuration file.
+            // It is constructed as roc_name.xml ( instead of roc_name.dat)
+            if (txt.endsWith(".dat")) {
+
+                // Then this is a roc. Read roc_name.xml file
+                String emuFName = cfd + File.separator +
+                        txt.substring(0, txt.lastIndexOf(".")) + ".xml";
+                String emuFContent = readFileAsString(emuFName);
+                if (emuFContent != null) {
+                    out.add(new cMsgPayloadItem(AConstants.EMUROCCONFIG, emuFContent));
+                }
+
+                String f_name = cfd + File.separator + txt;
+                String f_content = readFileAsString(f_name);
+                if (f_content != null) {
+                    long date = new File(f_name).lastModified();
+                    out.add(new cMsgPayloadItem(AConstants.FILECONTENT, f_content));
+                    out.add(new cMsgPayloadItem(AConstants.FILEDATE, date));
+                    break;
+                }
+            }
+        }
+        return out;
+    }
 
     /**
      * <p>
@@ -889,52 +802,7 @@ public class APlatform extends ABase {
                                 }
                                 myPlatformConnection.send(mr);
                             } catch (cMsgException | IOException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
-                            }
-                        }
-
-                        break;
-                    case AConstants.PlatformInfoRequestReadConfgiFile:
-
-                        if (msg.isGetRequest()) {
-                            try {
-                                cMsgMessage mr = msg.response();
-                                mr.setSubject(AConstants.udf);
-                                mr.setType(AConstants.udf);
-                                if (txt != null &&
-                                        msg.getPayloadItem(AConstants.DEFAULTOPTIONDIRS) != null) {
-                                    String[] cif = msg.getPayloadItem(AConstants.DEFAULTOPTIONDIRS).getStringArray();
-                                    for (String cfd : cif) {
-
-                                        // Read emu based roc component configuration file.
-                                        // It is constructed as roc_name.xml ( instead of roc_name.dat)
-                                        if (txt.endsWith(".dat")) {
-
-                                            // Then this is a roc. Read roc_name.xml file
-                                            String emuFName = cfd + File.separator +
-                                                    txt.substring(0, txt.lastIndexOf(".")) + ".xml";
-                                            String emuFContent = readFileAsString(emuFName);
-                                            if (emuFContent != null) {
-                                                mr.addPayloadItem(
-                                                        new cMsgPayloadItem(AConstants.EMUROCCONFIG, emuFContent));
-                                            }
-                                        }
-
-                                        String f_name = cfd + File.separator + txt;
-                                        String f_content = readFileAsString(f_name);
-                                        if (f_content != null) {
-                                            long date = new File(f_name).lastModified();
-                                            mr.addPayloadItem(new cMsgPayloadItem(AConstants.FILECONTENT, f_content));
-                                            mr.addPayloadItem(new cMsgPayloadItem(AConstants.FILEDATE, date));
-                                            break;
-                                        }
-                                    }
-                                    myPlatformConnection.send(mr);
-                                }
-                            } catch (cMsgException | IOException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                         }
 
@@ -967,8 +835,7 @@ public class APlatform extends ABase {
                                 }
                                 myPlatformConnection.send(mr);
                             } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                         }
 
@@ -1008,8 +875,7 @@ public class APlatform extends ABase {
                                 }
                                 myPlatformConnection.send(mr);
                             } catch (cMsgException | ClassNotFoundException | IOException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                         }
                         break;
@@ -1031,8 +897,7 @@ public class APlatform extends ABase {
 
                                 myPlatformConnection.send(mr);
                             } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                         }
                         break;
@@ -1055,7 +920,6 @@ public class APlatform extends ABase {
                                 myPlatformConnection.send(mr);
                             } catch (IOException | cMsgException e) {
                                 e.printStackTrace();
-                                a_println(AfecsTool.stack2str(e));
                             }
                         }
                         break;
@@ -1069,8 +933,7 @@ public class APlatform extends ABase {
                                 mr.setByteArray(AfecsTool.O2B(getDocContent(txt)));
                                 myPlatformConnection.send(mr);
                             } catch (IOException | cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                         }
                         break;
@@ -1085,8 +948,7 @@ public class APlatform extends ABase {
                                 mr.setByteArray(AfecsTool.O2B(registrar.getSessionDir()));
                                 myPlatformConnection.send(mr);
                             } catch (IOException | cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                         }
                         break;
@@ -1102,8 +964,7 @@ public class APlatform extends ABase {
                                 mr.setByteArray(AfecsTool.O2B(registrar.getSessionNames()));
                                 myPlatformConnection.send(mr);
                             } catch (IOException | cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                         }
                         break;
@@ -1117,8 +978,7 @@ public class APlatform extends ABase {
                                 mr.setByteArray(AfecsTool.O2B(registrar.getRunNumbers(txt)));
                                 myPlatformConnection.send(mr);
                             } catch (IOException | cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                         }
                         break;
@@ -1136,8 +996,7 @@ public class APlatform extends ABase {
                                 }
                                 myPlatformConnection.send(mr);
                             } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                         }
                         break;
@@ -1164,8 +1023,7 @@ public class APlatform extends ABase {
                                 mr.addPayloadItem(new cMsgPayloadItem("activeruntype_p", rt));
                                 myPlatformConnection.send(mr);
                             } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                         }
                         break;
@@ -1190,13 +1048,11 @@ public class APlatform extends ABase {
                                         mr.setByteArray(AfecsTool.O2B(rts));
                                     } catch (IOException e) {
                                         e.printStackTrace();
-                                        a_println(AfecsTool.stack2str(e));
                                     }
                                 }
                                 myPlatformConnection.send(mr);
                             } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                         }
                         break;
@@ -1217,8 +1073,7 @@ public class APlatform extends ABase {
                                                 l.toArray(new String[l.size()])));
                                 myPlatformConnection.send(mr);
                             } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                         }
                         break;
@@ -1238,8 +1093,7 @@ public class APlatform extends ABase {
                                                 st.toArray(new String[st.size()])));
                                 myPlatformConnection.send(mr);
                             } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                         }
                         break;
@@ -1258,8 +1112,7 @@ public class APlatform extends ABase {
                                 }
                                 myPlatformConnection.send(mr);
                             } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                                a_println(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                         }
                         break;

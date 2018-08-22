@@ -22,10 +22,9 @@
 
 package org.jlab.coda.afecs.supervisor;
 
+import org.jlab.coda.afecs.codarc.CodaRCAgent;
 import org.jlab.coda.afecs.cool.ontology.AComponent;
 import org.jlab.coda.afecs.system.ACodaType;
-import org.jlab.coda.afecs.system.AConstants;
-import org.jlab.coda.afecs.system.util.AfecsTool;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,7 +44,7 @@ public class SUtility {
 
     private SupervisorAgent owner;
 
-    public SUtility(SupervisorAgent owner) {
+    SUtility(SupervisorAgent owner) {
         this.owner = owner;
     }
 
@@ -57,7 +56,7 @@ public class SUtility {
      * Clears all internal registration storage.
      * </p>
      */
-    public void clearLocalRegister() {
+    void clearLocalRegister() {
 
         if (owner.sortedComponentList != null &&
                 !owner.sortedComponentList.isEmpty()) {
@@ -87,58 +86,6 @@ public class SUtility {
 
 
     /**
-     * <p>
-     * Block and wait until components reset
-     * </p>
-     */
-    public synchronized void blockingWait4Reset(boolean send, int sec) {
-        boolean allSet = true;
-        int trial = 0;
-        owner.isResetting.set(true);
-        while (trial < sec * 10) {
-            allSet = true;
-            for (AComponent c : owner.myComponents.values()) {
-                if (c.getState().equals(AConstants.disconnected)) {
-                    owner.me.setState(AConstants.booted);
-                    owner.send(AConstants.GUI,
-                            owner.me.getSession() + "_" + owner.me.getRunType() + "/supervisor",
-                            owner.me.getRunTimeDataAsPayload());
-                    owner.isResetting.set(false);
-                    return;
-                } else if (c.getState().equalsIgnoreCase(AConstants.failed)) {
-
-                    owner.me.setState(AConstants.failed);
-                    owner.send(AConstants.GUI,
-                            owner.me.getSession() + "_" + owner.me.getRunType() + "/supervisor",
-                            owner.me.getRunTimeDataAsPayload());
-                    owner.isResetting.set(false);
-                    return;
-                } else if (c.getState().contains("ing")) {
-                    allSet = false;
-                    break;
-                }
-            }
-            trial++;
-            AfecsTool.sleep(100);
-        }
-
-        if (allSet) {
-            owner.me.setState(AConstants.configured);
-            if (send)
-                owner.send(AConstants.GUI,
-                        owner.me.getSession() + "_" + owner.me.getRunType() + "/supervisor",
-                        owner.me.getRunTimeDataAsPayload());
-        } else {
-            owner.me.setState(AConstants.failed);
-            owner.send(AConstants.GUI,
-                    owner.me.getSession() + "_" + owner.me.getRunType() + "/supervisor",
-                    owner.me.getRunTimeDataAsPayload());
-        }
-        owner.isResetting.set(false);
-    }
-
-
-    /**
      * Checks reporting components map to see if
      * any of the components have a required state.
      * </p>
@@ -147,8 +94,8 @@ public class SUtility {
      * @return true if found
      */
     public boolean containsState(String state) {
-        for (AComponent c : owner.getMyComponents().values()) {
-            if (c.getState().equals(state)) return true;
+        for (CodaRCAgent c : owner.getMyComponents().values()) {
+            if (c.me.getState().equals(state)) return true;
         }
         return false;
     }
@@ -163,8 +110,8 @@ public class SUtility {
      */
     public boolean containsStates(List<String> states) {
         String state;
-        for (AComponent c : owner.getMyComponents().values()) {
-            state = c.getState();
+        for (CodaRCAgent c : owner.getMyComponents().values()) {
+            state = c.me.getState();
             for (String s : states) {
                 if (s.equals(state)) return true;
             }
@@ -182,18 +129,18 @@ public class SUtility {
      *
      * @return AComponent object reference
      */
-    public AComponent getTriggerSourceComponent() {
+    AComponent getTriggerSourceComponent() {
 
         AComponent gtComponent = null;
         List<AComponent> rocComponents = new ArrayList<>();
 
-        for (AComponent com : owner.myComponents.values()) {
-            if (com.getType().equals(ACodaType.TS.name())) {
-                return com;
-            } else if (com.getType().equals(ACodaType.GT.name())) {
-                gtComponent = com;
-            } else if (com.getType().equals(ACodaType.ROC.name())) {
-                rocComponents.add(com);
+        for (CodaRCAgent com : owner.myComponents.values()) {
+            if (com.me.getType().equals(ACodaType.TS.name())) {
+                return com.me;
+            } else if (com.me.getType().equals(ACodaType.GT.name())) {
+                gtComponent = com.me;
+            } else if (com.me.getType().equals(ACodaType.ROC.name())) {
+                rocComponents.add(com.me);
             }
         }
         if (gtComponent != null) {
@@ -221,14 +168,14 @@ public class SUtility {
      */
     AComponent getPersistencyComponent() {
 
-        if(owner.sortedComponentList.containsKey("ER_class")){
+        if (owner.sortedComponentList.containsKey("ER_class")) {
             return owner.sortedComponentList.get("ER_class");
-        } else if(owner.sortedComponentList.containsKey("PEB_class")){
+        } else if (owner.sortedComponentList.containsKey("PEB_class")) {
             return owner.sortedComponentList.get("PEB_class");
-        } else if(owner.sortedComponentList.containsKey("SEB_class")){
+        } else if (owner.sortedComponentList.containsKey("SEB_class")) {
             return owner.sortedComponentList.get("SEB_class");
         }
-        List<AComponent> l = new ArrayList<>(owner.myComponents.values());
+        List<AComponent> l = new ArrayList<>(owner.sortedComponentList.values());
         Collections.sort(l);
         for (AComponent comp : l) {
             if (comp.getType().equals(ACodaType.ER.name())) return comp;

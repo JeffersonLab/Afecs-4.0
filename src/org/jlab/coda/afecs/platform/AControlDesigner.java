@@ -25,6 +25,7 @@ package org.jlab.coda.afecs.platform;
 import org.jlab.coda.afecs.client.AClientInfo;
 import org.jlab.coda.afecs.cool.ontology.*;
 import org.jlab.coda.afecs.cool.parser.CParser;
+import org.jlab.coda.afecs.supervisor.SupervisorAgent;
 import org.jlab.coda.afecs.system.ABase;
 import org.jlab.coda.afecs.system.ACodaType;
 import org.jlab.coda.afecs.system.AConstants;
@@ -61,7 +62,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *         Date: 11/16/14 Time: 2:51 PM
  * @version 3.x
  */
-public class AControlDesigner extends ABase {
+class AControlDesigner extends ABase {
 
     private Map<String, String> definedRTVs;
 
@@ -70,12 +71,14 @@ public class AControlDesigner extends ABase {
 
     private Map<String, Thread> _orphanAgentMap = new ConcurrentHashMap<>();
 
+    private APlatform myPlatform;
     /**
      * <p>
      * Constructor does cMsg connect
      * </p>
      */
-    public AControlDesigner() {
+    public AControlDesigner(APlatform platform) {
+        myPlatform = platform;
         myName = AConstants.CONTROLDESIGNER;
 
         // Connect to the platform cMsg domain server
@@ -1006,7 +1009,7 @@ public class AControlDesigner extends ABase {
 
         ConcurrentHashMap<String, AComponent> registeredComps;
 
-        registeredComps = APlatform.registrar.getAgentDir();
+        registeredComps = myPlatform.registrar.getAgentDir();
 
         if (registeredComps != null &&
                 !registeredComps.containsKey(com.getName())) {
@@ -1021,14 +1024,14 @@ public class AControlDesigner extends ABase {
             // First see if the container administrator
             // exists for the required agent
             if (registeredComps.containsKey(com.getHost() + "_admin")) {
-                if (APlatform.registrar.getClientDir().containsKey(com.getName())) {
-                    AClientInfo ci = APlatform.registrar.getClientDir().get(com.getName());
+                if (myPlatform.registrar.getClientDir().containsKey(com.getName())) {
+                    AClientInfo ci = myPlatform.registrar.getClientDir().get(com.getName());
                     ci.setContainerHost(com.getHost());
                     com.setClient(ci);
                 }
 
                 // Ask container admin to start a new agent
-                APlatform.container.startAgent(com);
+                myPlatform.container.startAgent(com);
 
                 // Wait until agent is registered
                 cMsgMessage msg_b = null;
@@ -1091,7 +1094,7 @@ public class AControlDesigner extends ABase {
             System.out.println("DDD ----| Info: ControlDesigner starts designing a control system.");
 
             // Assign configuration id to the runType
-            int conf_id = APlatform.registrar.addConfigId(runType);
+            int conf_id = myPlatform.registrar.addConfigId(runType);
 
             for (AComponent com : c.getComponents()) {
 
@@ -1103,17 +1106,17 @@ public class AControlDesigner extends ABase {
                 com.setSupervisor("sms_" + runType);
 
 //                 set the client of the agent if client already requested an agent
-                if (APlatform.registrar.getClientDir() != null &&
-                        APlatform.registrar.getClientDir().containsKey(com.getName())) {
-                    ci = APlatform.registrar.getClientDir().get(com.getName());
+                if (myPlatform.registrar.getClientDir() != null &&
+                        myPlatform.registrar.getClientDir().containsKey(com.getName())) {
+                    ci = myPlatform.registrar.getClientDir().get(com.getName());
                     com.setClient(ci);
                 }
 
                 // See if component in the control description is already active
-                if (APlatform.registrar.getAgentDir() != null &&
-                        APlatform.registrar.getAgentDir().containsKey(com.getName())) {
+                if (myPlatform.registrar.getAgentDir() != null &&
+                        myPlatform.registrar.getAgentDir().containsKey(com.getName())) {
 
-                    AComponent regComp = APlatform.registrar.getAgentDir().get(com.getName());
+                    AComponent regComp = myPlatform.registrar.getAgentDir().get(com.getName());
 
                     // Configured in a different session
                     if (!regComp.getSession().equals(AConstants.udf) &&
@@ -1165,7 +1168,7 @@ public class AControlDesigner extends ABase {
                         com.setHost(myConfig.getPlatformHost());
                     }
 
-                    APlatform.container.startAgent(com);
+                    myPlatform.container.startAgent(com);
                     // Ask container admin to start a new agent
 
                     // wait for agent registration
@@ -1174,7 +1177,7 @@ public class AControlDesigner extends ABase {
                         AfecsTool.sleep(100);
                         tout++;
                     } while ((tout < AConstants.TIMEOUT) &&
-                            !APlatform.registrar.getAgentDir().containsKey(com.getName()));
+                            !myPlatform.registrar.getAgentDir().containsKey(com.getName()));
                     if (tout > AConstants.TIMEOUT) {
                         reportAlarmMsg(session + "/" + runType,
                                 myName,
@@ -1189,25 +1192,25 @@ public class AControlDesigner extends ABase {
             }
 
             // Update client database in the COOL_HOME
-            APlatform.registrar.dumpClientDatabase();
+            myPlatform.registrar.dumpClientDatabase();
 
 //            AfecsTool.sleep(100);
 
             // Update client database in the memory by
             // reading back the client database file
             // from the COOL
-//            APlatform.registrar.readClientDatabase();
+//            myPlatform.registrar.readClientDatabase();
 
             // See if supervisor agent exists
             if (c.getSupervisor() != null) {
                 c.getSupervisor().setSession(session);
                 c.getSupervisor().setRunType(runType);
-                if (APlatform.registrar.getAgentDir().containsKey(c.getSupervisor().getName())) {
+                if (myPlatform.registrar.getAgentDir().containsKey(c.getSupervisor().getName())) {
 
-                    // This will setup supervisor agent, which also
-                    // will send setup request to all supervised agents
-                    send(c.getSupervisor().getName(),
-                            AConstants.SupervisorControlRequestSetup, c);
+                    SupervisorAgent sa = myPlatform.container.getContainerSupervisors().get(c.getSupervisor().getName());
+                    if(sa!=null){
+                        sa.supervisorControlRequestSetup(c);
+                    }
 
                     // Start a new supervisor agent
                 } else {
@@ -1224,33 +1227,27 @@ public class AControlDesigner extends ABase {
                         AfecsTool.sleep(100);
                         tout++;
                     } while ((tout < AConstants.TIMEOUT) &&
-                            !APlatform.registrar.getAgentDir().containsKey("sms_" + runType));
+                            !myPlatform.registrar.getAgentDir().containsKey("sms_" + runType));
 
                     if (tout < AConstants.TIMEOUT) {
 
                         // Send setup message to the supervisor. 2 attempts.
-                        try {
-                            p2pSend(c.getSupervisor().getName(),
-                                    AConstants.SupervisorControlRequestSetup,
-                                    c,5000);
-                        } catch (AException e) {
-                            try {
-                                p2pSend(c.getSupervisor().getName(),
-                                        AConstants.SupervisorControlRequestSetup,
-                                        c,5000);
-                            } catch (AException ee) {
-                                reportAlarmMsg(session + "/" + runType,
-                                        myName,
-                                        9,
-                                        AConstants.ERROR,
-                                        "Supervisor Agent " +
-                                                c.getSupervisor().getName() + " is not active.");
-                                lg.logger.severe(myName +
-                                        ":  Supervisor Agent " +
-                                        c.getSupervisor().getName() + " is not active.");
-                                return false;
-                            }
+                        SupervisorAgent sa = myPlatform.container.getContainerSupervisors().get(c.getSupervisor().getName());
+                        if(sa!=null){
+                            sa.supervisorControlRequestSetup(c);
+                        } else {
+                            reportAlarmMsg(session + "/" + runType,
+                                    myName,
+                                    9,
+                                    AConstants.ERROR,
+                                    "Supervisor Agent " +
+                                            c.getSupervisor().getName() + " is not active.");
+                            lg.logger.severe(myName +
+                                    ":  Supervisor Agent " +
+                                    c.getSupervisor().getName() + " is not active.");
+                            return false;
                         }
+
                     } else if (tout > AConstants.TIMEOUT) {
                         reportAlarmMsg(session + "/" + runType,
                                 myName,

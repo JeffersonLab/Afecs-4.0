@@ -24,12 +24,13 @@ package org.jlab.coda.afecs.supervisor;
 
 import org.jlab.coda.afecs.agent.AParent;
 import org.jlab.coda.afecs.agent.AReportingTime;
+import org.jlab.coda.afecs.codarc.CodaRCAgent;
+import org.jlab.coda.afecs.container.AContainer;
 import org.jlab.coda.afecs.cool.ontology.AComponent;
 import org.jlab.coda.afecs.cool.ontology.AControl;
 import org.jlab.coda.afecs.cool.ontology.AProcess;
 import org.jlab.coda.afecs.cool.ontology.AService;
 import org.jlab.coda.afecs.cool.parser.ACondition;
-import org.jlab.coda.afecs.supervisor.thread.AHealthMonitorT;
 import org.jlab.coda.afecs.supervisor.thread.AStatusReportT;
 import org.jlab.coda.afecs.supervisor.thread.MoveToStateT;
 import org.jlab.coda.afecs.supervisor.thread.ServiceExecutionT;
@@ -44,9 +45,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -131,14 +130,12 @@ public class SupervisorAgent extends AParent implements Serializable {
 
     // Containers
     // Synchronized map holding supervised agents
-    transient public ConcurrentHashMap<String, AComponent>
-            myComponents =
-            new ConcurrentHashMap<>();
+    transient public ConcurrentHashMap<String, CodaRCAgent>
+            myComponents = new ConcurrentHashMap<>();
 
     // Synchronized map holding agentReportingTimes
     transient public ConcurrentHashMap<String, AReportingTime>
-            myCompReportingTimes =
-            new ConcurrentHashMap<>();
+            myCompReportingTimes = new ConcurrentHashMap<>();
 
     // Sorted component list to be reported to UIs
     public Map<String, AComponent>
@@ -148,7 +145,7 @@ public class SupervisorAgent extends AParent implements Serializable {
 
     // Sorting components in the order of
     // being allowed to write an output file
-    transient public Map<String, AComponent>
+    transient Map<String, AComponent>
             sortedByOutputList =
             Collections.synchronizedMap(
                     new LinkedHashMap<String, AComponent>());
@@ -168,10 +165,6 @@ public class SupervisorAgent extends AParent implements Serializable {
     // Callback for supervisor control messages
     transient private cMsgSubscriptionHandle superControlSH;
 
-    // Callback for the messages coming from the
-    // agents under control of this supervisor.
-    transient private cMsgSubscriptionHandle agentsStateSH;
-
     // Callback for the requests from user
     // scripts or commandline programs.
     transient private cMsgSubscriptionHandle userRequestSH;
@@ -184,10 +177,6 @@ public class SupervisorAgent extends AParent implements Serializable {
     // Thread that periodically reports
     // supervised agents statuses
     transient private AStatusReportT agentStatusReport;
-
-    // Thread that monitors supervised
-    // agents reporting
-    transient private AHealthMonitorT agentHealthMonitor;
 
     // Thread that runs a described service
     transient private ServiceExecutionT serviceExecutionThread;
@@ -210,7 +199,7 @@ public class SupervisorAgent extends AParent implements Serializable {
     transient public SUtility sUtility;
 
     // Reference to this supervisor
-    public SupervisorAgent mySelf;
+    private SupervisorAgent mySelf;
 
 
     // CODA rc specific fields
@@ -221,8 +210,8 @@ public class SupervisorAgent extends AParent implements Serializable {
             new AtomicBoolean(false);
 
     // Persistent and trigger component agent objects
-    AComponent persistencyComponent;
-    AComponent triggerComponent;
+    private AComponent persistencyComponent;
+    private AComponent triggerComponent;
 
     // Flag that is set by the request of the gui to
     // enable/disable data file output
@@ -240,8 +229,11 @@ public class SupervisorAgent extends AParent implements Serializable {
     transient public AtomicBoolean isClientProblemAtActive = new AtomicBoolean(false);
 
 
-
     transient public boolean wasConfigured = false;
+
+    private ScheduledFuture<?> agnetsCheck;
+
+    public AContainer myContainer;
 
     /**
      * <p>
@@ -261,8 +253,10 @@ public class SupervisorAgent extends AParent implements Serializable {
      * @param comp Object containing COLL
      *             description of this agent
      */
-    public SupervisorAgent(AComponent comp) {
+    public SupervisorAgent(AComponent comp, AContainer container) {
         super(comp);
+        myContainer = container;
+        setMyPlatform(myContainer.myPlatform);
         coolServiceAnalyser = new CoolServiceAnalyser(this);
         sUtility = new SUtility(this);
         me.setExpid(myConfig.getPlatformExpid());
@@ -284,7 +278,7 @@ public class SupervisorAgent extends AParent implements Serializable {
      * removing subscriptions.
      * </p>
      */
-    public void sup_exit() throws cMsgException {
+    private void sup_exit() throws cMsgException {
         remove_registration();
         sup_clean();
         _un_subscribe_all();
@@ -298,7 +292,7 @@ public class SupervisorAgent extends AParent implements Serializable {
      * Cleans maps, stops processes, etc.
      * </p>
      */
-    public void sup_clean() {
+    private void sup_clean() {
         isResetting.set(false);
         isClientProblemAtActive.set(false);
         _un_subscribe_all();
@@ -360,12 +354,8 @@ public class SupervisorAgent extends AParent implements Serializable {
                 me.getRunTimeDataAsPayload());
 
         // Asking supervised agents to configure.
-        for (AComponent com : myComponents.values()) {
-
-            send(com.getName(),
-                    AConstants.AgentControlRequestSetup,
-                    com);
-            AfecsTool.sleep(10);
+        for (CodaRCAgent com : myComponents.values()) {
+            com.agentControlRequestSetup();
         }
 
     }
@@ -383,7 +373,7 @@ public class SupervisorAgent extends AParent implements Serializable {
      *
      * @param stateName the name of a state to transition
      */
-    public void _moveToState(String stateName) {
+    private void _moveToState(String stateName) {
 
 // ======== added 10.11.16 ============== Execute after active script at the reset ====================
         for (AProcess bp : me.getProcesses()) {
@@ -452,8 +442,8 @@ public class SupervisorAgent extends AParent implements Serializable {
 
         // Release agents under the control
         if (myComponents != null && !myComponents.isEmpty()) {
-            for (String s : myComponents.keySet()) {
-                send(s, AConstants.AgentControlRequestReleaseAgent, "");
+            for (CodaRCAgent s : myComponents.values()) {
+                s.agentControlRequestReleaseAgent();
             }
         }
     }
@@ -467,7 +457,7 @@ public class SupervisorAgent extends AParent implements Serializable {
      *
      * @return reference to the components map.
      */
-    public ConcurrentHashMap<String, AComponent> getMyComponents() {
+    public ConcurrentHashMap<String, CodaRCAgent> getMyComponents() {
         return myComponents;
     }
 
@@ -515,31 +505,19 @@ public class SupervisorAgent extends AParent implements Serializable {
      * <p>
      * Supervisor agent specific subscriptions
      * </p>
-     *
-     * @return status of the subscriptions
      */
-    public boolean agentSubscribe() {
-        boolean status = true;
+    void agentSubscribe() {
 
-        try {
-
-            // Un-subscribe first;
-            if (agentsStateSH != null)
-                myPlatformConnection.unsubscribe(agentsStateSH);
-
-            // Subscribe messages coming from controlled agents,
-            // reporting their states ( as an AComponent object
-            // or payload items)
-            agentsStateSH = myPlatformConnection.subscribe(
-                    me.getSession(),
-                    me.getRunType(),
-                    new AgentsStatusCB(),
-                    null);
-        } catch (cMsgException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
-            status = false;
+        if (agnetsCheck != null) {
+            agnetsCheck.cancel(true);
         }
-        return status;
+        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+        Runnable check = this::checkComponents;
+
+        agnetsCheck = executorService.scheduleAtFixedRate(
+                check,
+                0,
+                1, TimeUnit.SECONDS);
     }
 
     /**
@@ -549,12 +527,14 @@ public class SupervisorAgent extends AParent implements Serializable {
      * </p>
      */
     private void _un_subscribe_all() {
+        if (agnetsCheck != null) {
+            agnetsCheck.cancel(true);
+        }
+
         try {
             if (isPlatformConnected()) {
                 if (superControlSH != null)
                     myPlatformConnection.unsubscribe(superControlSH);
-                if (agentsStateSH != null)
-                    myPlatformConnection.unsubscribe(agentsStateSH);
                 if (userRequestSH != null)
                     myPlatformConnection.unsubscribe(userRequestSH);
                 if (controlSH != null)
@@ -576,16 +556,13 @@ public class SupervisorAgent extends AParent implements Serializable {
      * components map for a relevant information.
      * </p>
      */
-    public void startAgentMonitors() {
+    private void startAgentMonitors() {
 
         // Stop first
         stopAgentMonitors();
 
         agentStatusReport = new AStatusReportT(this);
         agentStatusReport.start();
-
-        agentHealthMonitor = new AHealthMonitorT(this);
-        agentHealthMonitor.start();
     }
 
     /**
@@ -594,11 +571,9 @@ public class SupervisorAgent extends AParent implements Serializable {
      * in case they are running.
      * </p>
      */
-    public void stopAgentMonitors() {
+    private void stopAgentMonitors() {
         if (agentStatusReport != null)
             agentStatusReport.setRunning(false);
-        if (agentHealthMonitor != null)
-            agentHealthMonitor.setRunning(false);
     }
 
     /**
@@ -606,7 +581,7 @@ public class SupervisorAgent extends AParent implements Serializable {
      * Stops service execution thread
      * </p>
      */
-    public void stopServiceExecutionThread() {
+    private void stopServiceExecutionThread() {
         if (serviceExecutionThread != null)
             serviceExecutionThread.stop();
     }
@@ -640,7 +615,7 @@ public class SupervisorAgent extends AParent implements Serializable {
      * Starts the service execution thread
      * </p>
      */
-    public void codaRC_stopRun() {
+    private void codaRC_stopRun() {
         if (myServiceConditions.containsKey("CodaRcEnd")) {
 
             serviceExecutionThread =
@@ -660,8 +635,8 @@ public class SupervisorAgent extends AParent implements Serializable {
     public String getIntermediateState() {
         if (_requestedService != null && _requestedService.equals("CodaRcStartRun")) {
             List<String> statuses = new ArrayList<>();
-            for (AComponent c : myComponents.values()) {
-                statuses.add(c.getState());
+            for (CodaRCAgent c : myComponents.values()) {
+                statuses.add(c.me.getState());
             }
             if (statuses.contains("downloading")) {
                 return "downloading";
@@ -680,7 +655,6 @@ public class SupervisorAgent extends AParent implements Serializable {
         return AConstants.udf;
     }
 
-    @Deprecated
     private Boolean isAllReport(List<String> statuses,
                                 String state) {
         for (String s : statuses) {
@@ -699,8 +673,8 @@ public class SupervisorAgent extends AParent implements Serializable {
      * @return true if run is ended
      */
     public boolean isRunEnded() {
-        for (AComponent c : myComponents.values()) {
-            if (!c.getState().equals(AConstants.downloaded)) {
+        for (CodaRCAgent c : myComponents.values()) {
+            if (!c.me.getState().equals(AConstants.downloaded)) {
                 return false;
             }
         }
@@ -732,33 +706,7 @@ public class SupervisorAgent extends AParent implements Serializable {
      */
     public String createRunLogXML(boolean isEnded) {
 
-        // Ask control designer to get rtv map
-        List<cMsgPayloadItem> al = new ArrayList<>();
-        try {
-            al.add(new cMsgPayloadItem(AConstants.SESSION, mySession));
-            al.add(new cMsgPayloadItem(AConstants.RUNTYPE, myRunType));
-        } catch (cMsgException e1) {
-            lg.logger.severe(AfecsTool.stack2str(e1));
-        }
-
-        // Ask platform registrar rtv file content for a defined runType
-        cMsgMessage m = null;
-        try {
-            m = p2pSend(AConstants.CONTROLDESIGNER,
-                    AConstants.DesignerInfoRequestGetDefinedRTVs,
-                    al, AConstants.TIMEOUT);
-        } catch (AException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
-        }
-
-        Map<String, String> remRtv = null;
-        if (m != null && m.getByteArray() != null) {
-            try {
-                remRtv = (Map<String, String>) AfecsTool.B2O(m.getByteArray());
-            } catch (IOException | ClassNotFoundException e) {
-                lg.logger.severe(AfecsTool.stack2str(e));
-            }
-        }
+        Map<String, String> remRtv = AfecsTool.readRTVFile(myRunType, mySession);
 
         StringBuilder sb = new StringBuilder();
         sb.append("<coda runtype = ").append("\"").append(myRunType).append("\"").
@@ -816,22 +764,22 @@ public class SupervisorAgent extends AParent implements Serializable {
     }
 
     private void xmlComponentData(StringBuilder sb) {
-        for (AComponent comp : getMyComponents().values()) {
-            sb.append("         <component name = ").append("\"").append(comp.getName()).append("\"").
-                    append(" type = ").append("\"").append(comp.getType()).append("\"").
+        for (CodaRCAgent comp : getMyComponents().values()) {
+            sb.append("         <component name = ").append("\"").append(comp.me.getName()).append("\"").
+                    append(" type = ").append("\"").append(comp.me.getType()).append("\"").
                     append(">").append("\n");
-            sb.append("            <evt-rate>").append(comp.getEventRateAverage()).append("</evt-rate>").append("\n");
-            sb.append("            <data-rate>").append(comp.getDataRateAverage()).append("</data-rate>").append("\n");
-            sb.append("            <evt-number>").append(comp.getEventNumber()).append("</evt-number>").append("\n");
-            sb.append("            <min-evt-size>").append(comp.getMinEventSize()).append("</min-evt-size>").append("\n");
-            sb.append("            <max-evt-size>").append(comp.getMaxEventSize()).append("</max-evt-size>").append("\n");
-            sb.append("            <average-evt-size>").append(comp.getAvgEventSize()).append("</average-evt-size>").append("\n");
-            sb.append("            <min-evt-build-time>").append(comp.getMinTimeToBuild()).append("</min-evt-build-time>").append("\n");
-            sb.append("            <max-evt-build-time>").append(comp.getMaxTimeToBuild()).append("</max-evt-build-time>").append("\n");
-            sb.append("            <average-evt-build-time>").append(comp.getMeanTimeToBuild()).append("</average-evt-build-time>").append("\n");
-            sb.append("            <chunk-x-et-buffer>").append(comp.getChunkXEtBuffer()).append("</chunk-x-et-buffer>").append("\n");
+            sb.append("            <evt-rate>").append(comp.me.getEventRateAverage()).append("</evt-rate>").append("\n");
+            sb.append("            <data-rate>").append(comp.me.getDataRateAverage()).append("</data-rate>").append("\n");
+            sb.append("            <evt-number>").append(comp.me.getEventNumber()).append("</evt-number>").append("\n");
+            sb.append("            <min-evt-size>").append(comp.me.getMinEventSize()).append("</min-evt-size>").append("\n");
+            sb.append("            <max-evt-size>").append(comp.me.getMaxEventSize()).append("</max-evt-size>").append("\n");
+            sb.append("            <average-evt-size>").append(comp.me.getAvgEventSize()).append("</average-evt-size>").append("\n");
+            sb.append("            <min-evt-build-time>").append(comp.me.getMinTimeToBuild()).append("</min-evt-build-time>").append("\n");
+            sb.append("            <max-evt-build-time>").append(comp.me.getMaxTimeToBuild()).append("</max-evt-build-time>").append("\n");
+            sb.append("            <average-evt-build-time>").append(comp.me.getMeanTimeToBuild()).append("</average-evt-build-time>").append("\n");
+            sb.append("            <chunk-x-et-buffer>").append(comp.me.getChunkXEtBuffer()).append("</chunk-x-et-buffer>").append("\n");
 
-            String cFileName = comp.getFileName();
+            String cFileName = comp.me.getFileName();
             if (cFileName.contains("?") || cFileName.contains("^") || cFileName.contains("<") || cFileName.contains(">")) {
                 cFileName = "corrupted";
             }
@@ -866,42 +814,70 @@ public class SupervisorAgent extends AParent implements Serializable {
             if (persistencyComponent.getName().contains("class")) {
                 switch (persistencyComponent.getName()) {
                     case "ER_class":
-                        for (AComponent c : sortedComponentList.values()) {
-                            if (c.getType().equals(ACodaType.ER.name())) {
+                        for (CodaRCAgent c : myComponents.values()) {
+                            if (c.me.getType().equals(ACodaType.ER.name())) {
                                 System.out.println("DDD ------- setting fileWriting = " +
-                                        s_fileWriting + " for component = " + c.getName());
-                                send(c.getName(),
-                                        AConstants.AgentControlRequestSetFileWriting,
-                                        s_fileWriting);
+                                        s_fileWriting + " for component = " + c.me.getName());
+                                c.agentControlRequestSetFileWriting(s_fileWriting);
                             }
                         }
                         break;
 
                     case "PEB_class":
-                        for (AComponent c : sortedComponentList.values()) {
-                            if (c.getType().equals(ACodaType.PEB.name())) {
-                                send(c.getName(),
-                                        AConstants.AgentControlRequestSetFileWriting,
-                                        s_fileWriting);
+                        for (CodaRCAgent c : myComponents.values()) {
+
+                            if (c.me.getType().equals(ACodaType.PEB.name())) {
+                                c.agentControlRequestSetFileWriting(s_fileWriting);
                             }
                         }
                         break;
 
                     case "SEB_class":
-                        for (AComponent c : sortedComponentList.values()) {
-                            if (c.getType().equals(ACodaType.SEB.name())) {
-                                send(c.getName(),
-                                        AConstants.AgentControlRequestSetFileWriting,
-                                        s_fileWriting);
+                        for (CodaRCAgent c : myComponents.values()) {
+
+                            if (c.me.getType().equals(ACodaType.SEB.name())) {
+                                c.agentControlRequestSetFileWriting(s_fileWriting);
                             }
                         }
                         break;
                 }
             } else {
-                send(persistencyComponent.getName(),
-                        AConstants.AgentControlRequestSetFileWriting,
-                        s_fileWriting);
+                CodaRCAgent c = myComponents.get(persistencyComponent.getName());
+                if (c != null) {
+                    c.agentControlRequestSetFileWriting(s_fileWriting);
+                }
             }
+        }
+    }
+
+    public void supervisorControlRequestFailTransition() {
+        send(AConstants.GUI,
+                me.getSession() + "_" + me.getRunType() + "/supervisor",
+                me.getRunTimeDataAsPayload());
+        reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
+                myName,
+                9,
+                AConstants.ERROR,
+                " transition failed.");
+        dalogMsg(myName,
+                9,
+                AConstants.ERROR,
+                " transition failed.");
+
+        // Ask components to reset
+        _moveToState(AConstants.reseted);
+    }
+
+    public void supervisorControlRequestReleaseAgent(String requestData) {
+        if (myComponents.containsKey(requestData)) {
+            myComponents.get(requestData).me.setState(AConstants.removed);
+            me.setState(AConstants.booted);
+            send(AConstants.GUI,
+                    me.getSession() + "_" + me.getRunType() + "/supervisor",
+                    me.getRunTimeDataAsPayload());
+        }
+        if (myComponents.containsKey(requestData)) {
+            myComponents.get(requestData).me.setState(AConstants.removed);
         }
     }
 
@@ -916,15 +892,12 @@ public class SupervisorAgent extends AParent implements Serializable {
             String type = msg.getType();
             String requestData = msg.getText();
             _requestedService = requestData;
-            ArrayList<cMsgPayloadItem> al = new ArrayList<>();
 
             switch (type) {
                 case AConstants.SupervisorControlRequestStartService:
                     // In this case requestData is the
                     // name of the COOL service
                     if (requestData != null) {
-
-
                         // Check to see if we have disconnected component/s
                         // Send ui asking to pop-up a dialog for suggesting
                         // to disable disconnected components. Blocks for ever.
@@ -966,11 +939,6 @@ public class SupervisorAgent extends AParent implements Serializable {
                                     " " + codaState + " is started.");
                         }
                     }
-
-                    break;
-                case AConstants.SupervisorControlRequestSopService:
-                    stopServiceExecutionThread();
-
                     break;
 
                 // request from the UI/user to disable the
@@ -979,7 +947,6 @@ public class SupervisorAgent extends AParent implements Serializable {
                     sortedComponentList.get(requestData).setState(AConstants.disabled);
                     myComponents.remove(requestData);
                     myCompReportingTimes.remove(requestData);
-
                     break;
 
                 // request from the UI/user to disable disconnected
@@ -994,21 +961,6 @@ public class SupervisorAgent extends AParent implements Serializable {
                             myCompReportingTimes.remove(c.getName());
                         }
                     }
-
-                    break;
-
-                case AConstants.SupervisorControlRequestReleaseAgent:
-                    if (myComponents.containsKey(requestData)) {
-                        myComponents.get(requestData).setState(AConstants.removed);
-                        me.setState(AConstants.booted);
-                        send(AConstants.GUI,
-                                me.getSession() + "_" + me.getRunType() + "/supervisor",
-                                me.getRunTimeDataAsPayload());
-                    }
-                    if (myComponents.containsKey(requestData)) {
-                        myComponents.get(requestData).setState(AConstants.removed);
-                    }
-
                     break;
 
                 case AConstants.SupervisorControlRequestReleaseRunType:
@@ -1028,18 +980,6 @@ public class SupervisorAgent extends AParent implements Serializable {
                     me.setState(AConstants.udf);
 
                     update_registration();
-
-                    break;
-
-                case AConstants.SupervisorControlRequestInformDeadAgent:
-                    if (myComponents.containsKey(requestData)) {
-                        myComponents.get(requestData).setState(AConstants.disconnected);
-
-                        me.setState(AConstants.booted);
-                        send(AConstants.GUI,
-                                me.getSession() + "_" + me.getRunType() + "/supervisor",
-                                me.getRunTimeDataAsPayload());
-                    }
                     break;
 
                 // Change the run number in the cool db if we
@@ -1052,56 +992,15 @@ public class SupervisorAgent extends AParent implements Serializable {
 
                         if (msg.getPayloadItem(AConstants.RUNNUMBER) != null) {
 
-                            // Ask platform to set run number, and update platform xml file
-                            al.clear();
+                            int rn = 0;
                             try {
-                                al.add(new cMsgPayloadItem(AConstants.RUNTYPE, me.getRunType()));
-                                al.add(new cMsgPayloadItem(AConstants.SESSION, me.getSession()));
-                                al.add(msg.getPayloadItem(AConstants.RUNNUMBER));
-
-                            } catch (Exception e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
+                                rn = msg.getPayloadItem(AConstants.RUNNUMBER).getInt();
+                            } catch (cMsgException e) {
+                                e.printStackTrace();
                             }
-
-                            send(myConfig.getPlatformName(),
-                                    AConstants.PlatformRegistrationRequestSetRunNum,
-                                    al);
+                            myPlatform.platformRegistrationRequestSetRunNum(me.getSession(), me.getRunType(), rn);
                         }
                     }
-
-                    break;
-
-                case AConstants.SupervisorControlRequestReportAgents:
-                    if (msg.isGetRequest()) {
-                        try {
-                            cMsgMessage mr = msg.response();
-                            mr.setSubject(AConstants.udf);
-                            mr.setType(AConstants.udf);
-                            mr.setByteArray(AfecsTool.O2B(sortedComponentList));
-                            myPlatformConnection.send(mr);
-                        } catch (cMsgException | IOException e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
-                        }
-                    }
-                    break;
-
-                case AConstants.SupervisorControlRequestFailTransition:
-                    send(AConstants.GUI,
-                            me.getSession() + "_" + me.getRunType() + "/supervisor",
-                            me.getRunTimeDataAsPayload());
-                    reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
-                            myName,
-                            9,
-                            AConstants.ERROR,
-                            " transition failed.");
-                    dalogMsg(myName,
-                            9,
-                            AConstants.ERROR,
-                            " transition failed.");
-
-                    // Ask components to reset
-                    _moveToState(AConstants.reseted);
-
                     break;
 
                 // The following is coda run control specific
@@ -1111,38 +1010,17 @@ public class SupervisorAgent extends AParent implements Serializable {
                         int i = Integer.parseInt(requestData);
                         if (i >= 0) {
                             me.setEventLimit(i);
-
                             // Ask platform registrar agent to update cool
-                            al.clear();
-                            try {
-                                al.add(new cMsgPayloadItem(AConstants.RUNTYPE, me.getRunType()));
-                                al.add(new cMsgPayloadItem(AConstants.EVENTLIMIT, me.getEventLimit()));
-                            } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                            }
-                            send(myConfig.getPlatformName(),
-                                    AConstants.PlatformControlUpdateOptions,
-                                    al);
+                            myPlatform.registrar.updateOptionsEventLimit(me.getRunType(), me.getEventLimit());
                         }
                     } catch (NumberFormatException e) {
                         lg.logger.severe(AfecsTool.stack2str(e));
                     }
-
                     break;
 
                 case AConstants.SupervisorControlRequestResetEventLimit:
                     me.setEventLimit(0);
-                    al.clear();
-                    try {
-                        al.add(new cMsgPayloadItem(AConstants.RUNTYPE, me.getRunType()));
-                        al.add(new cMsgPayloadItem(AConstants.EVENTLIMIT, me.getEventLimit()));
-                    } catch (cMsgException e) {
-                        lg.logger.severe(AfecsTool.stack2str(e));
-                    }
-                    send(myConfig.getPlatformName(),
-                            AConstants.PlatformControlUpdateOptions,
-                            al);
-
+                    myPlatform.registrar.updateOptionsEventLimit(me.getRunType(), me.getEventLimit());
                     break;
 
                 case AConstants.SupervisorControlRequestSetDataLimit:
@@ -1152,36 +1030,16 @@ public class SupervisorAgent extends AParent implements Serializable {
                             me.setDataLimit(i);
 
                             // Ask platform registrar agent to update cool
-                            al.clear();
-                            try {
-                                al.add(new cMsgPayloadItem(AConstants.RUNTYPE, me.getRunType()));
-                                al.add(new cMsgPayloadItem(AConstants.DATALIMIT, me.getDataLimit()));
-                            } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                            }
-                            send(myConfig.getPlatformName(),
-                                    AConstants.PlatformControlUpdateOptions,
-                                    al);
+                            myPlatform.registrar.updateOptionsEventLimit(me.getRunType(), me.getEventLimit());
                         }
                     } catch (NumberFormatException e) {
                         lg.logger.severe(AfecsTool.stack2str(e));
                     }
-
                     break;
 
                 case AConstants.SupervisorControlRequestResetDataLimit:
                     me.setDataLimit(0);
-                    al.clear();
-                    try {
-                        al.add(new cMsgPayloadItem(AConstants.RUNTYPE, me.getRunType()));
-                        al.add(new cMsgPayloadItem(AConstants.DATALIMIT, me.getDataLimit()));
-                    } catch (cMsgException e) {
-                        lg.logger.severe(AfecsTool.stack2str(e));
-                    }
-                    send(myConfig.getPlatformName(),
-                            AConstants.PlatformControlUpdateOptions,
-                            al);
-
+                    myPlatform.registrar.updateOptionsEventLimit(me.getRunType(), me.getEventLimit());
                     break;
 
                 case AConstants.SupervisorControlRequestSetTimeLimit:
@@ -1194,14 +1052,12 @@ public class SupervisorAgent extends AParent implements Serializable {
                     } catch (NumberFormatException e) {
                         lg.logger.severe(AfecsTool.stack2str(e));
                     }
-
                     break;
 
                 case AConstants.SupervisorControlRequestResetTimeLimit:
                     timeLimit = 0;
                     absTimeLimit = 0;
                     me.setTimeLimit(absTimeLimit);
-
                     break;
 
                 case AConstants.SupervisorControlRequestEnableAutoMode:
@@ -1209,13 +1065,11 @@ public class SupervisorAgent extends AParent implements Serializable {
                         autoStart.set(true);
                         me.setAutoStart(true);
                     }
-
                     break;
 
                 case AConstants.SupervisorControlRequestDisableAutoMode:
                     autoStart.set(false);
                     me.setAutoStart(false);
-
                     break;
 
                 case AConstants.SupervisorControlRequestSetNumberOfRuns:
@@ -1227,13 +1081,11 @@ public class SupervisorAgent extends AParent implements Serializable {
                     } catch (NumberFormatException e) {
                         lg.logger.severe(AfecsTool.stack2str(e));
                     }
-
                     break;
 
                 case AConstants.SupervisorControlRequestResetNumberOfRuns:
                     _numberOfRuns = 0;
                     me.setnScheduledRuns(_numberOfRuns);
-
                     break;
 
                 case AConstants.SupervisorControlRequestPause:
@@ -1260,17 +1112,6 @@ public class SupervisorAgent extends AParent implements Serializable {
                     break;
 
                 case AConstants.SupervisorControlRequestReportReady:
-//                    if (msg.isGetRequest()) {
-//                        try {
-//                            cMsgMessage mr = msg.response();
-//                            mr.setSubject(AConstants.udf);
-//                            mr.setType(AConstants.udf);
-//                            mr.setText("IamAlive");
-//                            myPlatformConnection.send(mr);
-//                        } catch (cMsgException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
                     break;
             }
             if (msg.isGetRequest()) {
@@ -1311,7 +1152,7 @@ public class SupervisorAgent extends AParent implements Serializable {
     private class UserRequestServiceThread extends Thread {
         cMsgMessage msg;
 
-        public UserRequestServiceThread(cMsgMessage msg) {
+        UserRequestServiceThread(cMsgMessage msg) {
             this.msg = msg;
         }
 
@@ -1358,45 +1199,45 @@ public class SupervisorAgent extends AParent implements Serializable {
 
                             case AConstants.SupervisorReportComponentStates:
                                 StringBuilder sb = new StringBuilder();
-                                for (AComponent comp : myComponents.values()) {
-                                    sb.append(comp.getName()).
+                                for (CodaRCAgent comp : myComponents.values()) {
+                                    sb.append(comp.me.getName()).
                                             append(" ").
-                                            append(comp.getState()).
+                                            append(comp.me.getState()).
                                             append("\n");
                                 }
                                 mr.setText(sb.toString());
                                 break;
 
                             case AConstants.SupervisorReportComponentEventNumber:
-                                tmpCmp = myComponents.get(txt);
+                                tmpCmp = myComponents.get(txt).me;
                                 if (tmpCmp != null) {
                                     mr.setText(Long.toString(tmpCmp.getEventNumber()));
                                 }
                                 break;
 
                             case AConstants.SupervisorReportComponentOutputFile:
-                                tmpCmp = myComponents.get(txt);
+                                tmpCmp = myComponents.get(txt).me;
                                 if (tmpCmp != null) {
                                     mr.setText(tmpCmp.getFileName());
                                 }
                                 break;
 
                             case AConstants.SupervisorReportComponentEventRate:
-                                tmpCmp = myComponents.get(txt);
+                                tmpCmp = myComponents.get(txt).me;
                                 if (tmpCmp != null) {
                                     mr.setText(Float.toString(tmpCmp.getEventRate()));
                                 }
                                 break;
 
                             case AConstants.SupervisorReportComponentDataRate:
-                                tmpCmp = myComponents.get(txt);
+                                tmpCmp = myComponents.get(txt).me;
                                 if (tmpCmp != null) {
                                     mr.setText(Double.toString(tmpCmp.getDataRate()));
                                 }
                                 break;
 
                             case AConstants.SupervisorReportComponentState:
-                                tmpCmp = myComponents.get(txt);
+                                tmpCmp = myComponents.get(txt).me;
                                 if (tmpCmp != null) {
                                     mr.setText(tmpCmp.getState());
                                 }
@@ -1422,8 +1263,8 @@ public class SupervisorAgent extends AParent implements Serializable {
 
                             case AConstants.SupervisorReportComponentStates_p:
                                 ArrayList<String> l = new ArrayList<>();
-                                for (AComponent comp : myComponents.values()) {
-                                    l.add(comp.getName() + " " + comp.getState());
+                                for (CodaRCAgent comp : myComponents.values()) {
+                                    l.add(comp.me.getName() + " " + comp.me.getState());
                                 }
                                 mr.addPayloadItem(
                                         new cMsgPayloadItem("states_p", l.toArray(new String[l.size()])));
@@ -1450,7 +1291,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                                 break;
 
                             case AConstants.SupervisorReportComponentEventNumber_p: {
-                                tmpCmp = myComponents.get(txt);
+                                tmpCmp = myComponents.get(txt).me;
                                 if (tmpCmp != null) {
                                     mr.addPayloadItem(new cMsgPayloadItem("evtnumber_p", tmpCmp.getEventNumber()));
                                 }
@@ -1458,7 +1299,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                             }
 
                             case AConstants.SupervisorReportComponentOutputFile_p: {
-                                tmpCmp = myComponents.get(txt);
+                                tmpCmp = myComponents.get(txt).me;
                                 if (tmpCmp != null) {
                                     mr.addPayloadItem(new cMsgPayloadItem("outputfile_p", tmpCmp.getFileName()));
                                 }
@@ -1466,7 +1307,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                             }
 
                             case AConstants.SupervisorReportComponentEventRate_p: {
-                                tmpCmp = myComponents.get(txt);
+                                tmpCmp = myComponents.get(txt).me;
                                 if (tmpCmp != null) {
                                     mr.addPayloadItem(new cMsgPayloadItem("compevtrate_p", tmpCmp.getEventRate()));
                                 }
@@ -1474,7 +1315,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                             }
 
                             case AConstants.SupervisorReportComponentDataRate_p: {
-                                tmpCmp = myComponents.get(txt);
+                                tmpCmp = myComponents.get(txt).me;
                                 if (tmpCmp != null) {
                                     mr.addPayloadItem(new cMsgPayloadItem("compdatarate_p", tmpCmp.getDataRate()));
                                 }
@@ -1482,7 +1323,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                             }
 
                             case AConstants.SupervisorReportComponentLiveTime_p: {
-                                tmpCmp = myComponents.get(txt);
+                                tmpCmp = myComponents.get(txt).me;
                                 if (tmpCmp != null) {
                                     mr.addPayloadItem(new cMsgPayloadItem("complivetime_p", tmpCmp.getLiveTime()));
                                 }
@@ -1490,7 +1331,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                             }
 
                             case AConstants.SupervisorReportComponentState_p: {
-                                tmpCmp = myComponents.get(txt);
+                                tmpCmp = myComponents.get(txt).me;
                                 if (tmpCmp != null) {
                                     mr.addPayloadItem(new cMsgPayloadItem("compstate_p", tmpCmp.getState()));
                                 }
@@ -1531,100 +1372,15 @@ public class SupervisorAgent extends AParent implements Serializable {
     }
 
 
-    /**
-     * <p>
-     * Private inner class for listening
-     * supervised agents messages.
-     * Checks for conditions to end the run,
-     * such as event, time limits, etc.
-     * </p>
-     */
-    private class AgentsStatusCB extends cMsgCallbackAdapter {
+    public void supervisorControlRequestSetup(AControl control) {
+        wasConfigured = false;
+        if (control != null) {
+            // differentiate supervisor
+            differentiate(control.getSupervisor());
 
-        // overwrite to increase callback queue size (1000 messages)
-        public int getMaximumQueueSize() {
-            return 10000;
-        }
-
-        public void callback(final cMsgMessage msg, Object userObject) {
-
-            if (msg != null && msg.getByteArray() != null) {
-
-                ExecutorService executorService = Executors.newSingleThreadExecutor();
-                executorService.execute(new Runnable() {
-                    public void run() {
-
-                        String sender = msg.getSender();
-
-                        if (myComponents.containsKey(sender)) {
-
-                            AComponent ac = null;
-                            try {
-                                ac = (AComponent) AfecsTool.B2O(msg.getByteArray());
-                            } catch (IOException | ClassNotFoundException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
-                            }
-                            if (ac != null && ac.getState() != null) {
-
-                                // Update local maps
-                                myComponents.put(sender, ac);
-
-                                sortedComponentList.put(sender, ac);
-                                if (myCompReportingTimes.contains(sender)) {
-                                    myCompReportingTimes.get(sender).setCurrentReportingTime(new Date().getTime());
-                                }
-                                // Supervisor's event number is set to
-                                // the persistent component event number.
-                                // Check limits against persistent component
-                                // reporting and decide if we need to end the run
-                                if (persistencyComponent != null) {
-
-                                    // check to see if persistent component is of class type
-                                    if (persistencyComponent.getName().contains("class")) {
-                                        me.setEventNumber(persistencyComponent.getEventNumber());
-                                        me.setNumberOfLongs(persistencyComponent.getNumberOfLongs());
-
-                                        // persistent component is a real reporting component
-                                    } else if (ac.getName().equals(persistencyComponent.getName())) {
-
-                                        // Set supervisor event number
-                                        me.setEventNumber(ac.getEventNumber());
-                                        me.setNumberOfLongs(ac.getNumberOfLongs());
-
-                                    }
-                                    // Check if event limit has reached
-                                    if (me.getEventLimit() > 0 &&
-                                            me.getState().equals(AConstants.active)) {
-                                        if (me.getEventLimit() < me.getEventNumber()) {
-                                            codaRC_stopRun();
-                                        }
-                                    }
-
-                                    // Check if data limit has reached
-                                    if (me.getDataLimit() > 0 &&
-                                            me.getState().equals(AConstants.active)) {
-                                        if (me.getDataLimit() < me.getNumberOfLongs()) {
-                                            codaRC_stopRun();
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                    }
-                });
-                executorService.shutdown();
-
-                // Check if time limit has reached
-                if (timeLimit > 0) {
-                    long lDateTime = new Date().getTime();
-                    if (lDateTime > timeLimit &&
-                            me.getState().equals(AConstants.active)) {
-                        codaRC_stopRun();
-                    }
-                }
-            }
-
+            System.out.println("DDD -----| Info: " + myName + " setting up control system.");
+            // supervisor setup
+            _setup(control);
         }
     }
 
@@ -1639,7 +1395,7 @@ public class SupervisorAgent extends AParent implements Serializable {
         public void callback(cMsgMessage msg, Object userObject) {
             if (msg != null) {
 
-                if(msg.isGetRequest()){
+                if (msg.isGetRequest()) {
                     try {
                         cMsgMessage mr = msg.response();
                         mr.setSubject(AConstants.udf);
@@ -1654,26 +1410,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                 String txt = msg.getText();
 
                 switch (type) {
-                    case AConstants.SupervisorControlRequestSetup:
-                        AControl control = null;
-                        wasConfigured = false;
-                        try {
-                            control = (AControl) AfecsTool.B2O(msg.getByteArray());
-                        } catch (IOException | ClassNotFoundException e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
-                        }
-                        if (control != null) {
-
-                            // differentiate supervisor
-                            differentiate(control.getSupervisor());
-
-                            System.out.println("DDD -----| Info: " + myName + " setting up control system.");
-                            // supervisor setup
-                            _setup(control);
-                        }
-                        break;
-
-                    case AConstants.AgentControlRequestPlatformDisconnect:
+                    case AConstants.AgentControlRequestPlatformDisconnect: // not used
                         try {
                             sup_exit();
                         } catch (cMsgException e) {
@@ -1681,12 +1418,6 @@ public class SupervisorAgent extends AParent implements Serializable {
                         }
                         break;
 
-                    case AConstants.AgentControlRequestExecuteProcess:
-                        // process name is passed through the cMsg test field
-                        if (txt != null) {
-                            requestStartProcess(txt);
-                        }
-                        break;
 
                     case AConstants.AgentControlRequestMoveToState:
                         // state name is passed through
@@ -1699,7 +1430,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                         }
                         break;
 
-                    case AConstants.AgentControlRequestSetRunNumber:
+                    case AConstants.AgentControlRequestSetRunNumber: // not used ?
                         if (msg.getPayloadItem(AConstants.RUNNUMBER) != null) {
                             try {
                                 int rn = msg.getPayloadItem(AConstants.RUNNUMBER).getInt();
@@ -1725,19 +1456,55 @@ public class SupervisorAgent extends AParent implements Serializable {
                             lg.logger.severe(AfecsTool.stack2str(e));
                         }
                         break;
-
-                    case AConstants.AgentControlRequestStartReporting:
-                        startStatusReporting();
-                        break;
-
-                    case AConstants.AgentControlRequestStopReporting:
-                        // stop if reporting thread is active
-                        stopStatusReporting();
-                        break;
                 }
             } else {
                 System.out.println("DDD MESSAGE IS NULL");
                 me.setState(AConstants.booted);
+            }
+        }
+    }
+
+
+    private void checkComponents() {
+        for (CodaRCAgent ac : myComponents.values()) {
+            sortedComponentList.put(ac.me.getName(), ac.me);
+            if (myCompReportingTimes.containsKey(ac.me.getName())) {
+                myCompReportingTimes.get(ac.me.getName()).setCurrentReportingTime(new Date().getTime());
+            }
+            // Supervisor's event number is set to
+            // the persistent component event number.
+            // Check limits against persistent component
+            // reporting and decide if we need to end the run
+            if (persistencyComponent != null) {
+
+                // check to see if persistent component is of class type
+                if (persistencyComponent.getName().contains("class")) {
+                    me.setEventNumber(persistencyComponent.getEventNumber());
+                    me.setNumberOfLongs(persistencyComponent.getNumberOfLongs());
+
+                    // persistent component is a real reporting component
+                } else if (ac.me.getName().equals(persistencyComponent.getName())) {
+
+                    // Set supervisor event number
+                    me.setEventNumber(ac.me.getEventNumber());
+                    me.setNumberOfLongs(ac.me.getNumberOfLongs());
+
+                }
+                // Check if event limit has reached
+                if (me.getEventLimit() > 0 &&
+                        me.getState().equals(AConstants.active)) {
+                    if (me.getEventLimit() < me.getEventNumber()) {
+                        codaRC_stopRun();
+                    }
+                }
+
+                // Check if data limit has reached
+                if (me.getDataLimit() > 0 &&
+                        me.getState().equals(AConstants.active)) {
+                    if (me.getDataLimit() < me.getNumberOfLongs()) {
+                        codaRC_stopRun();
+                    }
+                }
             }
         }
     }
