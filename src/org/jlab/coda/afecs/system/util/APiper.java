@@ -37,8 +37,6 @@ public class APiper implements java.lang.Runnable {
     private java.io.InputStream input;
 
     private java.io.OutputStream output;
-    // local instance of the logger object
-    private ALogger lg = ALogger.getInstance();
 
     public APiper(java.io.InputStream input,
                   java.io.OutputStream output) {
@@ -69,7 +67,7 @@ public class APiper implements java.lang.Runnable {
                 input.close();
                 output.close();
             } catch (Exception e) {
-                lg.logger.severe(AfecsTool.stack2str(e));
+                e.printStackTrace();
             }
         }
     }

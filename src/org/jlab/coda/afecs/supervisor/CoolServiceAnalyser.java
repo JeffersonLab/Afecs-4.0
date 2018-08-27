@@ -30,7 +30,7 @@ import org.jlab.coda.afecs.cool.parser.AStatement;
 import org.jlab.coda.afecs.cool.parser.CCompiler;
 import org.jlab.coda.afecs.system.ACodaType;
 import org.jlab.coda.afecs.system.AConstants;
-import org.jlab.coda.afecs.system.util.ALogger;
+
 import org.jlab.coda.afecs.system.util.AfecsTool;
 
 import java.util.ArrayList;
@@ -50,9 +50,6 @@ import java.util.ArrayList;
 public class CoolServiceAnalyser {
 
     private SupervisorAgent owner;
-
-    // local instance of the logger object
-    private ALogger lg = ALogger.getInstance();
 
     CoolServiceAnalyser(SupervisorAgent owner) {
         this.owner = owner;
@@ -114,7 +111,7 @@ public class CoolServiceAnalyser {
                         "ERROR",
                         " Syntax error in the cool state machine " +
                                 "description. Wrong keyword.");
-                lg.logger.severe(owner.myName +
+                System.out.println(owner.myName +
                         " Syntax error in the cool state machine " +
                         "description. Wrong keyword.");
 //                co =  -1;
@@ -178,7 +175,7 @@ public class CoolServiceAnalyser {
                             "ERROR",
                             " Syntax error in the cool service " +
                                     "description 1. Unknown component.");
-                    lg.logger.severe(owner.myName +
+                    System.out.println(owner.myName +
                             " Syntax error in the cool service " +
                             "description 1. Unknown component.");
                 } else {
@@ -203,7 +200,7 @@ public class CoolServiceAnalyser {
                                         "ERROR",
                                         " Syntax error in the cool state machine " +
                                                 "description. Wrong actionOperator.");
-                                lg.logger.severe(owner.myName +
+                                System.out.println(owner.myName +
                                         " Syntax error in the cool state machine " +
                                         "description. Wrong actionOperator.");
                                 break;
@@ -250,7 +247,7 @@ public class CoolServiceAnalyser {
                             "ERROR",
                             " Syntax error in the cool state machine " +
                                     "description. Wrong actionOperator.");
-                    lg.logger.severe(owner.myName +
+                    System.out.println(owner.myName +
                             " Syntax error in the cool state machine " +
                             "description. Wrong actionOperator.");
                     break;
@@ -314,7 +311,7 @@ public class CoolServiceAnalyser {
                         " Syntax error in the cool state machine " +
                                 "description 1. Unknown component = " +
                                 stmt.getLeft());
-                lg.logger.severe(owner.myName +
+                System.out.println(owner.myName +
                         " Syntax error in the cool state machine " +
                         "description 1. Unknown component = " +
                         stmt.getLeft());
@@ -358,7 +355,7 @@ public class CoolServiceAnalyser {
                         "ERROR",
                         " Syntax error in the cool state machine " +
                                 "description 2. Unknown component.");
-                lg.logger.severe(owner.myName +
+                System.out.println(owner.myName +
                         "Syntax error in the cool state machine " +
                         "description 2. Unknown component.");
                 stat = false;
@@ -412,7 +409,7 @@ public class CoolServiceAnalyser {
                                 "ERROR",
                                 " Syntax error in the cool state machine description. " +
                                         "Wrong conditionalOperator.");
-                        lg.logger.severe(owner.myName +
+                        System.out.println(owner.myName +
                                 " Syntax error in the cool state machine description. " +
                                 "Wrong conditionalOperator.");
                         res = false;
@@ -439,7 +436,7 @@ public class CoolServiceAnalyser {
                                 "ERROR",
                                 " Syntax error in the cool state machine description. " +
                                         "Wrong conditionalOperator.");
-                        lg.logger.severe(owner.myName +
+                        System.out.println(owner.myName +
                                 " Syntax error in the cool state machine description. " +
                                 "Wrong conditionalOperator.");
                         res = false;
@@ -503,7 +500,7 @@ public class CoolServiceAnalyser {
                         "ERROR",
                         " Syntax error in the cool state machine description 3 . " +
                                 "No type/priority.");
-                lg.logger.severe(owner.myName +
+                System.out.println(owner.myName +
                         " Syntax error in the cool state machine description 3 . " +
                         "No type/priority.");
                 stat = false;
@@ -588,7 +585,7 @@ public class CoolServiceAnalyser {
                         "ERROR",
                         " Syntax error in the cool state machine description 4 . " +
                                 "No type/priority.");
-                lg.logger.severe(owner.myName +
+                System.out.println(owner.myName +
                         " Syntax error in the cool state machine description 4 . " +
                         "No type/priority.");
             }

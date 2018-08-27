@@ -24,7 +24,7 @@ package org.jlab.coda.afecs.plugin.ssh2;
 
 import com.jcraft.jsch.*;
 import org.jlab.coda.afecs.system.AConstants;
-import org.jlab.coda.afecs.system.util.ALogger;
+
 import org.jlab.coda.afecs.system.util.AfecsTool;
 
 import java.io.*;
@@ -42,9 +42,6 @@ public class JSSH {
 
     private String  command;
     private Session session;
-    // local instance of the logger object
-    private ALogger lg = ALogger.getInstance();
-
 
     public static void main(String[] args) {
         try {
@@ -72,7 +69,7 @@ public class JSSH {
             session.setUserInfo(ui);
             session.connect();
         } catch (JSchException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
         this.command = command;
     }

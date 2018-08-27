@@ -30,7 +30,7 @@ import org.jlab.coda.afecs.system.ABase;
 import org.jlab.coda.afecs.system.ACodaType;
 import org.jlab.coda.afecs.system.AConstants;
 import org.jlab.coda.afecs.system.AException;
-import org.jlab.coda.afecs.system.util.ALogger;
+
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.cMsgCallbackAdapter;
 import org.jlab.coda.cMsg.cMsgException;
@@ -66,9 +66,6 @@ class AControlDesigner extends ABase {
 
     private Map<String, String> definedRTVs;
 
-    // Local instance of the logger object
-    private ALogger lg = ALogger.getInstance();
-
     private Map<String, Thread> _orphanAgentMap = new ConcurrentHashMap<>();
 
     private APlatform myPlatform;
@@ -86,7 +83,7 @@ class AControlDesigner extends ABase {
         if (isPlatformConnected()) {
             subscribe();
         } else {
-            lg.logger.severe(" Problem starting ControlDesigner. " +
+            System.out.println(" Problem starting ControlDesigner. " +
                     "Cannot connect to the platform.");
         }
     }
@@ -115,7 +112,7 @@ class AControlDesigner extends ABase {
                     null);
 
         } catch (cMsgException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
             stat = false;
         }
         return stat;
@@ -161,7 +158,7 @@ class AControlDesigner extends ABase {
             // from the map.
             String k = session + "_" + runType;
             if (!_orphanAgentMap.containsKey(k)) {
-                Thread v = new Thread(new AClientLessAgentsMonitorT(comps, session, runType, _orphanAgentMap));
+                Thread v = new Thread(new AClientLessAgentsMonitorT(myPlatform, comps, session, runType, _orphanAgentMap));
                 v.start();
                 _orphanAgentMap.put(k, v);
             }
@@ -172,7 +169,7 @@ class AControlDesigner extends ABase {
                     9,
                     AConstants.ERROR,
                     "Problem parsing control configuration file.");
-            lg.logger.severe(myName +
+            System.out.println(myName +
                     ": parsing configuration file.");
             stat = false;
         }
@@ -279,7 +276,7 @@ class AControlDesigner extends ABase {
                         9,
                         AConstants.ERROR,
                         "null control.");
-                lg.logger.severe(myName +
+                System.out.println(myName +
                         ": null control.");
             }
 
@@ -289,7 +286,7 @@ class AControlDesigner extends ABase {
                     9,
                     AConstants.ERROR,
                     "Problem parsing control configuration file.");
-            lg.logger.severe(myName +
+            System.out.println(myName +
                     ": parsing configuration file.");
             stat = false;
         }
@@ -363,7 +360,7 @@ class AControlDesigner extends ABase {
                         9,
                         AConstants.ERROR,
                         "Problem parsing a control.");
-                lg.logger.severe(myName +
+                System.out.println(myName +
                         ": Problem parsing a control.");
             }
         } else {
@@ -372,7 +369,7 @@ class AControlDesigner extends ABase {
                     9,
                     AConstants.ERROR,
                     "Configuration file was not found.");
-            lg.logger.severe(myName +
+            System.out.println(myName +
                     ": Configuration file was not found.");
             stat = false;
         }
@@ -405,7 +402,7 @@ class AControlDesigner extends ABase {
             else if (c.getType().equalsIgnoreCase(ACodaType.SMS.name())) c.setPriority(ACodaType.SMS.priority());
             else if (c.getType().equalsIgnoreCase(ACodaType.RCS.name())) c.setPriority(ACodaType.RCS.priority());
             else if (c.getType().equalsIgnoreCase(ACodaType.FILE.name())) c.setPriority(ACodaType.FILE.priority());
-            else lg.logger.severe("Error: " +
+            else System.out.println("Error: " +
                         c.getType() +
                         " type is not defined for the component " + " " + c.getName());
         }
@@ -1041,7 +1038,7 @@ class AControlDesigner extends ABase {
                             com.getName(),
                             AConstants.TIMEOUT);
                 } catch (AException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
                 if (msg_b == null) return false;
                 if (msg_b.getText() == null ||
@@ -1051,7 +1048,7 @@ class AControlDesigner extends ABase {
                             9,
                             AConstants.ERROR,
                             "Agent " + com.getName() + " is not registered.");
-                    lg.logger.severe(myName +
+                    System.out.println(myName +
                             ":  Agent " +
                             com.getName() + " is not registered.");
                     return false;
@@ -1063,7 +1060,7 @@ class AControlDesigner extends ABase {
                         AConstants.ERROR,
                         "Can not find container_admin on the node " +
                                 com.getHost());
-                lg.logger.severe(myName +
+                System.out.println(myName +
                         ": Can not find container_admin on the node " +
                         com.getHost());
                 return false;
@@ -1136,8 +1133,8 @@ class AControlDesigner extends ABase {
                             al.add(new cMsgPayloadItem("MSGACTION",
                                     "GLOBALRESET"));
                         } catch (cMsgException e) {
-                            System.out.println(AfecsTool.stack2str(e));
-                            lg.logger.severe(AfecsTool.stack2str(e));
+                            e.printStackTrace();
+                            e.printStackTrace();
                         }
 
                         // Inform GUIs
@@ -1148,17 +1145,14 @@ class AControlDesigner extends ABase {
 
                         // Not configured, i.e. session = undefined
                     } else {
-                        regComp.setExpid(getPlEXPID());
-                        regComp.setSession(session);
-                        regComp.setRunType(runType);
-                        regComp.setConfigID(conf_id);
-                        regComp.setSupervisor("sms_" + runType);
-                        regComp.setClient(ci);
+                        com.setClient(ci);
+                        myPlatform.container.getContainerAgents().get(regComp.getName()).updateComponent(com);
                     }
 
                     // No registration of the required agent
                     // has been found. This is a new request
                 } else {
+
                     // Container of the agent is undefined
                     if (com.getHost().equals(AConstants.udf)) {
 
@@ -1184,7 +1178,7 @@ class AControlDesigner extends ABase {
                                 9,
                                 AConstants.ERROR,
                                 "Agent " + com.getName() + " is not registered.");
-                        lg.logger.severe(myName +
+                        System.out.println(myName +
                                 ":  Agent " + com.getName() + " is not registered.");
                         return false;
                     }
@@ -1216,10 +1210,11 @@ class AControlDesigner extends ABase {
                 } else {
                     c.getSupervisor().setHost(myConfig.getContainerHost());
 
-                    // Ask container admin to start a new supervisor agent
-                    send(c.getSupervisor().getHost() + "_admin",
-                            AConstants.ContainerControlStartSupervisor,
-                            c);
+                    System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") +
+                            " " + myName +
+                            ": Request to start agent for " +
+                            c.getSupervisor().getName());
+                    myPlatform.container.startSupervisor(c);
 
                     // Wait until supervisor is registered
                     int tout = 0;
@@ -1242,7 +1237,7 @@ class AControlDesigner extends ABase {
                                     AConstants.ERROR,
                                     "Supervisor Agent " +
                                             c.getSupervisor().getName() + " is not active.");
-                            lg.logger.severe(myName +
+                            System.out.println(myName +
                                     ":  Supervisor Agent " +
                                     c.getSupervisor().getName() + " is not active.");
                             return false;
@@ -1255,12 +1250,12 @@ class AControlDesigner extends ABase {
                                 AConstants.ERROR,
                                 "Supervisor Agent " +
                                         c.getSupervisor().getName() + " is not registered.");
-                        lg.logger.severe(myName +
+                        System.out.println(myName +
                                 ":  Supervisor Agent " +
                                 c.getSupervisor().getName() + " is not registered.");
                         return false;
                     } else {
-                        lg.logger.severe(myName +
+                        System.out.println(myName +
                                 ":  Problem communication with the platform registrar agent.");
                         return false;
                     }
@@ -1280,7 +1275,7 @@ class AControlDesigner extends ABase {
                     9,
                     AConstants.ERROR,
                     "Described control does not have components.");
-            lg.logger.severe(myName +
+            System.out.println(myName +
                     ": Described control does not have components");
         }
         return true;
@@ -1310,7 +1305,7 @@ class AControlDesigner extends ABase {
             try {
                 fl = new cMsgPayloadItem("configFileNames", al.toArray(new String[al.size()]));
             } catch (cMsgException e) {
-                lg.logger.severe(AfecsTool.stack2str(e));
+                e.printStackTrace();
             }
         }
         return fl;
@@ -1348,7 +1343,7 @@ class AControlDesigner extends ABase {
                         try {
                             setRTVs = (Map<String, String>) AfecsTool.B2O(msg.getByteArray());
                         } catch (IOException | ClassNotFoundException e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
+                            e.printStackTrace();
                         }
                     }
 
@@ -1416,7 +1411,7 @@ class AControlDesigner extends ABase {
                                 }
 
                             } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                                 mr.setText("config_failed");
                             }
 
@@ -1477,14 +1472,14 @@ class AControlDesigner extends ABase {
                                         definedRTVs);
 
                             } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                                 mr.setText("config_failed");
                             }
                             myPlatformConnection.send(mr);
                         }
                     }
                 } catch (Exception e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
         }
@@ -1512,7 +1507,7 @@ class AControlDesigner extends ABase {
                             if (pi != null) mr.addPayloadItem(pi);
                             myPlatformConnection.send(mr);
                         } catch (cMsgException e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
+                            e.printStackTrace();
                         }
                     }
                 } else if (type.equals(AConstants.DesignerInfoRequestGetDefinedRTVs)) {
@@ -1526,7 +1521,7 @@ class AControlDesigner extends ABase {
                             session = msg.getPayloadItem(AConstants.SESSION).getString();
                             runType = msg.getPayloadItem(AConstants.RUNTYPE).getString();
                         } catch (cMsgException e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
+                            e.printStackTrace();
                         }
                         cMsgMessage mr = null;
 
@@ -1543,7 +1538,7 @@ class AControlDesigner extends ABase {
 
                             myPlatformConnection.send(mr);
                         } catch (cMsgException | IOException e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
+                            e.printStackTrace();
                             if (mr != null) mr.setText(e.getMessage());
                         }
 
@@ -1567,7 +1562,7 @@ class AControlDesigner extends ABase {
                             myPlatformConnection.send(mr);
                         }
                     } catch (cMsgException e) {
-                        lg.logger.severe(AfecsTool.stack2str(e));
+                        e.printStackTrace();
                     }
                 }
             }

@@ -191,7 +191,7 @@ public class AConstants {
     public static final String NODE = "node";
     public static final String USERNAME = "userName";
     public static final String PASSWORD = "password";
-    public static final int TIMEOUT = 60000; // in seconds
+    public static final int TIMEOUT = 30000;
 
 
     /***********************************************************************
@@ -203,15 +203,6 @@ public class AConstants {
 
     public static final String PlatformJoinRequest = "platform/join/Request";
 
-
-    public static final String PlatformRegistrationRequest = "platform/registration/request/*";
-    public static final String PlatformRegistrationRequestAdd = "platform/registration/request/add";
-    public static final String PlatformRegistrationRequestUpdate = "platform/registration/request/aupdate";
-    public static final String PlatformRegistrationRequestRemove = "platform/registration/request/remove";
-    public static final String PlatformRegistrationRequestIncrementRunNum = "platform/registration/request/incrementRunNum";
-    public static final String PlatformRegistrationRequestSetRunNum = "platform/registration/request/setRunNum";
-    public static final String PlatformRegistrationRequestReportRunNum = "platform/registration/request/reportRunNum";
-    public static final String PlatformHostNameRequest = "platform/registration/request/reportPlatformHostPort";
 
     public static final String PlatformControl = "platform/control/*";
     public static final String PlatformControlGetAgentsDir = "platform/control/getAgentsDir";
@@ -263,26 +254,6 @@ public class AConstants {
     public static final String InfluxDBInjectRequest = "influx/inject/request/*";
     public static final String InfluxDBInjectRequestUserData = "influx/inject/request/user";
     public static final String InfluxDBInjectRequestPlatformData = "influx/inject/request/user/platform";
-
-
-    /***********************************************************************
-     *
-     *                            Afecs Container
-     *
-     * *********************************************************************/
-
-    public static final String ContainerControlRequest = "container/control/request/*";
-    public static final String ContainerControlStartAgent = "container/control/request/startAgent";
-    public static final String ContainerControlStopAgent = "container/control/request/stopAgent";
-    public static final String ContainerControlStartSupervisor = "container/control/request/startSupervisor";
-
-
-    public static final String ContainerInfo = "container/info/*";
-    public static final String ContainerInfoRequest = "container/info/request/*";
-    public static final String ContainerInfoRequestStatus = "container/info/request/status";
-    public static final String ContainerInfoRequestState = "container/info/request/state";
-
-    public static final String ContainerInfoResponseStatus = "container/info/response/status";
 
 
     /***********************************************************************

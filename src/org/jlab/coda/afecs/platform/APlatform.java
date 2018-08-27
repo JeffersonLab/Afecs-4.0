@@ -729,6 +729,10 @@ public class APlatform extends ABase {
         List<cMsgPayloadItem> out = new ArrayList<>();
         for (String cfd : cif) {
 
+            String f_name = cfd + File.separator + txt;
+            String f_content = readFileAsString(f_name);
+            long date = new File(f_name).lastModified();
+
             // Read emu based roc component configuration file.
             // It is constructed as roc_name.xml ( instead of roc_name.dat)
             if (txt.endsWith(".dat")) {
@@ -740,15 +744,11 @@ public class APlatform extends ABase {
                 if (emuFContent != null) {
                     out.add(new cMsgPayloadItem(AConstants.EMUROCCONFIG, emuFContent));
                 }
-
-                String f_name = cfd + File.separator + txt;
-                String f_content = readFileAsString(f_name);
-                if (f_content != null) {
-                    long date = new File(f_name).lastModified();
-                    out.add(new cMsgPayloadItem(AConstants.FILECONTENT, f_content));
-                    out.add(new cMsgPayloadItem(AConstants.FILEDATE, date));
-                    break;
-                }
+            }
+            if (f_content != null) {
+                out.add(new cMsgPayloadItem(AConstants.FILECONTENT, f_content));
+                out.add(new cMsgPayloadItem(AConstants.FILEDATE, date));
+                break;
             }
         }
         return out;

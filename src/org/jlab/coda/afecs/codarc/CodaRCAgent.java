@@ -120,8 +120,6 @@ public class CodaRCAgent extends AParent {
 
     private List<Float> averageRateStorage = new ArrayList<>();
 
-    private AContainer myContainer;
-
     /**
      * <p>
      * Constructor calls the parent constructor that will
@@ -137,9 +135,7 @@ public class CodaRCAgent extends AParent {
      *             going to be represented by this agent.
      */
     public CodaRCAgent(AComponent comp, AContainer container) {
-        super(comp);
-        myContainer = container;
-        setMyPlatform(myContainer.myPlatform);
+        super(comp, container, container.myPlatform);
         boolean b = _connect2Client();
         // if client connection is successful ask platform
         // registration service to register the client
@@ -172,6 +168,10 @@ public class CodaRCAgent extends AParent {
 
         // Subscribe control messages to this agent
         me.setState(AConstants.booted);
+    }
+
+    public void updateComponent(AComponent component){
+        me = component;
     }
 
     /**
@@ -447,8 +447,8 @@ public class CodaRCAgent extends AParent {
     private void _reset() {
         isResetting.set(true);
 
-        AfecsTool.sleep(1000);
-        _getClientState(AConstants.TIMEOUT, 1000);
+//        AfecsTool.sleep(1000);
+//        _getClientState(AConstants.TIMEOUT, 1000);
 
         stopPeriodicProcesses();
 
@@ -491,8 +491,6 @@ public class CodaRCAgent extends AParent {
                 a_println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
                         myName + ": <-- rc_syncGetState = " + tmp);
             } catch (AException e) {
-                e.printStackTrace();
-//                e.printStackTrace();
                 if (e.getMessage() != null && e.getMessage().trim().equals("Broken pipe")) break;
             }
         }
@@ -523,6 +521,7 @@ public class CodaRCAgent extends AParent {
      */
     ArrayList<String> getStateRequiredClientResponse(String requiredState) {
         ArrayList<String> expectedResponses = new ArrayList<>();
+
         for (AState st : me.getStates()) {
             if (st.getName().equals(requiredState)) {
 
@@ -885,74 +884,6 @@ public class CodaRCAgent extends AParent {
         }
         return stat;
     }
-
-    /**
-     * <p>
-     * This method is called as a result of the container's
-     * send-and-get request to reconnect to the client.
-     * The message is triggered by the "join platform"
-     * request from a client at it's boot process.
-     * This method will check to see if this agent
-     * has a proper client connected and will reject
-     * connections in case it's client is active, otherwise
-     * this agent will establish connection to a new client.
-     * </p>
-     *
-     * @param msg cMsgMessage object reference.
-     */
-    private void _reconnect2Client(cMsgMessage msg) {
-
-        // Get requesting client info
-        AClientInfo cInfo = null;
-        String clientHost = AConstants.udf;
-        try {
-            cInfo = (AClientInfo) AfecsTool.B2O(msg.getByteArray());
-            clientHost = cInfo.getHostName();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        if (cInfo != null) {
-
-            // Check if client is active
-            if (!_getClientState(AConstants.TIMEOUT, 1000).equalsIgnoreCase(AConstants.udf)) {
-                System.out.println(myName +
-                        ": Client collision. My current client is healthy.");
-                reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
-                        myName,
-                        7,
-                        AConstants.WARN,
-                        " Attempt to join the platform from the host = " +
-                                clientHost +
-                                ", using currently active client identity.");
-                System.out.println(" Connection request from the host = " +
-                        clientHost +
-                        " is denied.");
-                try {
-                    sendResponse(msg, AConstants.no);
-                } catch (cMsgException e) {
-                    e.printStackTrace();
-                }
-
-                // If after timeout we don't get a response
-            } else {
-
-                // The old client is dead. This is a new client network info. Store it.
-                me.setClient(cInfo);
-
-
-                _stopCommunications();
-                _stopClientHealthMonitor();
-                _reconnectResponse(cInfo);
-                try {
-                    sendResponse(msg, AConstants.yes);
-                } catch (cMsgException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
 
     public void _reconnectResponse(AClientInfo cInfo) {
 

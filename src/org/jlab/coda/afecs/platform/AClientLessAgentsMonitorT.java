@@ -22,11 +22,12 @@
 
 package org.jlab.coda.afecs.platform;
 
+import org.jlab.coda.afecs.codarc.CodaRCAgent;
 import org.jlab.coda.afecs.cool.ontology.AComponent;
 import org.jlab.coda.afecs.system.ABase;
 import org.jlab.coda.afecs.system.AConstants;
 import org.jlab.coda.afecs.system.AException;
-import org.jlab.coda.afecs.system.util.ALogger;
+
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.cMsgMessage;
 
@@ -53,14 +54,13 @@ public class AClientLessAgentsMonitorT extends ABase implements Runnable {
     private Map<String, Thread> registrationMap;
     private boolean keepRunning = true;
 
-    private ALogger lg = ALogger.getInstance();
+    private APlatform myPlatform;
 
-    private String name;
-
-    AClientLessAgentsMonitorT(Map<String, AComponent> agents,
+    AClientLessAgentsMonitorT(APlatform platform, Map<String, AComponent> agents,
                               String session, String runType,
                               Map<String, Thread> registrationMap) {
 
+        myPlatform = platform;
         this.agents = agents;
         this.session = session;
         this.runType = runType;
@@ -72,10 +72,9 @@ public class AClientLessAgentsMonitorT extends ABase implements Runnable {
         // Connect to the platform cMsg domain server
         myPlatformConnection = platformConnect();
         if (!isPlatformConnected()) {
-            lg.logger.severe(" Problem starting OrphanAgentMonitor. " +
+            System.out.println(" Problem starting OrphanAgentMonitor. " +
                     "Cannot connect to the platform.");
         }
-        name = AfecsTool.generateName("orphan");
     }
 
     private void stopMe() {
@@ -91,24 +90,26 @@ public class AClientLessAgentsMonitorT extends ABase implements Runnable {
                 if (c.getState().equals(AConstants.udf) ||
                         c.getState().equals(AConstants.checking) ||
                         c.getState().equals(AConstants.connected) ||
-                        c.getState().equals(AConstants.booted) ||
                         c.getState().equals(AConstants.disconnected)
                         ) {
                     stop = false;
-                    try {
-                        cMsgMessage msg_b = p2pSend(c.getName(),
-                                AConstants.AgentInfoRequestState,
-                                "",
-                                2000);
-                        if (msg_b != null) {
-                            c.setState(msg_b.getText());
+                    if (myPlatform.container.getContainerAgents().containsKey(c.getName())) {
+                        CodaRCAgent ta = myPlatform.container.getContainerAgents().get(c.getName());
+                        try {
+                            cMsgMessage msg = ta.rcp2pSend(c.getName(), AConstants.CodaInfoGetState, "getState", 3000);
+                            if (msg != null && msg.getText() != null) {
+                                c.setState(msg.getText());
+
+                            } else {
+                                c.setState(AConstants.udf);
+                            }
+                        } catch (AException e) {
+//                            e.printStackTrace();
                         }
-                    } catch (AException e) {
-//                    e.printStackTrace();
                     }
                 }
             }
-            if(stop){
+            if (stop) {
                 stopMe();
             } else {
                 // Report all GUIs sorted list of components
@@ -117,7 +118,7 @@ public class AClientLessAgentsMonitorT extends ABase implements Runnable {
                         "udf",
                         agents);
             }
-            AfecsTool.sleep(1000);
+            AfecsTool.sleep(3000);
         }
     }
 }

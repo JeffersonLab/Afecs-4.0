@@ -24,7 +24,7 @@ package org.jlab.coda.afecs.platform;
 
 import org.jlab.coda.afecs.system.ABase;
 import org.jlab.coda.afecs.system.AConstants;
-import org.jlab.coda.afecs.system.util.ALogger;
+
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.cMsgCallbackAdapter;
 import org.jlab.coda.cMsg.cMsgException;
@@ -65,9 +65,6 @@ public class ADaLogArchive extends ABase {
 
     private AtomicBoolean archiving = new AtomicBoolean(true);
 
-    // Local instance of the logger object
-    private ALogger lg = ALogger.getInstance();
-
 
     public ADaLogArchive(String ap){
         archive_path = ap;
@@ -78,7 +75,7 @@ public class ADaLogArchive extends ABase {
         if(isPlatformConnected()){
             subscribe();
         } else {
-            lg.logger.severe(" Problem starting DaLogArchiver. " +
+            System.out.println(" Problem starting DaLogArchiver. " +
                     "Cannot connect to the platform.");
         }
     }
@@ -106,7 +103,7 @@ public class ADaLogArchive extends ABase {
             stat = (new File(archivePath +
                     File.separator + "dalogArchive")).mkdirs();
             if (!stat) {
-                lg.logger.severe("Failed to create "+ archivePath +
+                System.out.println("Failed to create "+ archivePath +
                         File.separator + "dalogArchive dir");
             }
         }
@@ -119,7 +116,7 @@ public class ADaLogArchive extends ABase {
                     null);
 
         } catch (cMsgException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
             stat = false;
         }
         return stat;
@@ -133,7 +130,7 @@ public class ADaLogArchive extends ABase {
               archiving.set(false);
             }
         } catch (cMsgException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
     }
 
@@ -149,7 +146,7 @@ public class ADaLogArchive extends ABase {
                 archiving.set(true);
             }
         } catch (cMsgException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
     }
 
@@ -183,7 +180,7 @@ public class ADaLogArchive extends ABase {
                         out.close();
                         basket.clear();
                     } catch (IOException e) {
-                        lg.logger.severe(AfecsTool.stack2str(e));
+                        e.printStackTrace();
                     }
                 }
             }

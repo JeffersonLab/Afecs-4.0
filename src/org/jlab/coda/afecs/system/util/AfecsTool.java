@@ -60,8 +60,6 @@ import java.util.*;
 public class AfecsTool {
 
     private static AConfig myConfig = AConfig.getInstance();
-    // local instance of the logger object
-    private static ALogger lg = ALogger.getInstance();
 
     /**
      * parser for the XML having a structure:
@@ -181,7 +179,7 @@ public class AfecsTool {
                                 try{
                                     fcd.setInputEtPort(Integer.parseInt(nnl.item(0).getNodeValue().trim()));
                                 } catch(NumberFormatException e){
-                                    lg.logger.severe(AfecsTool.stack2str(e));
+                                    e.printStackTrace();
                                 }
                             }
                         }
@@ -216,7 +214,7 @@ public class AfecsTool {
                                 try{
                                     fcd.setOutputEtPort(Integer.parseInt(nnl.item(0).getNodeValue().trim()));
                                 } catch(NumberFormatException e){
-                                    lg.logger.severe(AfecsTool.stack2str(e));
+                                    e.printStackTrace();
                                 }
                             }
                         }
@@ -247,7 +245,7 @@ public class AfecsTool {
         } catch (SAXException |
                 ParserConfigurationException |
                 IOException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
 
         return fcd;
@@ -272,7 +270,7 @@ public class AfecsTool {
             ds.setReuseAddress(true);
             return true;
         } catch (IOException | SecurityException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         } finally {
             if (ds != null) {
                 ds.close();
@@ -282,7 +280,7 @@ public class AfecsTool {
                 try {
                     ss.close();
                 } catch (IOException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
         }
@@ -453,7 +451,7 @@ public class AfecsTool {
         }
         String err = out.getStdErr();
         if(err!=null && !err.equals("")){
-            lg.logger.severe(err);
+            System.out.println(err);
         }
         return out;
     }
@@ -519,7 +517,7 @@ public class AfecsTool {
         if(out!=null){
             String err = out.getStdErr();
             if(err!=null && !err.equals("")){
-                lg.logger.severe(err);
+                System.out.println(err);
             }
         }
         return out;
@@ -661,7 +659,7 @@ public class AfecsTool {
                     }
                     sb.append("  </payloadItem>\n");
                 } catch (cMsgException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
         }
@@ -677,7 +675,7 @@ public class AfecsTool {
         try {
             Thread.sleep(msec);
         } catch (InterruptedException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
     }
 
@@ -695,7 +693,7 @@ public class AfecsTool {
         try {
             r = Integer.parseInt(s);
         } catch (NumberFormatException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
             return -1;
         }
         return r;
@@ -729,7 +727,7 @@ public class AfecsTool {
         try {
             sp = fork(cl, true);
         } catch (AException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
         if(sp!=null) {
             Scanner sc = new Scanner(sp.getStdio());
@@ -740,7 +738,7 @@ public class AfecsTool {
                 try {
                     fork(cl, true);
                 } catch (AException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
         }
@@ -999,7 +997,7 @@ public class AfecsTool {
             bw.close();
         } catch (IOException e1) {
             e1.printStackTrace();
-            lg.logger.severe(AfecsTool.stack2str(e1));
+            System.out.println(AfecsTool.stack2str(e1));
         }
 
     }
@@ -1047,7 +1045,7 @@ public class AfecsTool {
                 definedRTVs = AfecsTool.parseRTVs(f2);
             }
         } catch (Exception e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
 
         return definedRTVs;

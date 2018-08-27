@@ -29,7 +29,7 @@ import org.jlab.coda.afecs.cool.ontology.*;
 import org.jlab.coda.afecs.system.ACodaType;
 import org.jlab.coda.afecs.system.AConfig;
 import org.jlab.coda.afecs.system.AConstants;
-import org.jlab.coda.afecs.system.util.ALogger;
+
 import org.jlab.coda.afecs.system.util.AfecsTool;
 
 import java.io.File;
@@ -59,8 +59,6 @@ public class CParser {
 
     // this is passed by the rcGui rtv table set by the user at the run time.
     private Map<String, String> setRTVs;
-    // local instance of the logger object
-    private ALogger lg = ALogger.getInstance();
 
     private int numberOfFileComponents;
     private int erId = -1, pebId = -1, sebId = -1, ebId = -1, cdebId = -1, dcId = -1;
@@ -178,7 +176,7 @@ public class CParser {
         try {
             fis = new FileInputStream(fileName);
         } catch (FileNotFoundException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
             return false;
         }
 // create the jena model
@@ -187,7 +185,7 @@ public class CParser {
         try {
             model.read(fis, AConstants.COOL_HTTP_BASE, "RDF/XML");
         } catch (Exception ee) {
-            lg.logger.severe(AfecsTool.stack2str(ee));
+            System.out.println(AfecsTool.stack2str(ee));
             return false;
         }
 
@@ -317,7 +315,7 @@ public class CParser {
             }
             results.close();
         } catch (Exception ex) {
-            lg.logger.severe(AfecsTool.stack2str(ex));
+            System.out.println(AfecsTool.stack2str(ex));
         }
         if (x == null) {
             return null;
@@ -352,7 +350,7 @@ public class CParser {
             }
             results.close();
         } catch (Exception ex) {
-            lg.logger.severe(AfecsTool.stack2str(ex));
+            System.out.println(AfecsTool.stack2str(ex));
         }
         return l;
     }
@@ -395,7 +393,7 @@ public class CParser {
             if (tmps != null) {
                 cmp.setName(tmps);
             } else {
-                lg.logger.severe("COOL: Component " + x + " does not have a name");
+                System.out.println("COOL: Component " + x + " does not have a name");
                 return null;
             }
 
@@ -446,7 +444,7 @@ public class CParser {
                 try {
                     cmp.setId(Integer.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -474,7 +472,7 @@ public class CParser {
                 try {
                     cmp.setPriority(Integer.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             } else {
                 if (cmp.getType().equalsIgnoreCase(ACodaType.USR.name())) cmp.setPriority(ACodaType.USR.priority());
@@ -555,13 +553,15 @@ public class CParser {
                 try {
                     cmp.setReportingInterval(Integer.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
 
             statelist = parseStates(x, "hasState");
+
             if (statelist != null && !statelist.isEmpty()) {
+
                 cmp.setStates(statelist);
             }
             processlist = parseProcess(x, "hasProcess");
@@ -589,7 +589,7 @@ public class CParser {
                 try {
                     cmp.setX(Double.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -598,7 +598,7 @@ public class CParser {
                 try {
                     cmp.setY(Double.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -607,7 +607,7 @@ public class CParser {
                 try {
                     cmp.setW(Double.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -616,7 +616,7 @@ public class CParser {
                 try {
                     cmp.setH(Double.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -662,7 +662,7 @@ public class CParser {
             if (name != null) {
                 plugin.setName(name);
             } else {
-                lg.logger.severe("COOL: Name is not defined for the Plugin of the" + x.toString());
+                System.out.println("COOL: Name is not defined for the Plugin of the" + x.toString());
                 return null;
             }
 
@@ -670,7 +670,7 @@ public class CParser {
             if (className != null) {
                 plugin.setClassName(className);
             } else {
-                lg.logger.severe("COOL: ClassName is not defined for the Plugin of the" + x.toString());
+                System.out.println("COOL: ClassName is not defined for the Plugin of the" + x.toString());
                 return null;
             }
 
@@ -699,7 +699,7 @@ public class CParser {
         ArrayList<AProcess> processes;
 
 
-        ArrayList<AState> states = new ArrayList<AState>();
+        ArrayList<AState> states = new ArrayList<>();
 
         String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
                 ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
@@ -719,7 +719,7 @@ public class CParser {
             if (name != null) {
                 state.setName(name);
             } else {
-                lg.logger.severe("COOL: Name is not defined for the State of the" + x.toString());
+                System.out.println("COOL: Name is not defined for the State of the" + x.toString());
                 return null;
             }
 
@@ -777,7 +777,7 @@ public class CParser {
             if (name != null) {
                 process.setName(name);
             } else {
-                lg.logger.severe("COOL: Name is not defined for the Process " + x.toString());
+                System.out.println("COOL: Name is not defined for the Process " + x.toString());
                 return null;
             }
 
@@ -888,7 +888,7 @@ public class CParser {
             if (name != null) {
                 service.setName(name);
             } else {
-                lg.logger.severe("COOL: Name is not defined for the Service " + x.toString());
+                System.out.println("COOL: Name is not defined for the Service " + x.toString());
                 return null;
             }
 
@@ -941,7 +941,7 @@ public class CParser {
             if (name != null) {
                 rule.setName(name);
             } else {
-                lg.logger.severe("COOL: Name is not defined for the rule of the" + x.toString());
+                System.out.println("COOL: Name is not defined for the rule of the" + x.toString());
                 return null;
             }
 
@@ -954,7 +954,7 @@ public class CParser {
             if (code != null) {
                 rule.setCode(code);
             } else {
-                lg.logger.severe("COOL: Code is not defined for the rule of the" + x.toString());
+                System.out.println("COOL: Code is not defined for the rule of the" + x.toString());
             }
         }
         results.close();
@@ -988,7 +988,7 @@ public class CParser {
             if (tmps != null) {
                 link.setName(tmps);
             } else {
-                lg.logger.severe("COOL: Name is not defined for the linkPoint " + x.toString());
+                System.out.println("COOL: Name is not defined for the linkPoint " + x.toString());
                 return null;
             }
 
@@ -1017,7 +1017,7 @@ public class CParser {
                 try {
                     link.setSourcePort(Integer.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -1036,7 +1036,7 @@ public class CParser {
                 try {
                     link.setDestinationPort(Integer.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -1045,7 +1045,7 @@ public class CParser {
                 try {
                     link.setDestinationETNumberEvents(Integer.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -1054,7 +1054,7 @@ public class CParser {
                 try {
                     link.setDestinationETEventSize(Integer.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -1063,7 +1063,7 @@ public class CParser {
                 try {
                     link.setStartX(Double.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -1072,7 +1072,7 @@ public class CParser {
                 try {
                     link.setStartY(Double.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -1081,7 +1081,7 @@ public class CParser {
                 try {
                     link.setEndX(Double.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -1090,7 +1090,7 @@ public class CParser {
                 try {
                     link.setEndY(Double.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -1132,7 +1132,7 @@ public class CParser {
             if (name != null) {
                 option.setName(name);
             } else {
-                lg.logger.severe("COOL: Name is not defined for the option " + x.toString());
+                System.out.println("COOL: Name is not defined for the option " + x.toString());
                 return null;
             }
 
@@ -1202,7 +1202,7 @@ public class CParser {
                 try {
                     option.setEventLimit(Integer.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -1211,7 +1211,7 @@ public class CParser {
                 try {
                     option.setDataLimit(Integer.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -1258,7 +1258,7 @@ public class CParser {
             if (name != null) {
                 pk.setName(name);
             } else {
-                lg.logger.severe("COOL: Name is not defined for the package " + x.toString());
+                System.out.println("COOL: Name is not defined for the package " + x.toString());
                 return null;
             }
 
@@ -1360,7 +1360,7 @@ public class CParser {
             if (name != null) {
                 ch.setName(name);
             } else {
-                lg.logger.severe("COOL: Name is not defined for the channel " + x.toString());
+                System.out.println("COOL: Name is not defined for the channel " + x.toString());
                 return null;
             }
 
@@ -1374,7 +1374,7 @@ public class CParser {
                 try {
                     ch.setValueType(Integer.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -1442,7 +1442,7 @@ public class CParser {
             if (name != null) {
                 sc.setName(name);
             } else {
-                lg.logger.severe("COOL: Name is not defined for the script " + x.toString());
+                System.out.println("COOL: Name is not defined for the script " + x.toString());
                 return null;
             }
 
@@ -1465,7 +1465,7 @@ public class CParser {
                 try {
                     sc.setExitCode(Integer.valueOf(tmp));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -1479,7 +1479,7 @@ public class CParser {
                 try {
                     sc.setTimeout(Integer.valueOf(tmp));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -1521,7 +1521,7 @@ public class CParser {
             if (name != null) {
                 h.setName(name);
             } else {
-                lg.logger.severe("COOL: Name is not defined for the hmi " + x.toString());
+                System.out.println("COOL: Name is not defined for the hmi " + x.toString());
                 return null;
             }
 
@@ -1540,7 +1540,7 @@ public class CParser {
                 try {
                     h.setRowsNumber(Integer.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -1549,7 +1549,7 @@ public class CParser {
                 try {
                     h.setColumnsNumber(Integer.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -1597,7 +1597,7 @@ public class CParser {
             if (name != null) {
                 p.setName(name);
             } else {
-                lg.logger.severe("COOL: Name is not defined for the panel " + x.toString());
+                System.out.println("COOL: Name is not defined for the panel " + x.toString());
                 return null;
             }
 
@@ -1621,7 +1621,7 @@ public class CParser {
                 try {
                     p.setNumber(Integer.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -1675,7 +1675,7 @@ public class CParser {
             if (name != null) {
                 w.setName(name);
             } else {
-                lg.logger.severe("COOL: Name is not defined for the widget " + x.toString());
+                System.out.println("COOL: Name is not defined for the widget " + x.toString());
                 return null;
             }
 
@@ -1694,7 +1694,7 @@ public class CParser {
                 try {
                     w.setNumber(Integer.valueOf(tmps));
                 } catch (NumberFormatException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 

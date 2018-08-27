@@ -22,6 +22,7 @@
 
 package org.jlab.coda.afecs.agent;
 
+import org.jlab.coda.afecs.container.AContainer;
 import org.jlab.coda.afecs.cool.ontology.AComponent;
 import org.jlab.coda.afecs.cool.ontology.APlugin;
 import org.jlab.coda.afecs.cool.ontology.AProcess;
@@ -144,7 +145,8 @@ public class AParent extends ABase implements Serializable {
     transient private cMsgSubscriptionHandle infoSH;
 
 
-    public APlatform myPlatform;
+    transient public AContainer myContainer;
+    transient public APlatform myPlatform;
 
     /**
      * <p>
@@ -156,10 +158,12 @@ public class AParent extends ABase implements Serializable {
      *
      * @param comp AComponent object reference
      */
-    public AParent(AComponent comp) {
+    public AParent(AComponent comp, AContainer container, APlatform platform ) {
         super();
         if (comp != null) {
             me = comp;
+            myContainer = container;
+            myPlatform = platform;
             myName = me.getName();
             // setting rcServer name the name of this agent
             myConfig.setPlatformRcDomainServerName(myName);
@@ -181,7 +185,6 @@ public class AParent extends ABase implements Serializable {
                     if (myPlatformConnection != null) {
                         if (infoSH != null) myPlatformConnection.unsubscribe(infoSH);
                     }
-
                     // subscribe messages asking information about this agent
                     infoSH = myPlatformConnection.subscribe(myName,
                             AConstants.AgentInfoRequest,
@@ -196,9 +199,6 @@ public class AParent extends ABase implements Serializable {
         pm = new ProcessManager(this);
     }
 
-    protected void setMyPlatform(APlatform platform) {
-        myPlatform = platform;
-    }
 
     /**
      * <p>
@@ -335,7 +335,6 @@ public class AParent extends ABase implements Serializable {
             // requested to change the configuration/supervisor
 
             if (!me.getSupervisor().equals(AConstants.udf)) {
-//                myPlatform.container.getContainerSupervisors().get("sms_" + myRunType).supervisorControlRequestReleaseAgent(myName);
                 myPlatform.container
                         .getContainerSupervisors()
                         .get(me.getSupervisor())
@@ -371,7 +370,7 @@ public class AParent extends ABase implements Serializable {
                         myPlugin.getDescription() + ". Plugin error.");
                 System.out.println(myPlugin.getDescription() +
                         ". Failure" +
-                        AfecsTool.stack2str(e));
+                        e.getMessage());
                 dalogMsg(me,
                         9,
                         "ERROR",
@@ -543,7 +542,6 @@ public class AParent extends ABase implements Serializable {
                         }
                     }
                 } else {
-
                     List<cMsgPayloadItem> res = myPlatform.platformInfoRequestReadConfgiFile(conf, comp.getDod());
                     if (res != null && !res.isEmpty()) {
                         long lmd = 0;
@@ -625,7 +623,7 @@ public class AParent extends ABase implements Serializable {
             }
         } catch (AException e) {
             me.setState(AConstants.disconnected);
-            e.printStackTrace();
+//            e.printStackTrace();
         }
         return me.getState();
     }
@@ -657,7 +655,7 @@ public class AParent extends ABase implements Serializable {
                                     mr.setType(AConstants.udf);
 
                                     if (sender.contains(AConstants.ORPHANAGENTMONITOR)) {
-                                        String tmp = rcClientInfoSyncGetState(1000);
+                                        String tmp = rcClientInfoSyncGetState(3000);
                                         if (tmp != null && !tmp.equals(AConstants.failed)) {
                                             me.setState(tmp);
                                         } else {
@@ -667,7 +665,7 @@ public class AParent extends ABase implements Serializable {
 
                                 } catch (AException e) {
                                     me.setState(AConstants.disconnected);
-                                    e.printStackTrace();
+                                    System.out.println(e.getMessage());
                                 }
 
                                 mr.setText(me.getState());

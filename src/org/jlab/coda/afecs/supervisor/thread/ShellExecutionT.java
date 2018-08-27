@@ -23,7 +23,7 @@
 package org.jlab.coda.afecs.supervisor.thread;
 
 import org.jlab.coda.afecs.system.AException;
-import org.jlab.coda.afecs.system.util.ALogger;
+
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.afecs.system.util.StdOutput;
 
@@ -46,9 +46,6 @@ public class ShellExecutionT extends Thread {
     private StdOutput proc;
     public boolean done = false;
 
-    // local instance of the logger object
-    private ALogger lg = ALogger.getInstance();
-
     public void run(){
         ArrayList<String> l = new ArrayList<>();
         StringTokenizer st = new StringTokenizer(command.trim());
@@ -58,7 +55,7 @@ public class ShellExecutionT extends Thread {
         try {
             proc = AfecsTool.fork(l, true);
         } catch (AException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
         if(proc!=null){
             exitCode = proc.getExitValue();

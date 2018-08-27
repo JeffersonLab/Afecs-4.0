@@ -22,8 +22,6 @@
 
 package org.jlab.coda.afecs.system;
 
-import org.jlab.coda.afecs.system.util.ALogger;
-import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.cMsgNetworkConstants;
 
 import java.net.InetAddress;
@@ -95,9 +93,8 @@ public class AConfig {
 
         dbUrl = System.getenv("MSQL_TCP_HOST");
 
-        ALogger lg = ALogger.getInstance();
         if(dbUrl == null){
-            lg.logger.warning("CODA2 SQL db host is not defined.");
+            System.out.println("CODA2 SQL db host is not defined.");
             dbUrl = AConstants.udf;
         } else {
             dbUrl    = "jdbc:msql://"+dbUrl+":8101/"+platformExpid;
@@ -114,7 +111,7 @@ public class AConfig {
             InetAddress addr = InetAddress.getLocalHost();
             localHost = addr.getHostName();
         } catch (UnknownHostException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
         platformHost                     = localHost;
         containerHost                    = localHost;

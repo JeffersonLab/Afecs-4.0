@@ -30,12 +30,10 @@ import org.jlab.coda.afecs.platform.APlatform;
 import org.jlab.coda.afecs.supervisor.SupervisorAgent;
 import org.jlab.coda.afecs.system.*;
 import org.jlab.coda.afecs.system.util.AClassLoader;
-import org.jlab.coda.afecs.system.util.ALogger;
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
@@ -113,9 +111,6 @@ public class AContainer extends ABase {
 
     private boolean isMultiCast;
 
-    // Local instance of the logger object
-    private ALogger lg = ALogger.getInstance();
-
     private static HashMap<String, ClientJoinRequestPacket>
             requestPacketCounts = new HashMap<>();
 
@@ -185,14 +180,13 @@ public class AContainer extends ABase {
 
                 // Complete container specific subscriptions
                 doRcSubscription();
-                doSubscriptions();
 
                 // Register with the platform
                 register();
 
             } else {
                 register();
-                lg.logger.severe(AfecsTool.getCurrentTime("HH:mm:ss") +
+                System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") +
                         " Severe: " + myName + ": Can not connect to the platform.");
                 System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") +
                         " Severe: " + myName + ": Can not connect to the platform. Exiting...");
@@ -271,8 +265,8 @@ public class AContainer extends ABase {
                         new JoinPlatformCB(),
                         null);
             } catch (cMsgException e) {
-                lg.logger.severe(AfecsTool.stack2str(e));
-                a_println(AfecsTool.stack2str(e));
+                e.printStackTrace();
+
                 System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") +
                         " Severe: " + myName +
                         ": JoinPlatform subscription fails. Exiting...");
@@ -280,46 +274,6 @@ public class AContainer extends ABase {
             }
         }
     }
-
-    /**
-     * <p>
-     * Subscribes basic container subscriptions.
-     * <ul>
-     * <li>
-     * Subscribe messages asking
-     * container to start or stop agents
-     * </li>
-     * <li>
-     * Subscribe messages asking to report
-     * status of the container, that includes
-     * the names and loads of all agents running
-     * in this container.
-     * </li>
-     * </ul>
-     * </p>
-     *
-     */
-    private void doSubscriptions() {
-        try {
-            // Subscribe messages asking
-            // container to start or stop agents
-            myPlatformConnection.subscribe(me.getName(),
-                    AConstants.ContainerControlRequest,
-                    new ContainerControlRequestCB(),
-                    null);
-
-            // Subscribe messages asking to
-            // report status of the container,
-            myPlatformConnection.subscribe(me.getName(),
-                    AConstants.ContainerInfoRequest,
-                    new ContainerInfoRequestCB(),
-                    null);
-        } catch (cMsgException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
-            a_println(AfecsTool.stack2str(e));
-        }
-    }
-
 
     /**
      * <p>
@@ -359,7 +313,7 @@ public class AContainer extends ABase {
      * @param c supervisor agent, described
      *          {@link AControl} object
      */
-    private void startSupervisor(AControl c) {
+    public void startSupervisor(AControl c) {
         boolean stat = true;
         SupervisorAgent sup = null;
         if (c.getSupervisor() != null &&
@@ -421,14 +375,14 @@ public class AContainer extends ABase {
                         Object o = c.newInstance(a);
                         if (o instanceof CodaRCAgent) return true;
                     } catch (NoSuchMethodException | InvocationTargetException e) {
-                        lg.logger.severe(AfecsTool.stack2str(e));
-                        a_println(AfecsTool.stack2str(e));
+                        e.printStackTrace();
+
                     }
                 }
             } catch (MalformedURLException | ClassNotFoundException
                     | InstantiationException | IllegalAccessException e) {
-                lg.logger.severe(AfecsTool.stack2str(e));
-                a_println(AfecsTool.stack2str(e));
+                e.printStackTrace();
+
             }
         }
         return false;
@@ -493,8 +447,8 @@ public class AContainer extends ABase {
                     cif.setRequestId(msg.getPayloadItem("SenderId").getInt());
                 }
             } catch (cMsgException e) {
-                lg.logger.severe(AfecsTool.stack2str(e));
-                a_println(AfecsTool.stack2str(e));
+                e.printStackTrace();
+
             }
 
             System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") +
@@ -515,7 +469,7 @@ public class AContainer extends ABase {
 
                 if (containerAgents.containsKey(sender)) {
                     CodaRCAgent _agent = containerAgents.get(sender);
-                    String clientState = _agent._getClientState(AConstants.TIMEOUT, 1000);
+                    String clientState = _agent._getClientState(3000, 1000);
                     if (!clientState.equals(AConstants.udf)) {
                         System.out.println("DDD =============== Rejecting (state = " +
                                 clientState + ") " +
@@ -606,76 +560,6 @@ public class AContainer extends ABase {
         }
     }
 
-    /**
-     * <p>
-     * Private inner class for responding control
-     * messages to this container (for e.g.
-     * starting/stopping agents).
-     * </p>
-     */
-    private class ContainerControlRequestCB extends cMsgCallbackAdapter {
-        public void callback(cMsgMessage msg, Object userObject) {
-            if (msg != null) {
-
-                String type = msg.getType();
-
-                // The name of the agent to be
-                // removed from the container
-                // is sent through text field
-
-                switch (type) {
-                    case AConstants.ContainerControlStartSupervisor:
-                        try {
-                            AControl c = (AControl) AfecsTool.B2O(msg.getByteArray());
-                            if (c != null) {
-                                if (!containerAgents.containsKey(c.getSupervisor().getName())) {
-
-                                    System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") +
-                                            " " + myName +
-                                            ": Request to start agent for " +
-                                            c.getSupervisor().getName());
-                                    startSupervisor(c);
-                                }
-                            }
-                        } catch (IOException | ClassNotFoundException e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
-                            a_println(AfecsTool.stack2str(e));
-                        }
-                        break;
-                }
-            }
-        }
-    }
-
-    /**
-     * <p>
-     * Private inner class for responding request
-     * messages to ge container specific information
-     * </p>
-     */
-    private class ContainerInfoRequestCB extends cMsgCallbackAdapter {
-        public void callback(cMsgMessage msg, Object userObject) {
-            if (msg != null) {
-
-                String type = msg.getType();
-                if (type.equals(AConstants.ContainerInfoRequestState)) {
-                    if (msg.isGetRequest()) {
-                        try {
-                            cMsgMessage mr = msg.response();
-                            mr.setSubject(AConstants.udf);
-                            mr.setType(AConstants.udf);
-                            mr.setText(me.getState());
-                            myPlatformConnection.send(mr);
-                        } catch (cMsgException e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
-                            a_println(AfecsTool.stack2str(e));
-                        }
-                    }
-                }
-            }
-        }
-    }
-
 
     /**
      * <p>
@@ -694,9 +578,6 @@ public class AContainer extends ABase {
             while (isActive) {
 
                 if (!isPlatformConnected()) {
-                    lg.logger.info(AfecsTool.getCurrentTime("HH:mm:ss") +
-                            " " + myName +
-                            ": Info -  Lost connection to the platform!");
                     System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") +
                             " " + myName +
                             ": Info -  Lost connection to the platform!");
@@ -715,17 +596,10 @@ public class AContainer extends ABase {
                         try {
                             sleep(1000);
                         } catch (InterruptedException e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
-                            a_println(AfecsTool.stack2str(e));
+                            e.printStackTrace();
+
                         }
                     }
-                    System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") +
-                            " " + myName +
-                            ": Restored connection to the platform!");
-                    lg.logger.info(AfecsTool.getCurrentTime("HH:mm:ss") +
-                            " " + myName +
-                            ": Restored connection to the platform!");
-                    doSubscriptions();
 
                     // Register with the platform
                     register();
@@ -735,8 +609,8 @@ public class AContainer extends ABase {
                 try {
                     sleep(3000);
                 } catch (InterruptedException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
-                    a_println(AfecsTool.stack2str(e));
+                    e.printStackTrace();
+
                 }
             }
         }

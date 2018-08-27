@@ -26,7 +26,7 @@ import org.jlab.coda.afecs.cool.ontology.AComponent;
 import org.jlab.coda.afecs.supervisor.SupervisorAgent;
 import org.jlab.coda.afecs.system.ACodaType;
 import org.jlab.coda.afecs.system.AConstants;
-import org.jlab.coda.afecs.system.util.ALogger;
+
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.cMsgPayloadItem;
 
@@ -48,9 +48,6 @@ import java.util.Map;
 public class AStatusReportT extends Thread {
 
     private SupervisorAgent owner;
-
-    // local instance of the logger object
-    private ALogger lg = ALogger.getInstance();
 
     private boolean isRunning = true;
 
@@ -403,7 +400,7 @@ public class AStatusReportT extends Thread {
                             al.add(new cMsgPayloadItem(AConstants.RUNTYPE, owner.myRunType));
                             al.add(new cMsgPayloadItem(AConstants.SESSION, owner.mySession));
                         } catch (Exception e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
+                            e.printStackTrace();
                         }
                         String xmlLog = owner.createRunLogXML(false);
                         owner.send(owner.myConfig.getPlatformName(),
@@ -425,7 +422,7 @@ public class AStatusReportT extends Thread {
                     }
                 }
             } catch (InterruptedException e) {
-                lg.logger.severe(AfecsTool.stack2str(e));
+                e.printStackTrace();
             }
         }
     }

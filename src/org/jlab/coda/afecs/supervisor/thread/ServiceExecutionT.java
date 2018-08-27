@@ -28,7 +28,7 @@ import org.jlab.coda.afecs.cool.parser.ACondition;
 import org.jlab.coda.afecs.cool.parser.AStatement;
 import org.jlab.coda.afecs.supervisor.SupervisorAgent;
 import org.jlab.coda.afecs.system.AConstants;
-import org.jlab.coda.afecs.system.util.ALogger;
+
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.cMsgException;
 import org.jlab.coda.cMsg.cMsgPayloadItem;
@@ -88,9 +88,6 @@ public class ServiceExecutionT extends Thread {
     private String stateName;
     private boolean scope;
     private static SupervisorAgent owner;
-
-    // Local instance of the logger object
-    private static ALogger lg = ALogger.getInstance();
 
     public ServiceExecutionT(SupervisorAgent owner, String name) {
         ServiceExecutionT.owner = owner;
@@ -175,7 +172,7 @@ public class ServiceExecutionT extends Thread {
                         nl.add(new cMsgPayloadItem(AConstants.RUNNUMBER, rn));
                         nl.add(new cMsgPayloadItem("ForAgentOnly", AConstants.seton));
                     } catch (Exception e) {
-                        lg.logger.severe(AfecsTool.stack2str(e));
+                        e.printStackTrace();
                     }
 
                     // Send all gui's to update their run-numbers

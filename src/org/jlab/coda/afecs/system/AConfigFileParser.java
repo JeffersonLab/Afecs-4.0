@@ -22,7 +22,7 @@
 
 package org.jlab.coda.afecs.system;
 
-import org.jlab.coda.afecs.system.util.ALogger;
+
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -71,7 +71,6 @@ public class AConfigFileParser {
         NodeList nl;
         Element ne;
 
-        ALogger lg = ALogger.getInstance();
         try {
             // Create a builder factory
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -109,7 +108,7 @@ public class AConfigFileParser {
                 try{
                     platformTcpPort = Integer.parseInt(nl.item(0).getNodeValue().trim());
                 } catch (NumberFormatException e){
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -129,7 +128,7 @@ public class AConfigFileParser {
                 try{
                     platformUdpPort = Integer.parseInt(nl.item(0).getNodeValue().trim());
                 } catch (NumberFormatException e){
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -141,7 +140,7 @@ public class AConfigFileParser {
                 try{
                     platformRcDomainUdpPort = Integer.parseInt(nl.item(0).getNodeValue().trim());
                 } catch (NumberFormatException e){
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
 
@@ -182,7 +181,7 @@ public class AConfigFileParser {
             }
 
         } catch (SAXException | ParserConfigurationException | IOException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
 
     }

@@ -28,7 +28,7 @@ import org.jlab.coda.afecs.cool.ontology.*;
 import org.jlab.coda.afecs.plugin.IAClientCommunication;
 import org.jlab.coda.afecs.system.AConstants;
 import org.jlab.coda.afecs.system.AException;
-import org.jlab.coda.afecs.system.util.ALogger;
+
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.afecs.system.util.StdOutput;
 import org.jlab.coda.cMsg.cMsgException;
@@ -62,9 +62,6 @@ public class ProcessManager {
     // Reference to an agent that
     // will instantiate this class
     private AParent owner;
-
-    // Local instance of the logger object
-    private ALogger lg = ALogger.getInstance();
 
 
     /**
@@ -301,7 +298,7 @@ public class ProcessManager {
                 }
 
             } catch (cMsgException e) {
-                lg.logger.severe(AfecsTool.stack2str(e));
+                e.printStackTrace();
             }
 
             // For the coda rc communications if the text of the message contains $runtype,
@@ -334,7 +331,7 @@ public class ProcessManager {
                         try {
                             al.add(new cMsgPayloadItem(AConstants.CONFSTRING,confS));
                         } catch (cMsgException e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
+                            e.printStackTrace();
                         }
                     }
 
@@ -358,7 +355,7 @@ public class ProcessManager {
                         }
                     }
                 } catch (cMsgException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
 
             } else if(pck.getName().equals("Prestart_Send_Package")){
@@ -374,7 +371,7 @@ public class ProcessManager {
                         }
                     }
                 } catch (cMsgException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
 
             } else if(pck.getName().equals("Go_Send_Package")){
@@ -387,7 +384,7 @@ public class ProcessManager {
                         }
                     }
                 } catch (cMsgException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
 
             } else if(pck.getName().equals("End_Send_Package")){
@@ -400,7 +397,7 @@ public class ProcessManager {
                         }
                     }
                 } catch (cMsgException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
         }
@@ -453,13 +450,13 @@ public class ProcessManager {
                         try {
                             sp = AfecsTool.fork(l, true);
                         } catch (AException e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
+                            e.printStackTrace();
                         }
                     } else {
                         try {
                             sp = AfecsTool.fork(l, false);
                         } catch (AException e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
+                            e.printStackTrace();
                         }
                     }
                 }
@@ -514,7 +511,7 @@ public class ProcessManager {
                         to));
             }
         } catch (AException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+//            e.printStackTrace();
             __reconnect();
         }
         // check the return message
@@ -547,6 +544,7 @@ public class ProcessManager {
     private boolean _async_sendPckgUsingRc(APackage pck,
                                            AComponent comp){
         boolean b = true;
+
         ArrayList <cMsgPayloadItem> al = _defineSendPackagePayload(pck, comp);
 
         try {
@@ -562,7 +560,7 @@ public class ProcessManager {
                         al);
             }
         } catch (cMsgException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
             b= false;
         }
         return b;
@@ -710,7 +708,7 @@ public class ProcessManager {
                             9,
                             "ERROR",
                             plugin.getDescription()+" communication error.");
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                     return false;
                 }
             }
@@ -744,7 +742,7 @@ public class ProcessManager {
                                 9,
                                 "ERROR",
                                 plugin.getDescription()+" communication error.");
-                        lg.logger.severe(AfecsTool.stack2str(e));
+                        e.printStackTrace();
                         return false;
                     }
                 }
@@ -792,7 +790,7 @@ public class ProcessManager {
                             9,
                             "ERROR",
                             plugin.getDescription()+" communication error.");
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                     b = false;
                 }
             }

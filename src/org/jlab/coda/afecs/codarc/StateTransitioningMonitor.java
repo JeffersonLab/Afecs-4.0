@@ -24,7 +24,7 @@ package org.jlab.coda.afecs.codarc;
 
 import org.jlab.coda.afecs.system.ACodaType;
 import org.jlab.coda.afecs.system.AConstants;
-import org.jlab.coda.afecs.system.util.ALogger;
+
 import org.jlab.coda.afecs.system.util.AfecsTool;
 
 import java.util.ArrayList;
@@ -48,9 +48,6 @@ public class StateTransitioningMonitor extends Thread {
     private ArrayList<String>
             stateExpectedResponses = new ArrayList<>();
 
-    // Local instance of the logger object
-    private ALogger lg = ALogger.getInstance();
-
     /**
      * Constructor
      * @param owner reference to the agent
@@ -63,7 +60,7 @@ public class StateTransitioningMonitor extends Thread {
         state2transition = sn;
         stateExpectedResponses =
                 owner.getStateRequiredClientResponse(sn);
-        if(stateExpectedResponses.isEmpty()){
+        if(stateExpectedResponses.isEmpty() && !sn.equals(AConstants.configured)){
             owner.reportAlarmMsg(owner.me.getSession() +
                             "/"+owner.me.getRunType(),owner.myName,
                     9,

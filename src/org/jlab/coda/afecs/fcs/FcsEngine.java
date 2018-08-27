@@ -69,8 +69,6 @@ public class FcsEngine {
     private String prestartLaunchCmd = AConstants.udf;
     private String goLaunchCmd = AConstants.udf;
     private String endLaunchCmd = AConstants.udf;
-    // local instance of the logger object
-    private ALogger lg = ALogger.getInstance();
 
     // Constructor
     public FcsEngine(CodaRCAgent agent) {
@@ -99,7 +97,7 @@ public class FcsEngine {
             localHost = addr.getHostName();
             fcs_udl = "cMsg://" + localHost + ":" + fcs_tcp_port + "/cMsg/" + fcs_server_name + "?cmsgpassword=" + myConfig.getPlatformExpid();
         } catch (UnknownHostException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
             e.printStackTrace();
         }
 
@@ -190,7 +188,7 @@ public class FcsEngine {
                         }
                     }
                 } catch (AException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
 
                 // stop all user processes using local stored pids
@@ -198,7 +196,7 @@ public class FcsEngine {
 
             }
         } else {
-            lg.logger.warning(myCodaComponent.getName() + " Failed retrieving the configuration file. ");
+            System.out.println(myCodaComponent.getName() + " Failed retrieving the configuration file. ");
         }
         return true;
     }
@@ -251,7 +249,7 @@ public class FcsEngine {
                 }
             }
         } catch (AException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
         return true;
     }
@@ -290,7 +288,7 @@ public class FcsEngine {
                 }
             }
         } catch (AException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
         return true;
     }
@@ -329,7 +327,7 @@ public class FcsEngine {
                 }
             }
         } catch (AException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
         return true;
     }
@@ -368,7 +366,7 @@ public class FcsEngine {
                 }
             }
         } catch (AException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
         return true;
     }
@@ -386,7 +384,7 @@ public class FcsEngine {
                             System.out.println("Afecs-FCS: " + err);
                         }
                     } catch (AException e) {
-                        lg.logger.severe(AfecsTool.stack2str(e));
+                        e.printStackTrace();
                     }
                 }
             }

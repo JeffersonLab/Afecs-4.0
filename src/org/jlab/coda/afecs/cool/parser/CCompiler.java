@@ -22,7 +22,7 @@
 
 package org.jlab.coda.afecs.cool.parser;
 
-import org.jlab.coda.afecs.system.util.ALogger;
+
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -41,7 +41,6 @@ public class CCompiler {
     private LinkedHashMap<Integer, Integer> Scopes = new LinkedHashMap<Integer, Integer>();
     private LinkedHashMap<Integer, Integer> Conditions = new LinkedHashMap<Integer, Integer>();
     // local instance of the logger object
-    private ALogger lg = ALogger.getInstance();
 
     /**
      * Constructor removes all control characters from the cool rule code
@@ -84,7 +83,7 @@ public class CCompiler {
             closeBrackets.add(matcher_c.end());
         }
         if(openBrackets.size()!=closeBrackets.size()){
-            lg.logger.severe("Syntax error: unmatched brackets.");
+            System.out.println("Syntax error: unmatched brackets.");
             return false;
         }
         // Find scopes
@@ -120,7 +119,7 @@ public class CCompiler {
             }
         }
         if(Scopes.size()!= Conditions.size()){
-            lg.logger.severe("Syntax error: scope without a condition \n" +
+            System.out.println("Syntax error: scope without a condition \n" +
                     "or condition without a scopes");
             return false;
         }
@@ -149,7 +148,7 @@ public class CCompiler {
             closeParenthesis.add(matcher_c.end());
         }
         if(openParenthesis.size()!=closeParenthesis.size()){
-            lg.logger.severe("Syntax error! unmatched parenthesis.");
+            System.out.println("Syntax error! unmatched parenthesis.");
             return null;
         }
 
@@ -206,7 +205,7 @@ public class CCompiler {
         } else if(s.startsWith("while")){
             return "while";
         } else {
-            lg.logger.severe("Syntax error: ACondition without a conditional operator");
+            System.out.println("Syntax error: ACondition without a conditional operator");
             return null;
         }
     }
@@ -239,7 +238,7 @@ public class CCompiler {
                 st.setRight(stk.nextToken());
                 break;
             default:
-                lg.logger.severe("Syntax error: Malformed statement\n statement = "+s);
+                System.out.println("Syntax error: Malformed statement\n statement = "+s);
                 return null;
         }
         return st;
@@ -271,7 +270,7 @@ public class CCompiler {
     public ArrayList<ACondition> compile(){
         // check the last brase
         if(!checkLastBrase(code)){
-            lg.logger.severe("Sintax error: missing the last brase");
+            System.out.println("Sintax error: missing the last brase");
             return null;
         }
 
@@ -325,7 +324,7 @@ public class CCompiler {
                     j=pCondStmt.size()-1;
                     break;
                 default:
-                    lg.logger.severe("Syntax error: Malformed boolean statement");
+                    System.out.println("Syntax error: Malformed boolean statement");
                     break;
             }
 
@@ -360,7 +359,7 @@ public class CCompiler {
 
         // Merge conditions and related scopes together
         if(conditions.size()!=scopes.size()){
-            lg.logger.severe("Syntax error...");
+            System.out.println("Syntax error...");
             return null;
         } else {
             for(int i=0; i<conditions.size();i++){

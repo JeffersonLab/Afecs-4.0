@@ -40,8 +40,6 @@ public class FETConnection {
 //    private String stationName      = "undefined";
 //    private int    stationPosition;
 //    private EtAttachment attachment = null;
-//    // local instance of the logger object
-//    private ALogger lg = ALogger.getInstance();
 //
 //
 //    public String getStationName() {
@@ -69,7 +67,7 @@ public class FETConnection {
 //                stationConfig.setUserMode(EtConstants.stationUserSingle);
 //            }
 //            catch (EtException e) { /* never happen */
-//                lg.logger.severe(AfecsTool.stack2str(e));
+//                e.printStackTrace();
 //            }
 //
 //            if(stSelectCriteria>0x0){
@@ -83,7 +81,7 @@ public class FETConnection {
 //            }
 //        }
 //        catch (Exception e) {/* never happen */
-//            lg.logger.severe(AfecsTool.stack2str(e));
+//            e.printStackTrace();
 //        }
 //        return stationConfig;
 //    }
@@ -110,7 +108,7 @@ public class FETConnection {
 //            else if (method == EtConstants.broadAndMulticast) {
 //                errString += " multi/broadcasting to port " + config.getUdpPort();
 //            }
-//            lg.logger.severe(errString+" \n"+AfecsTool.stack2str(e));
+//            System.out.println(errString+" \n"+AfecsTool.stack2str(e));
 //        }
 //
 //        try {
@@ -122,22 +120,22 @@ public class FETConnection {
 //
 //        } catch (EtExistsException e) {
 //            res = false;
-//            lg.logger.severe(AfecsTool.stack2str(e));
+//            e.printStackTrace();
 //        } catch (IOException e) {
 //            res = false;
-//            lg.logger.severe(AfecsTool.stack2str(e));
+//            e.printStackTrace();
 //        } catch (EtClosedException e) {
 //            res = false;
-//            lg.logger.severe(AfecsTool.stack2str(e));
+//            e.printStackTrace();
 //        } catch (EtException e) {
 //            res = false;
-//            lg.logger.severe(AfecsTool.stack2str(e));
+//            e.printStackTrace();
 //        } catch (EtDeadException e) {
 //            res = false;
-//            lg.logger.severe(AfecsTool.stack2str(e));
+//            e.printStackTrace();
 //        } catch (EtTooManyException e) {
 //            res = false;
-//            lg.logger.severe(AfecsTool.stack2str(e));
+//            e.printStackTrace();
 //        }
 //        return res;
 //    }
@@ -240,7 +238,7 @@ public class FETConnection {
 //            etSystem = new EtSystem(openConfig);
 //        }
 //        catch (EtException e) {
-//            lg.logger.severe(AfecsTool.stack2str(e));
+//            e.printStackTrace();
 //        }
 //        return etSystem;
 //    }

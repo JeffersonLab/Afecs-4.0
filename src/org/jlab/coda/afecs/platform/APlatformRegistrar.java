@@ -27,7 +27,7 @@ import org.jlab.coda.afecs.cool.ontology.AComponent;
 import org.jlab.coda.afecs.system.AConfig;
 import org.jlab.coda.afecs.system.AConstants;
 import org.jlab.coda.afecs.system.AException;
-import org.jlab.coda.afecs.system.util.ALogger;
+
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -96,9 +96,6 @@ public class APlatformRegistrar {
     // Get hold of AConfig singleton object.
     AConfig sysConfig = AConfig.getInstance();
 
-    // Local instance of the logger object
-    private ALogger lg = ALogger.getInstance();
-
 
     /**
      * Constructor
@@ -162,7 +159,7 @@ public class APlatformRegistrar {
                 IllegalBlockSizeException |
                 BadPaddingException |
                 IOException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
     }
 
@@ -190,7 +187,7 @@ public class APlatformRegistrar {
                 kis.readFully(keyBytes);
                 kis.close();
             } catch (IOException e) {
-                lg.logger.severe(AfecsTool.stack2str(e));
+                e.printStackTrace();
             }
         }
         return keyBytes;
@@ -219,7 +216,7 @@ public class APlatformRegistrar {
                 pis.readFully(passwordBytes);
                 pis.close();
             } catch (IOException e) {
-                lg.logger.severe(AfecsTool.stack2str(e));
+                e.printStackTrace();
             }
         }
         return passwordBytes;
@@ -318,7 +315,7 @@ public class APlatformRegistrar {
 
         } catch(IOException e){
             stat = false;
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
         return stat;
     }
@@ -376,7 +373,7 @@ public class APlatformRegistrar {
                                 try{
                                     ci.setPortNumber(Integer.parseInt(nnl.item(0).getNodeValue().trim()));
                                 } catch(NumberFormatException e){
-                                    lg.logger.severe(AfecsTool.stack2str(e));
+                                    e.printStackTrace();
                                 }
                             }
                         }
@@ -387,7 +384,7 @@ public class APlatformRegistrar {
         } catch (SAXException |
                 ParserConfigurationException |
                 IOException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
             stat = false;
         }
         return stat;
@@ -505,7 +502,7 @@ public class APlatformRegistrar {
     public boolean dumpSessionsDatabase(){
         boolean stat = true;
         if(sysConfig.getCoolHome().equals(AConstants.udf)){
-            lg.logger.severe("System constant coolHome is not defined.");
+            System.out.println("System constant coolHome is not defined.");
             return false;
         }
         try{
@@ -527,7 +524,7 @@ public class APlatformRegistrar {
 
         } catch(IOException e){
             stat = false;
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
         return stat;
     }
@@ -543,7 +540,7 @@ public class APlatformRegistrar {
         boolean stat = true;
         SessionDir.clear();
         if(sysConfig.getCoolHome().equals(AConstants.udf)){
-            lg.logger.severe("System constant codaHome is not defined.");
+            System.out.println("System constant codaHome is not defined.");
             return false;
         }
         try {
@@ -585,7 +582,7 @@ public class APlatformRegistrar {
                                 try{
                                     ci.setRunNumber(Integer.parseInt(nnl.item(0).getNodeValue().trim()));
                                 } catch(NumberFormatException e){
-                                    lg.logger.severe(AfecsTool.stack2str(e));
+                                    e.printStackTrace();
                                 }
                             }
                         }
@@ -596,7 +593,7 @@ public class APlatformRegistrar {
         } catch (SAXException |
                 ParserConfigurationException |
                 IOException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
             stat = false;
         }
         return stat;
@@ -611,7 +608,7 @@ public class APlatformRegistrar {
     public boolean dumpRunTypeDatabase(){
         boolean stat = true;
         if(sysConfig.getCoolHome().equals(AConstants.udf)){
-            lg.logger.severe("System constant codaHome is not defined.");
+            System.out.println("System constant codaHome is not defined.");
             return false;
         }
         try{
@@ -631,7 +628,7 @@ public class APlatformRegistrar {
             out.close();
         } catch(IOException e){
             stat = false;
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
         return stat;
     }
@@ -751,7 +748,7 @@ public class APlatformRegistrar {
         boolean stat = true;
         if(sysConfig.getCoolHome().equals(AConstants.udf)){
             System.out.println("Error: System constant codaHome is not defined.");
-            lg.logger.severe("System constant codaHome is not defined.");
+            System.out.println("System constant codaHome is not defined.");
             stat =  false;
         } else {
             String logDirName = sysConfig.getCoolHome()+File.separator+
@@ -774,7 +771,7 @@ public class APlatformRegistrar {
                     } catch (AException e) {
                         stat = false;
                         System.out.println("Error: "+e.getMessage());
-                        lg.logger.severe(AfecsTool.stack2str(e));
+                        e.printStackTrace();
                     }
                 }
             }
@@ -786,7 +783,7 @@ public class APlatformRegistrar {
             } catch(IOException e){
                 stat = false;
                 System.out.println("Error: "+e.getMessage());
-                lg.logger.severe(AfecsTool.stack2str(e));
+                e.printStackTrace();
             }
         }
         return stat;
@@ -849,7 +846,11 @@ public class APlatformRegistrar {
                 File.separator + "Options " +
                 File.separator + runType + "_option.rdf";
         try{
-            FileReader fr = new FileReader(optionsFileName);
+
+            File opt = new File(optionsFileName);
+            if(!opt.exists()) return false;
+
+            FileReader fr = new FileReader(opt);
             BufferedReader in = new BufferedReader(fr);
             ArrayList<String> tr = new ArrayList<>();
             String l;
@@ -874,7 +875,7 @@ public class APlatformRegistrar {
 
         } catch(IOException e){
             stat = false;
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
         return stat;
     }

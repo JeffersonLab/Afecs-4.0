@@ -37,7 +37,7 @@ import org.jlab.coda.afecs.supervisor.thread.ServiceExecutionT;
 import org.jlab.coda.afecs.system.ACodaType;
 import org.jlab.coda.afecs.system.AConstants;
 import org.jlab.coda.afecs.system.AException;
-import org.jlab.coda.afecs.system.util.ALogger;
+
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.*;
 
@@ -217,9 +217,6 @@ public class SupervisorAgent extends AParent implements Serializable {
     // enable/disable data file output
     public String s_fileWriting = "enabled";
 
-    // Local instance of the logger object
-    transient private ALogger lg = ALogger.getInstance();
-
     // private variable that stores requested service
     // (for e.g. CodaRcDownload, CodaRcStartRun, etc.)
     transient private String _requestedService = AConstants.udf;
@@ -231,9 +228,8 @@ public class SupervisorAgent extends AParent implements Serializable {
 
     transient public boolean wasConfigured = false;
 
-    private ScheduledFuture<?> agnetsCheck;
+    transient private ScheduledFuture<?> agnetsCheck;
 
-    public AContainer myContainer;
 
     /**
      * <p>
@@ -254,9 +250,7 @@ public class SupervisorAgent extends AParent implements Serializable {
      *             description of this agent
      */
     public SupervisorAgent(AComponent comp, AContainer container) {
-        super(comp);
-        myContainer = container;
-        setMyPlatform(myContainer.myPlatform);
+        super(comp, container, container.myPlatform);
         coolServiceAnalyser = new CoolServiceAnalyser(this);
         sUtility = new SUtility(this);
         me.setExpid(myConfig.getPlatformExpid());
@@ -496,7 +490,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                     null);
 
         } catch (cMsgException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
 
     }
@@ -541,7 +535,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                     myPlatformConnection.unsubscribe(controlSH);
             }
         } catch (cMsgException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
     }
 
@@ -796,7 +790,7 @@ public class SupervisorAgent extends AParent implements Serializable {
             al.add(new cMsgPayloadItem("MSGCONTENT", text));
 
         } catch (cMsgException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
         }
 
         // Inform GUIs
@@ -910,7 +904,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                                         "",
                                         AConstants.TIMEOUT);
                             } catch (AException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                             if (mb != null && mb.getText() != null) {
                                 if (mb.getText().equals("disable")) {
@@ -1014,7 +1008,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                             myPlatform.registrar.updateOptionsEventLimit(me.getRunType(), me.getEventLimit());
                         }
                     } catch (NumberFormatException e) {
-                        lg.logger.severe(AfecsTool.stack2str(e));
+                        e.printStackTrace();
                     }
                     break;
 
@@ -1033,7 +1027,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                             myPlatform.registrar.updateOptionsEventLimit(me.getRunType(), me.getEventLimit());
                         }
                     } catch (NumberFormatException e) {
-                        lg.logger.severe(AfecsTool.stack2str(e));
+                        e.printStackTrace();
                     }
                     break;
 
@@ -1050,7 +1044,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                             me.setTimeLimit(absTimeLimit);
                         }
                     } catch (NumberFormatException e) {
-                        lg.logger.severe(AfecsTool.stack2str(e));
+                        e.printStackTrace();
                     }
                     break;
 
@@ -1079,7 +1073,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                             me.setnScheduledRuns(_numberOfRuns);
                         }
                     } catch (NumberFormatException e) {
-                        lg.logger.severe(AfecsTool.stack2str(e));
+                        e.printStackTrace();
                     }
                     break;
 
@@ -1364,7 +1358,7 @@ public class SupervisorAgent extends AParent implements Serializable {
 
                         myPlatformConnection.send(mr);
                     } catch (cMsgException e) {
-                        lg.logger.severe(AfecsTool.stack2str(e));
+                        e.printStackTrace();
                     }
                 }
             }
@@ -1414,7 +1408,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                         try {
                             sup_exit();
                         } catch (cMsgException e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
+                            e.printStackTrace();
                         }
                         break;
 
@@ -1439,7 +1433,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                                     runControlSetRunNumber(rn);
                                 }
                             } catch (cMsgException e) {
-                                lg.logger.severe(AfecsTool.stack2str(e));
+                                e.printStackTrace();
                             }
                         }
                         break;
@@ -1453,7 +1447,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                         try {
                             sup_exit();
                         } catch (cMsgException e) {
-                            lg.logger.severe(AfecsTool.stack2str(e));
+                            e.printStackTrace();
                         }
                         break;
                 }

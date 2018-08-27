@@ -23,7 +23,7 @@
 package org.jlab.coda.afecs.codarc;
 
 import org.jlab.coda.afecs.system.AConstants;
-import org.jlab.coda.afecs.system.util.ALogger;
+
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.cMsgException;
 
@@ -57,8 +57,6 @@ public class ClientHeartBeatMonitor extends Thread {
     private volatile boolean _hadWarning = false;
     private volatile boolean _stopWarning = false;
 
-    // Local instance of the logger object
-    private ALogger lg = ALogger.getInstance();
 
     /**
      * Constructor
@@ -218,8 +216,7 @@ public class ClientHeartBeatMonitor extends Thread {
             try {
                 owner.sessionControlStartReporting();
             } catch (cMsgException e) {
-                lg.logger.severe(AfecsTool.stack2str(e));
-                owner.a_println(AfecsTool.stack2str(e));
+                e.printStackTrace();
             }
 
             owner.a_println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " + owner.myName +

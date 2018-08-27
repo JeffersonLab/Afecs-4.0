@@ -23,7 +23,7 @@
 package org.jlab.coda.afecs.system;
 
 import org.jlab.coda.afecs.cool.ontology.AComponent;
-import org.jlab.coda.afecs.system.util.ALogger;
+
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.cMsg;
 import org.jlab.coda.cMsg.cMsgException;
@@ -82,9 +82,6 @@ public class ABase implements Serializable {
     transient public AConfig myConfig;
 
     transient private static Map<String, String> _RTVs;
-
-    // local instance of the logger object
-    transient private ALogger lg = ALogger.getInstance();
 
     /**
      * Constructor gets the singleton object of constants
@@ -176,15 +173,15 @@ public class ABase implements Serializable {
                 m = myRcDomainConnection.monitor(Integer.toString(sleep));
 
             } catch (cMsgException e) {
-                a_println(AfecsTool.stack2str(e));
+
                 e.printStackTrace();
-                lg.logger.severe(AfecsTool.stack2str(e));
-                lg.logger.severe(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                e.printStackTrace();
+                System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
                         myName +
                         ": testing/monitoring RC domain server using \n udl = " +
                         rcUDL);
 
-                lg.logger.severe(AfecsTool.stack2str(e));
+                e.printStackTrace();
             }
         }
         return m;
@@ -208,10 +205,10 @@ public class ABase implements Serializable {
             connectionObj.connect();
             connectionObj.start();
         } catch (cMsgException e) {
-            a_println(AfecsTool.stack2str(e));
-            lg.logger.severe(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+
+            System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
                     myName + ": connecting to the udl = " + udl);
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
             return null;
         }
 
@@ -257,8 +254,8 @@ public class ABase implements Serializable {
                 myPlatformConnection.disconnect();
             }
         } catch (cMsgException e) {
-            lg.logger.severe(AfecsTool.stack2str(e));
-            a_println(AfecsTool.stack2str(e));
+            e.printStackTrace();
+
             stat = false;
         }
         return stat;
@@ -291,10 +288,10 @@ public class ABase implements Serializable {
                     myConfig.getPlatformRcDomainServerDescription());
 
         } catch (Exception e) {
-            a_println(AfecsTool.stack2str(e));
-            lg.logger.severe(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+
+            System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
                     myName + ": when connecting to the client " + udl);
-            lg.logger.severe(AfecsTool.stack2str(e));
+            e.printStackTrace();
 
         }
         return isRcClientConnected();
@@ -324,8 +321,8 @@ public class ABase implements Serializable {
                 myCRCClientConnection.disconnect();
             }
         } catch (cMsgException e) {
-            a_println(AfecsTool.stack2str(e));
-            lg.logger.severe(AfecsTool.stack2str(e));
+
+            e.printStackTrace();
             stat = false;
         }
         return stat;
@@ -347,8 +344,8 @@ public class ABase implements Serializable {
         try {
             o = myPlatformConnection.syncSend(msg, 3000);
         } catch (cMsgException e) {
-            a_println(AfecsTool.stack2str(e));
-            lg.logger.severe(AfecsTool.stack2str(e));
+
+            e.printStackTrace();
         }
         return o;
     }
@@ -368,8 +365,8 @@ public class ABase implements Serializable {
             try {
                 myPlatformConnection.send(msg);
             } catch (cMsgException e) {
-                a_println(AfecsTool.stack2str(e));
-                lg.logger.severe(AfecsTool.stack2str(e));
+
+                e.printStackTrace();
                 status = false;
             }
         } else {
@@ -509,8 +506,8 @@ public class ABase implements Serializable {
                     e.printStackTrace();
                     System.out.println("DDD ----------- DDD");
 
-                    a_println(AfecsTool.stack2str(e));
-                    lg.logger.severe(AfecsTool.stack2str(e));
+
+                    e.printStackTrace();
                     status = false;
                 }
             }
@@ -523,8 +520,8 @@ public class ABase implements Serializable {
                 e.printStackTrace();
                 System.out.println("DDD ----------- DDD");
 
-                a_println(AfecsTool.stack2str(e));
-                lg.logger.severe(AfecsTool.stack2str(e));
+
+                e.printStackTrace();
                 status = false;
             }
         } else {
@@ -825,7 +822,7 @@ public class ABase implements Serializable {
                             " type = " + type + " => exception message = " + e.getMessage());
                 }
 //                e.printStackTrace();
-                a_println(AfecsTool.stack2str(e));
+
                 throw new AException(e.getMessage(), e);
             }
             if (msgBack == null) {
@@ -905,14 +902,14 @@ public class ABase implements Serializable {
 
                 msg.addPayloadItem(new cMsgPayloadItem("tod", AfecsTool.getCurrentTimeInH()));
             } catch (cMsgException e) {
-                lg.logger.severe(AfecsTool.stack2str(e));
-                a_println(AfecsTool.stack2str(e));
+                e.printStackTrace();
+
             }
             try {
                 myPlatformConnection.send(msg);
             } catch (cMsgException e) {
-                lg.logger.severe(AfecsTool.stack2str(e));
-                a_println(AfecsTool.stack2str(e));
+                e.printStackTrace();
+
                 status = false;
             }
         } else {
@@ -973,15 +970,15 @@ public class ABase implements Serializable {
 
                 msg.addPayloadItem(new cMsgPayloadItem("tod", AfecsTool.getCurrentTimeInH()));
             } catch (cMsgException e) {
-                lg.logger.severe(AfecsTool.stack2str(e));
-                a_println(AfecsTool.stack2str(e));
+                e.printStackTrace();
+
             }
             try {
                 myPlatformConnection.send(msg);
 
             } catch (cMsgException e) {
-                lg.logger.severe(AfecsTool.stack2str(e));
-                a_println(AfecsTool.stack2str(e));
+                e.printStackTrace();
+
                 status = false;
             }
         } else {
@@ -1066,7 +1063,7 @@ public class ABase implements Serializable {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            a_println(AfecsTool.stack2str(e));
+
         }
 
         return out;
@@ -1096,9 +1093,9 @@ public class ABase implements Serializable {
                 out = AfecsTool.checkRtvs(out, _RTVs);
             }
         } catch (FileNotFoundException e) {
-            a_println(AfecsTool.stack2str(e));
-            lg.logger.severe(AfecsTool.stack2str(e));
-            lg.logger.warning(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+
+            e.printStackTrace();
+            System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
                     myName + ": Config file in " +
                     filePath + " was not found.");
             dalogMsg(myName, 9, AConstants.WARN, " Warning: Config file in " +
@@ -1107,9 +1104,9 @@ public class ABase implements Serializable {
             if (f != null) try {
                 f.close();
             } catch (IOException e) {
-                a_println(AfecsTool.stack2str(e));
-                lg.logger.severe(AfecsTool.stack2str(e));
-                lg.logger.warning(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+
+                e.printStackTrace();
+                System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
                         myName + ": At closing config file in " + filePath);
                 dalogMsg(myName, 9, AConstants.WARN,
                         " Warning: at closing config file in " + filePath);

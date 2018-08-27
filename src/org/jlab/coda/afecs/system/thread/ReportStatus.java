@@ -24,7 +24,7 @@ package org.jlab.coda.afecs.system.thread;
 
 import org.jlab.coda.afecs.agent.AParent;
 import org.jlab.coda.afecs.system.AConstants;
-import org.jlab.coda.afecs.system.util.ALogger;
+
 import org.jlab.coda.afecs.system.util.AfecsTool;
 
 /**
@@ -47,8 +47,6 @@ public class ReportStatus implements Runnable {
     public boolean isRunning = false;
     private AParent owner;
     private volatile boolean isPeriodic;
-    // local instance of the logger object
-    private ALogger lg = ALogger.getInstance();
 
     /**
      * Constructor
@@ -100,7 +98,7 @@ public class ReportStatus implements Runnable {
                 try {
                     Thread.sleep(owner.me.getReportingInterval());
                 } catch (InterruptedException e) {
-                    lg.logger.severe(AfecsTool.stack2str(e));
+                    e.printStackTrace();
                 }
             }
         }
