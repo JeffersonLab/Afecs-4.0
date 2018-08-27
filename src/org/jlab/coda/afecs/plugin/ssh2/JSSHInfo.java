@@ -87,13 +87,13 @@ public class JSSHInfo implements UserInfo, UIKeyboardInteractive {
                     GridBagConstraints.NORTHWEST,
                     GridBagConstraints.NONE,
                     new Insets(0,0,0,0),0,0);
-    private Container panel;
+
     public String[] promptKeyboardInteractive(String destination,
                                               String name,
                                               String instruction,
                                               String[] prompt,
                                               boolean[] echo){
-        panel = new JPanel();
+        Container panel = new JPanel();
         panel.setLayout(new GridBagLayout());
 
         gbc.weightx = 1.0;

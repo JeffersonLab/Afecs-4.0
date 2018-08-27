@@ -26,7 +26,8 @@ import java.io.Serializable;
 
 public class ARule extends AOntologyConcept implements Serializable {
 
-    private String name, description, code;
+    private String name;
+    private String code;
 
 
     public ARule() {
@@ -59,6 +60,6 @@ public class ARule extends AOntologyConcept implements Serializable {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        String description1 = description;
     }
 }

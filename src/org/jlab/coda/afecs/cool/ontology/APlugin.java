@@ -25,8 +25,6 @@ package org.jlab.coda.afecs.cool.ontology;
 import java.io.Serializable;
 
 public class APlugin extends AOntologyConcept implements Serializable {
-    private String name;
-    private String description;
     private String className;
 
     public APlugin(){
@@ -38,11 +36,11 @@ public class APlugin extends AOntologyConcept implements Serializable {
     }
 
     public void setName(String name) {
-        this.name = name;
+        String name1 = name;
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        String description1 = description;
     }
 
     public String getClassName() {

@@ -35,7 +35,6 @@ import java.io.Serializable;
  */
 public class AReportingTime implements Serializable {
     private long currentReportingTime;
-    private long timeSinceLastReporting;
 
     public long getCurrentReportingTime() {
         return currentReportingTime;
@@ -48,6 +47,6 @@ public class AReportingTime implements Serializable {
 
     public void setTimeSinceLastReporting(
             long timeSinceLastReporting) {
-        this.timeSinceLastReporting = timeSinceLastReporting;
+        long timeSinceLastReporting1 = timeSinceLastReporting;
     }
 }

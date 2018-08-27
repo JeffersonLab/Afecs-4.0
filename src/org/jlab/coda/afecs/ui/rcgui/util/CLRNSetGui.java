@@ -61,18 +61,18 @@ public class CLRNSetGui extends JFrame {
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         // Generated using JFormDesigner non-commercial license
-        dialogPane = new JPanel();
-        contentPanel = new JPanel();
-        label2 = new JLabel();
+        JPanel dialogPane = new JPanel();
+        JPanel contentPanel = new JPanel();
+        JLabel label2 = new JLabel();
         coolDbRunnumberTextField = new JTextField();
-        label3 = new JLabel();
+        JLabel label3 = new JLabel();
         newValueField = new JTextField();
-        textArea1 = new JTextArea();
-        buttonBar = new JPanel();
-        okButton = new JButton();
-        cancelButton = new JButton();
-        action1 = new OkAction();
-        action2 = new CancelAction();
+        JTextArea textArea1 = new JTextArea();
+        JPanel buttonBar = new JPanel();
+        JButton okButton = new JButton();
+        JButton cancelButton = new JButton();
+        OkAction action1 = new OkAction();
+        CancelAction action2 = new CancelAction();
 
         //======== this ========
         Container contentPane = getContentPane();
@@ -150,8 +150,8 @@ public class CLRNSetGui extends JFrame {
             {
                 buttonBar.setBorder(new EmptyBorder(12, 0, 0, 0));
                 buttonBar.setLayout(new GridBagLayout());
-                ((GridBagLayout)buttonBar.getLayout()).columnWidths = new int[] {0, 85, 80};
-                ((GridBagLayout)buttonBar.getLayout()).columnWeights = new double[] {1.0, 0.0, 0.0};
+                ((GridBagLayout) buttonBar.getLayout()).columnWidths = new int[] {0, 85, 80};
+                ((GridBagLayout) buttonBar.getLayout()).columnWeights = new double[] {1.0, 0.0, 0.0};
 
                 //---- okButton ----
                 okButton.setAction(action1);
@@ -174,20 +174,8 @@ public class CLRNSetGui extends JFrame {
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
-    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-    // Generated using JFormDesigner non-commercial license
-    private JPanel dialogPane;
-    private JPanel contentPanel;
-    private JLabel label2;
     private JTextField coolDbRunnumberTextField;
-    private JLabel label3;
     private JTextField newValueField;
-    private JTextArea textArea1;
-    private JPanel buttonBar;
-    private JButton okButton;
-    private JButton cancelButton;
-    private OkAction action1;
-    private CancelAction action2;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 
     private class OkAction extends AbstractAction {

@@ -33,14 +33,13 @@ public enum CodaSM {
     STARTRUN(4,"CodaRcStartRun",    AConstants.active,     "activating"),
     RESET   (5,AConstants.reseted,  AConstants.reseted,    "resetting");
 
-    private final int stateid;
     private final String cmd;
     private final String response;
     private final String inActionString;
 
 
     CodaSM(int astate, String acmd, String response, String inAction){
-        this.stateid = astate;
+        int stateid = astate;
         this.cmd = acmd;
         this.response = response;
         this.inActionString = inAction;

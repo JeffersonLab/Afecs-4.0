@@ -32,13 +32,9 @@ public class AAgentData {
     private String   name       = AConstants.udf;
     private String   type       = AConstants.udf;
     private String   state      = AConstants.udf;
-    private long     evtNumber  = -1L;
     List<Float>      evtRate    = Collections.synchronizedList(new ArrayList<Float>());
-    private float    evtRateA   = -1;
     List<Double>     dataRate   = Collections.synchronizedList(new ArrayList<Double>());
-    private double   dataRateA  = -1;
     private float    liveTime   = -1;
-    private String   fileName   = AConstants.udf;
 
     public AAgentData(){
     }
@@ -68,7 +64,7 @@ public class AAgentData {
     }
 
     public void setEvtNumber(long evtNumber) {
-        this.evtNumber = evtNumber;
+        long evtNumber1 = evtNumber;
     }
 
 
@@ -96,7 +92,7 @@ public class AAgentData {
     }
 
     public void setEvtRateA(float evtRateA) {
-        this.evtRateA = evtRateA;
+        float evtRateA1 = evtRateA;
     }
 
     public void setDataRate(double dataRatev) {
@@ -126,7 +122,7 @@ public class AAgentData {
     }
 
     public void setDataRateA(double dataRateA) {
-        this.dataRateA = dataRateA;
+        double dataRateA1 = dataRateA;
     }
 
     public float getLiveTime() {
@@ -138,6 +134,6 @@ public class AAgentData {
     }
 
     public void setFileName(String fileName) {
-        this.fileName = fileName;
+        String fileName1 = fileName;
     }
 }

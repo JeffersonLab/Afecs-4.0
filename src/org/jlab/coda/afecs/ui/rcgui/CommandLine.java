@@ -26,7 +26,6 @@ import org.jlab.coda.afecs.system.AConstants;
 import org.jlab.coda.cMsg.cMsgNetworkConstants;
 
 public class CommandLine {
-    private String  name                 = AConstants.udf;
     private String  session              = AConstants.udf;
     private String  expid                = AConstants.udf;
     private String  platformHost         = AConstants.udf;
@@ -36,13 +35,13 @@ public class CommandLine {
     private String  platformUdl          = AConstants.udf;
     private String  platformMulticastUdl = AConstants.udf;
     private String  configFileName       = AConstants.udf;
-    private boolean isMulticast          = true;
     private boolean noFx                 = false;
     private boolean autoConnect          = false;
     private boolean monitorOnly          = false;
 
 
     public String getName() {
+        String name = AConstants.udf;
         return name;
     }
 
@@ -112,7 +111,7 @@ public class CommandLine {
     }
 
     public void setMulticast(boolean multicast) {
-        isMulticast = multicast;
+        boolean isMulticast = multicast;
     }
 
     public String getConfigFileName() {

@@ -192,8 +192,8 @@ public class AutoModeForm extends JFrame {
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         // Generated using JFormDesigner non-commercial license
-        dialogPane = new JPanel();
-        contentPanel = new JPanel();
+        JPanel dialogPane = new JPanel();
+        JPanel contentPanel = new JPanel();
         NRSlider = new JSlider();
         NRTextField = new JTextField();
         ELSlider = new JSlider();
@@ -202,10 +202,10 @@ public class AutoModeForm extends JFrame {
         TLTextField = new JTextField();
         DLSlider = new JSlider();
         DLTextField = new JTextField();
-        buttonBar = new JPanel();
-        startButton = new JButton();
-        stopButton = new JButton();
-        cancelButton = new JButton();
+        JPanel buttonBar = new JPanel();
+        JButton startButton = new JButton();
+        JButton stopButton = new JButton();
+        JButton cancelButton = new JButton();
 
         //======== this ========
         Container contentPane = getContentPane();
@@ -378,8 +378,8 @@ public class AutoModeForm extends JFrame {
             {
                 buttonBar.setBorder(new EmptyBorder(12, 0, 0, 0));
                 buttonBar.setLayout(new GridBagLayout());
-                ((GridBagLayout)buttonBar.getLayout()).columnWidths = new int[] {0, 85, 0, 80};
-                ((GridBagLayout)buttonBar.getLayout()).columnWeights = new double[] {1.0, 0.0, 0.0, 0.0};
+                ((GridBagLayout) buttonBar.getLayout()).columnWidths = new int[] {0, 85, 0, 80};
+                ((GridBagLayout) buttonBar.getLayout()).columnWeights = new double[] {1.0, 0.0, 0.0, 0.0};
 
                 //---- startButton ----
                 startButton.setText("Set");
@@ -425,10 +425,6 @@ public class AutoModeForm extends JFrame {
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
-    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-    // Generated using JFormDesigner non-commercial license
-    private JPanel dialogPane;
-    private JPanel contentPanel;
     private JSlider NRSlider;
     private JTextField NRTextField;
     private JSlider ELSlider;
@@ -437,10 +433,6 @@ public class AutoModeForm extends JFrame {
     private JTextField TLTextField;
     private JSlider DLSlider;
     private JTextField DLTextField;
-    private JPanel buttonBar;
-    private JButton startButton;
-    private JButton stopButton;
-    private JButton cancelButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 
 }

@@ -61,10 +61,7 @@ public class FcsEngine {
     private String fcs_udl = AConstants.udf;
     private String fcs_multicast_udl = AConstants.udf;
 
-    private cMsgNameServer fcsServer;
-
     private List<String> _nodes = null;
-    private String configureLaunchCmd = AConstants.udf;
     private String downloadLaunchCmd = AConstants.udf;
     private String prestartLaunchCmd = AConstants.udf;
     private String goLaunchCmd = AConstants.udf;
@@ -105,7 +102,7 @@ public class FcsEngine {
     }
 
     public boolean configure() {
-        configureLaunchCmd = AConstants.udf;
+        String configureLaunchCmd = AConstants.udf;
         downloadLaunchCmd = AConstants.udf;
         prestartLaunchCmd = AConstants.udf;
         goLaunchCmd = AConstants.udf;
@@ -421,7 +418,7 @@ public class FcsEngine {
                                      int tcpPort,
                                      int tcpDPort,
                                      int udpPort) {
-        fcsServer = new cMsgNameServer(tcpPort, tcpDPort, udpPort,
+        cMsgNameServer fcsServer = new cMsgNameServer(tcpPort, tcpDPort, udpPort,
                 false,
                 false,
                 myConfig.getPlatformExpid(),

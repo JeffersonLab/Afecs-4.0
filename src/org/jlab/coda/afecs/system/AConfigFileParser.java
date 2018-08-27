@@ -48,24 +48,12 @@ import java.io.IOException;
 public class AConfigFileParser {
     private String             platformExpid = AConstants.udf;
 
-    // platform cMsg domain server
-    private String             platformDescription = AConstants.udf;
     private String             platformHost = AConstants.udf;
     private int                platformTcpPort;
     private int                platformUdpPort;
 
-    // platform rc domain server
-    private String             platformRcDomainServerDescription = AConstants.udf;
-    private int                platformRcDomainUdpPort;
-
     // control session
     private String session = AConstants.udf;
-
-    // sql database
-    private String dbUrl    = AConstants.udf;
-    private String dbDriver = AConstants.udf;
-    private String dbUser   = AConstants.udf;
-    private String dbPasswd = AConstants.udf;
 
     public AConfigFileParser(String fileName){
         NodeList nl;
@@ -98,7 +86,7 @@ public class AConfigFileParser {
             if(nl.item(0)!=null){
                 ne = (Element)nl.item(0);
                 nl = ne.getChildNodes();
-                platformDescription = nl.item(0).getNodeValue().trim();
+                String platformDescription = nl.item(0).getNodeValue().trim();
             }
 
             nl = doc.getElementsByTagName("tcpPort");
@@ -138,7 +126,7 @@ public class AConfigFileParser {
                 ne = (Element)nl.item(0);
                 nl = ne.getChildNodes();
                 try{
-                    platformRcDomainUdpPort = Integer.parseInt(nl.item(0).getNodeValue().trim());
+                    int platformRcDomainUdpPort = Integer.parseInt(nl.item(0).getNodeValue().trim());
                 } catch (NumberFormatException e){
                     e.printStackTrace();
                 }
@@ -148,7 +136,7 @@ public class AConfigFileParser {
             if(nl.item(0)!=null){
                 ne = (Element)nl.item(0);
                 nl = ne.getChildNodes();
-                platformRcDomainServerDescription = nl.item(0).getNodeValue().trim();
+                String platformRcDomainServerDescription = nl.item(0).getNodeValue().trim();
             }
 
             // sql database parameters
@@ -156,28 +144,28 @@ public class AConfigFileParser {
             if(nl.item(0)!=null){
                 ne = (Element)nl.item(0);
                 nl = ne.getChildNodes();
-                dbUrl = nl.item(0).getNodeValue().trim();
+                String dbUrl = nl.item(0).getNodeValue().trim();
             }
 
             nl = doc.getElementsByTagName("dbDriver");
             if(nl.item(0)!=null){
                 ne = (Element)nl.item(0);
                 nl = ne.getChildNodes();
-                dbDriver = nl.item(0).getNodeValue().trim();
+                String dbDriver = nl.item(0).getNodeValue().trim();
             }
 
             nl = doc.getElementsByTagName("dbUser");
             if(nl.item(0)!=null){
                 ne = (Element)nl.item(0);
                 nl = ne.getChildNodes();
-                dbUser = nl.item(0).getNodeValue().trim();
+                String dbUser = nl.item(0).getNodeValue().trim();
             }
 
             nl = doc.getElementsByTagName("dbPasswd");
             if(nl.item(0)!=null){
                 ne = (Element)nl.item(0);
                 nl = ne.getChildNodes();
-                dbPasswd = nl.item(0).getNodeValue().trim();
+                String dbPasswd = nl.item(0).getNodeValue().trim();
             }
 
         } catch (SAXException | ParserConfigurationException | IOException e) {

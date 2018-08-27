@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Vardan Gyurjyan
  */
 public class ADialogList extends JDialog {
-    private String InfoTitle;
     private String GuiTitle;
     private CodaRcGui owner;
 
@@ -76,7 +75,7 @@ public class ADialogList extends JDialog {
 
         myList = ss;
         myColor = cl;
-        InfoTitle = title;
+        String infoTitle1 = title;
         GuiTitle = g_title;
         owner = parent;
 
@@ -93,7 +92,7 @@ public class ADialogList extends JDialog {
 
         initComponents();
         guiTitle.setText(GuiTitle);
-        infoTitle.setText(InfoTitle);
+        infoTitle.setText(infoTitle1);
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -148,17 +147,17 @@ public class ADialogList extends JDialog {
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         // Generated using JFormDesigner non-commercial license
-        dialogPane = new JPanel();
-        contentPanel = new JPanel();
+        JPanel dialogPane = new JPanel();
+        JPanel contentPanel = new JPanel();
         guiTitle = new JLabel();
         infoTitle = new JLabel();
-        scrollPane1 = new JScrollPane();
+        JScrollPane scrollPane1 = new JScrollPane();
         sessionsList = new JList();
-        buttonBar = new JPanel();
-        okButton = new JButton();
-        cancelButton = new JButton();
-        action1 = new OkAction();
-        action2 = new CancelAction();
+        JPanel buttonBar = new JPanel();
+        JButton okButton = new JButton();
+        JButton cancelButton = new JButton();
+        OkAction action1 = new OkAction();
+        CancelAction action2 = new CancelAction();
 
         //======== this ========
         Container contentPane = getContentPane();
@@ -264,19 +263,9 @@ public class ADialogList extends JDialog {
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
-    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-    // Generated using JFormDesigner non-commercial license
-    private JPanel dialogPane;
-    private JPanel contentPanel;
     private JLabel guiTitle;
     private JLabel infoTitle;
-    private JScrollPane scrollPane1;
     private JList sessionsList;
-    private JPanel buttonBar;
-    private JButton okButton;
-    private JButton cancelButton;
-    private OkAction action1;
-    private CancelAction action2;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 
     private class OkAction extends AbstractAction {

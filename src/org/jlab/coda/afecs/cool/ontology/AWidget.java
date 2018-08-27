@@ -29,7 +29,6 @@ import java.util.ArrayList;
 
 public class AWidget extends AOntologyConcept implements Serializable, Cloneable {
     private String name;
-    private String description;
     private String title;
     private int number;
     private String type;
@@ -98,7 +97,7 @@ public class AWidget extends AOntologyConcept implements Serializable, Cloneable
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        String description1 = description;
     }
 
     public String getTitle() {

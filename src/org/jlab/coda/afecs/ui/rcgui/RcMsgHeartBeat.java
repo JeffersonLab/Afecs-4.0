@@ -47,7 +47,6 @@ import java.util.Random;
  */
 public class RcMsgHeartBeat {
 
-    private int delay = 2000;
     private CodaRcGui owner;
     private Timer timer;
     private boolean wasConnected = true;
@@ -63,6 +62,7 @@ public class RcMsgHeartBeat {
 
     public RcMsgHeartBeat(CodaRcGui owner) {
         this.owner = owner;
+        int delay = 2000;
         timer = new Timer(delay, actionListener);
     }
 

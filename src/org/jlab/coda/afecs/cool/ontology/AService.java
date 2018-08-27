@@ -28,11 +28,9 @@ import java.io.Serializable;
 
 public class AService extends AOntologyConcept implements Serializable {
 
-    private String owner                = AConstants.udf;
     private String name                 = AConstants.udf;
     private String author               = AConstants.udf;
     private String version              = AConstants.udf;
-    private String description          = AConstants.udf;
     private String inputObjectClass     = AConstants.udf;
     private String outputObjectClass    = AConstants.udf;
     private ARule stateMachineRule;
@@ -59,11 +57,11 @@ public class AService extends AOntologyConcept implements Serializable {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        String description1 = description;
     }
 
     public void setOwner(String owner) {
-        this.owner = owner;
+        String owner1 = owner;
     }
 
 

@@ -68,8 +68,6 @@ public class AConfig {
     // sql database
     private String             dbUrl     = AConstants.udf;
     private String             dbDriver  = AConstants.udf;
-    private String             dbUser    = " ";
-    private String             dbPasswd  = " ";
 
 
     /**
@@ -134,6 +132,8 @@ public class AConfig {
      * @return String representing parameters
      */
     public String toString(){
+        String dbPasswd = " ";
+        String dbUser = " ";
         return "Afecs db dir                   = " + coolHome + "\n" +
                 "Platform host                  = " + platformHost + "\n" +
                 "Platform name                  = " + platformName + "\n" +

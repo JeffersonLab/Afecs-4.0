@@ -29,10 +29,8 @@ import java.util.ArrayList;
 
 public class APackage extends AOntologyConcept implements Serializable {
     private String name;
-    private String description        = AConstants.udf;
     private String isForRcClient      = AConstants.udf;
     private String isForNativecMsg    = AConstants.udf;
-    private String isForShellClient   = AConstants.udf;
     private String sendSubject        = AConstants.udf;
     private String sendType           = AConstants.udf;
     private String sendText           = AConstants.udf;
@@ -88,7 +86,7 @@ public class APackage extends AOntologyConcept implements Serializable {
     }
 
     public void setForShellClient(String forShellClient) {
-        isForShellClient = forShellClient;
+        String isForShellClient = forShellClient;
     }
 
     public ArrayList<AChannel> getChannels() {
@@ -104,7 +102,7 @@ public class APackage extends AOntologyConcept implements Serializable {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        String description1 = description;
     }
 
 

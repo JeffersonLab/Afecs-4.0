@@ -33,7 +33,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class RcGraphUpdate {
-    private int delay = 1000;
     private CodaRcGui owner;
     private Timer timer;
     private float prevEvtRate = 10;
@@ -118,6 +117,7 @@ public class RcGraphUpdate {
 
     public RcGraphUpdate(CodaRcGui owner){
         this.owner = owner;
+        int delay = 1000;
         timer = new Timer(delay, actionListener);
     }
 

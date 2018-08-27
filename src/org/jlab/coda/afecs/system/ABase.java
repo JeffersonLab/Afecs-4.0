@@ -142,12 +142,12 @@ public class ABase implements Serializable {
         return plUDL;
     }
 
-    public String getPlMulticastUDL() {
-        return plMulticastUDL;
-    }
-
     public String getPlEXPID() {
         return plEXPID;
+    }
+
+    public String getPlMulticastUDL() {
+        return plMulticastUDL;
     }
 
     /**
@@ -312,54 +312,24 @@ public class ABase implements Serializable {
     /**
      * Disconnects from the rcDomain
      *
-     * @return status of the disconnect operation
      */
-    public boolean rcClientDisconnect() {
-        boolean stat = true;
+    public void rcClientDisconnect() {
         try {
             if (isRcClientConnected()) {
                 myCRCClientConnection.disconnect();
             }
         } catch (cMsgException e) {
-
-            e.printStackTrace();
-            stat = false;
-        }
-        return stat;
-    }
-
-    /**
-     * Check to see if cMsg server is up and running
-     * we send syncSend and if it returns -1 that
-     * indicates that server is down.
-     *
-     * @return integer
-     */
-    public int pingServer() {
-        int o = -1;
-        cMsgMessage msg = new cMsgMessage();
-        msg.setSubject("ping");
-        msg.setType("ping");
-
-        try {
-            o = myPlatformConnection.syncSend(msg, 3000);
-        } catch (cMsgException e) {
-
             e.printStackTrace();
         }
-        return o;
     }
-
 
     /**
      * Forwards message from some other domain,
      * in our case from rc domain to cMsg domain.
      *
      * @param msg message to be forwarded
-     * @return true if succeeded
      */
-    public boolean msgForward(cMsgMessage msg) {
-        boolean status = true;
+    public void msgForward(cMsgMessage msg) {
 
         if (isPlatformConnected()) {
             try {
@@ -367,12 +337,8 @@ public class ABase implements Serializable {
             } catch (cMsgException e) {
 
                 e.printStackTrace();
-                status = false;
             }
-        } else {
-            status = false;
         }
-        return status;
     }
 
     /**
@@ -541,26 +507,6 @@ public class ABase implements Serializable {
         return status;
     }
 
-    /**
-     * <p>
-     * Creates a response message from the given
-     * message and sends it through platform connection
-     * </p>
-     *
-     * @param msg given message
-     * @param txt text for the response message
-     */
-    public void sendResponse(cMsgMessage msg, String txt)
-            throws cMsgException {
-        if (msg.isGetRequest()) {
-            cMsgMessage mr;
-            mr = msg.response();
-            mr.setSubject(AConstants.udf);
-            mr.setType(AConstants.udf);
-            mr.setText(txt);
-            myPlatformConnection.send(mr);
-        }
-    }
 
     /**
      * cMsg sendAndGet sends a simple subject with a text
@@ -688,12 +634,11 @@ public class ABase implements Serializable {
      * @param subject of the message
      * @param type    of the message
      * @param text    of the message
-     * @return status of the send operation
      */
-    public boolean rcSend(String subject,
-                          String type,
-                          String text) throws cMsgException {
-        return rcSend(subject, type, text, null);
+    private void rcSend(String subject,
+                        String type,
+                        String text) throws cMsgException {
+        rcSend(subject, type, text, null);
     }
 
     /**
@@ -703,12 +648,11 @@ public class ABase implements Serializable {
      * @param type    of the message
      * @param text    of the message
      * @param pis     ArrayList of payload items of the message
-     * @return status of the send operation
      */
-    public boolean rcSend(String subject,
-                          String type,
-                          String text,
-                          ArrayList<cMsgPayloadItem> pis)
+    public void rcSend(String subject,
+                       String type,
+                       String text,
+                       ArrayList<cMsgPayloadItem> pis)
             throws cMsgException {
         boolean status = true;
         cMsgMessage msg;
@@ -740,14 +684,6 @@ public class ABase implements Serializable {
             a_println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
                     myName + ": Info - rc_send subject = " + subject +
                     " type = " + type);
-        }
-        return status;
-    }
-
-    public void rcSend(cMsgMessage msg) throws cMsgException {
-        if (myCRCClientConnection != null &&
-                myCRCClientConnection.isConnected()) {
-            myCRCClientConnection.send(msg);
         }
     }
 
@@ -855,7 +791,7 @@ public class ABase implements Serializable {
      * @return status of the operation
      */
     public boolean dalogMsg(AComponent c, int severityId, String severity, String text) {
-        boolean status = false;
+        boolean status = true;
         if (myPlatformConnection != null && myPlatformConnection.isConnected()) {
             cMsgMessage msg = new cMsgMessage();
             msg.setSubject(c.getName());
@@ -928,7 +864,7 @@ public class ABase implements Serializable {
      * @return status of the operation
      */
     public boolean dalogMsg(String name, int severityId, String severity, String text) {
-        boolean status = false;
+        boolean status = true;
         if (myPlatformConnection != null && myPlatformConnection.isConnected()) {
             cMsgMessage msg = new cMsgMessage();
             msg.setSubject(name);
@@ -1076,7 +1012,7 @@ public class ABase implements Serializable {
      *
      * @param filePath full path of the config file
      * @return content of a file with substituted RTV values
-     * @throws java.io.IOException
+     * @throws java.io.IOException .
      */
     public String readFileAsString(String filePath) throws java.io.IOException {
 

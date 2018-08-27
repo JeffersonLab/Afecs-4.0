@@ -42,7 +42,6 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
     private int                   id;
     private String                description          = AConstants.udf;
     private String                type                 = AConstants.udf;
-    private String                code                 = AConstants.udf;
     private int                   priority             = 0;
     private String                session              = AConstants.udf;
     private String                runType              = AConstants.udf;
@@ -54,7 +53,6 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
     private ArrayList<AState>     states               = new ArrayList<>();
     private ArrayList<AProcess>   processes            = new ArrayList<>();
     private ArrayList<AService>   services             = new ArrayList<>();
-    private HMI                   gui;
     private APlugin               plugin;
     private String                userConfig           = AConstants.udf;
 
@@ -88,7 +86,6 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
     private long                  dataLimit            = 0;
     private long                  timeLimit            = 0;
     private long                  eventNumber;
-    private int                   previous_runNumber   = -1371;
     private int                   runNumber            = -1371;
     private AClientInfo           client;
     private int                   nScheduledRuns       = 0;
@@ -106,11 +103,6 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
 
     private int     configID;
 
-    // parameters og the component needed by the JCedit
-    private double x;
-    private double y;
-    private double w;
-    private double h;
     private ArrayList<String>     linkedComponentNames = new ArrayList<>();
 
     // input and output buffers
@@ -186,7 +178,7 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
 
 
     public void setCode(String code) {
-        this.code = code;
+        String code1 = code;
     }
 
     public AClientInfo getClient() {
@@ -278,7 +270,7 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
     }
 
     public void setPrevious_runNumber(int runNumber) {
-        this.previous_runNumber = runNumber;
+        int previous_runNumber = runNumber;
     }
 
     public int getPriority() {
@@ -512,7 +504,7 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
     }
 
     public void setGui(HMI gui) {
-        this.gui = gui;
+        HMI gui1 = gui;
     }
 
 
@@ -577,19 +569,19 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
     }
 
     public void setW(double w) {
-        this.w = w;
+        double w1 = w;
     }
 
     public void setX(double x) {
-        this.x = x;
+        double x1 = x;
     }
 
     public void setY(double y) {
-        this.y = y;
+        double y1 = y;
     }
 
     public void setH(double h) {
-        this.h = h;
+        double h1 = h;
     }
 
     public void setLinkedComponentNames(ArrayList<String> linkedComponentNames) {

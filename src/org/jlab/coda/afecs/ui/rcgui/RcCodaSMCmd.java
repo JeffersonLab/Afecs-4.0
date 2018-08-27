@@ -43,7 +43,6 @@ public class RcCodaSMCmd extends SwingWorker<Integer, Void>{
 
     private CodaRcGui owner;
     private CodaSM    smRequest;
-    private int timeout = 15000;
 
     RcCodaSMCmd(CodaRcGui owner, CodaSM smr){
         this.owner = owner;
@@ -63,9 +62,10 @@ public class RcCodaSMCmd extends SwingWorker<Integer, Void>{
             case STARTRUN:
 
                 cMsgMessage mb;
+                int timeout = 15000;
                 mb = owner.base.p2pSend(owner._supervisorName,
                         AConstants.SupervisorControlRequestStartService,
-                        smRequest.cmd(),timeout);
+                        smRequest.cmd(), timeout);
                 if (mb == null) {
                     owner.popupWarningDialog("Heavy network traffic detected!");
                     return out;

@@ -25,14 +25,12 @@ public class JinFluxDriver extends JinFlux {
     private String dbName;
     private boolean jinFxConnected = true;
 
-    //database history retention in hours
-    private int retention = 24;
-
     public JinFluxDriver(String dbNode, String dbName, String user, String password) throws JinFluxException {
         super(dbNode, user, password);
         this.dbName = dbName;
         try {
             if (!existsDB(dbName)) {
+                int retention = 24;
                 createDB(dbName, retention, JinTime.HOURE);
             }
         } catch (Exception e) {

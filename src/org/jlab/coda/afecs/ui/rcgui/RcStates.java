@@ -51,11 +51,10 @@ public enum RcStates {
     FAILED      (AConstants.failed, "failed");
 
     private String name;
-    private String action;
 
     RcStates(String name, String action){
         this.name = name;
-        this.action = action;
+        String action1 = action;
     }
 
     public String getName() {

@@ -26,11 +26,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class HMI extends AOntologyConcept implements Serializable {
-    private String name;
-    private String description;
-    private ArrayList<APanel> panel = new ArrayList<APanel>();
-    private String isWebBased;
-    private int rowsNumber, columnsNumber;
 
 
     public HMI(){
@@ -48,27 +43,27 @@ public class HMI extends AOntologyConcept implements Serializable {
 
 
     public void setName(String name) {
-        this.name = name;
+        String name1 = name;
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        String description1 = description;
     }
 
     public void setPanels(ArrayList<APanel> panel) {
-        this.panel = panel;
+        ArrayList<APanel> panel1 = panel;
     }
 
     public void setWebBased(String webBased) {
-        isWebBased = webBased;
+        String isWebBased = webBased;
     }
 
 
     public void setRowsNumber(int rowsNumber) {
-        this.rowsNumber = rowsNumber;
+        int rowsNumber1 = rowsNumber;
     }
 
     public void setColumnsNumber(int columnsNumber) {
-        this.columnsNumber = columnsNumber;
+        int columnsNumber1 = columnsNumber;
     }
 }

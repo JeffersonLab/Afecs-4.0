@@ -38,10 +38,6 @@ public class ALink extends AOntologyConcept implements Serializable {
     private int    destinationPort;
     private int    destinationETNumberEvents;
     private int    destinationETEventSize;
-    private double startX;
-    private double startY;
-    private double endX;
-    private double endY;
 
     public ALink(){
         setOntology("afecs");
@@ -104,19 +100,19 @@ public class ALink extends AOntologyConcept implements Serializable {
     }
 
     public void setEndX(double endX) {
-        this.endX = endX;
+        double endX1 = endX;
     }
 
     public void setEndY(double endY) {
-        this.endY = endY;
+        double endY1 = endY;
     }
 
     public void setStartX(double startX) {
-        this.startX = startX;
+        double startX1 = startX;
     }
 
     public void setStartY(double startY) {
-        this.startY = startY;
+        double startY1 = startY;
     }
 
     public String getName() {

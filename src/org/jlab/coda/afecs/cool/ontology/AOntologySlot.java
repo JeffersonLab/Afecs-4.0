@@ -26,41 +26,33 @@ import java.io.Serializable;
 
 public class AOntologySlot implements Serializable {
 
-    private String name;
-    private boolean isOptional;
-    private boolean isJavaObject;
-    private boolean isOntologyConcept;
-    private int cardinality;
-    private String javaObjectType;
-    private String conceptType;
-
     public void setName(String name) {
-        this.name = name;
+        String name1 = name;
     }
 
 
     public void setOptional(boolean optional) {
-        isOptional = optional;
+        boolean isOptional = optional;
     }
 
     public void setCardinality(int cardinality) {
-        this.cardinality = cardinality;
+        int cardinality1 = cardinality;
     }
 
     public void setJavaObjectType(String javaObjectType) {
-        this.javaObjectType = javaObjectType;
+        String javaObjectType1 = javaObjectType;
     }
 
     public void setConceptType(String conceptType) {
-        this.conceptType = conceptType;
+        String conceptType1 = conceptType;
     }
 
     public void setJavaObject(boolean javaObject) {
-        isJavaObject = javaObject;
+        boolean isJavaObject = javaObject;
     }
 
     public void setOntologyConcept(boolean ontologyConcept) {
-        isOntologyConcept = ontologyConcept;
+        boolean isOntologyConcept = ontologyConcept;
     }
 
 }

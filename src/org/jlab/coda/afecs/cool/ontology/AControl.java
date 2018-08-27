@@ -31,7 +31,6 @@ public class AControl extends AOntologyConcept implements Serializable, Cloneabl
     private ArrayList<AComponent> components = new ArrayList<AComponent>();
     private AComponent supervisor;
     private String name;
-    private HMI gui;
     private AOption option;
 
     public AControl(){
@@ -85,7 +84,7 @@ public class AControl extends AOntologyConcept implements Serializable, Cloneabl
     }
 
     public void setGui(HMI gui) {
-        this.gui = gui;
+        HMI gui1 = gui;
     }
 
     public AOption getOption() {

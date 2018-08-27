@@ -27,11 +27,10 @@ import java.util.ArrayList;
 
 public class AOntologyConcept implements Serializable {
 
-    private String name, ontology;
     private ArrayList<AOntologySlot> slots = new ArrayList<AOntologySlot>();
 
     public void setConceptName(String name) {
-        this.name = name;
+        String name1 = name;
     }
 
     public void addSlot(AOntologySlot slot) {
@@ -39,7 +38,7 @@ public class AOntologyConcept implements Serializable {
     }
 
     public void setOntology(String ontology) {
-        this.ontology = ontology;
+        String ontology1 = ontology;
     }
 
     /**

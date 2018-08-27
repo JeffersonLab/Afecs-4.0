@@ -27,13 +27,6 @@ import org.jlab.coda.afecs.system.AConstants;
 import java.io.Serializable;
 
 public class AOption extends AOntologyConcept implements Serializable {
-    private String name           = AConstants.udf;
-    private String description    = AConstants.udf;
-    private String dataFile       = AConstants.udf;
-    private String dataFilePrefix = AConstants.udf;
-    private String coda2Component = AConstants.udf;
-    private String autoStart      = AConstants.udf;
-    private String startRun       = AConstants.udf;
     private String configFile     = AConstants.udf;
     private String configString   = AConstants.udf;
     private String downloadString = AConstants.udf;
@@ -68,23 +61,23 @@ public class AOption extends AOntologyConcept implements Serializable {
 
 
     public void setName(String name) {
-        this.name = name;
+        String name1 = name;
     }
 
     public void setDataFile(String dataFile) {
-        this.dataFile = dataFile;
+        String dataFile1 = dataFile;
     }
 
     public void setDataFilePrefix(String dataFilePrefix) {
-        this.dataFilePrefix = dataFilePrefix;
+        String dataFilePrefix1 = dataFilePrefix;
     }
 
     public void setAutoStart(String autoStart) {
-        this.autoStart = autoStart;
+        String autoStart1 = autoStart;
     }
 
     public void setStartRun(String startRun) {
-        this.startRun = startRun;
+        String startRun1 = startRun;
     }
 
     public String getConfigFile() {
@@ -112,11 +105,11 @@ public class AOption extends AOntologyConcept implements Serializable {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        String description1 = description;
     }
 
     public void setCoda2Component(String coda2Component) {
-        this.coda2Component = coda2Component;
+        String coda2Component1 = coda2Component;
     }
 
     public String getConfigString() {

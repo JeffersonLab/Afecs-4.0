@@ -51,7 +51,6 @@ public class RcConfigure extends SwingWorker<Integer, Void> {
 
     private CodaRcGui owner;
     private boolean start = false;
-    private int timeout = 15000;
 
     public RcConfigure(CodaRcGui owner) {
         this.owner = owner;
@@ -107,6 +106,7 @@ public class RcConfigure extends SwingWorker<Integer, Void> {
 
                 // ask control designer to configure the run and send back the list of user
                 // defined RTVs in the cool file (%()) that are not defined
+                int timeout = 15000;
                 cMsgMessage m = owner.base.p2pSend(AConstants.CONTROLDESIGNER,
                         AConstants.DesignerControlRequestConfigureControl,
                         "",

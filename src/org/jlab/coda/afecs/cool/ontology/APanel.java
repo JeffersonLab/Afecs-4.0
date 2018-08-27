@@ -29,10 +29,8 @@ import java.util.ArrayList;
 
 public class APanel extends AOntologyConcept implements Serializable, Cloneable {
     private String name;
-    private String description;
     private String color;
     private String title;
-    private ArrayList<AWidget> widgets = new ArrayList<AWidget>();
     private int number;
 
     public APanel(){
@@ -76,7 +74,7 @@ public class APanel extends AOntologyConcept implements Serializable, Cloneable 
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        String description1 = description;
     }
 
     public String getTitle() {
@@ -105,7 +103,7 @@ public class APanel extends AOntologyConcept implements Serializable, Cloneable 
     }
 
     public void setWidgets(ArrayList<AWidget> widgets) {
-        this.widgets = widgets;
+        ArrayList<AWidget> widgets1 = widgets;
     }
 
 }

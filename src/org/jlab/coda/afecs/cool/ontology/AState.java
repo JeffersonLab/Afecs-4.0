@@ -27,7 +27,6 @@ import java.util.ArrayList;
 
 public class AState extends AOntologyConcept implements Serializable {
     private String name, description;
-    private ArrayList<String> componentNames = new ArrayList<String>();
     private ArrayList<AProcess> processes = new ArrayList<AProcess>();
 
     public AState(){
@@ -72,7 +71,7 @@ public class AState extends AOntologyConcept implements Serializable {
      * @param componentNames ArrayList of component names.
      */
     public void setComponentNames(ArrayList<String> componentNames) {
-        this.componentNames = componentNames;
+        ArrayList<String> componentNames1 = componentNames;
     }
 
     public String getDescription() {
