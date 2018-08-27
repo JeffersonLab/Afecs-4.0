@@ -33,7 +33,6 @@ import org.jlab.coda.afecs.system.ABase;
 import org.jlab.coda.afecs.system.AConstants;
 import org.jlab.coda.afecs.system.AException;
 import org.jlab.coda.afecs.system.process.ProcessManager;
-import org.jlab.coda.afecs.system.thread.ReportStatus;
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.*;
 
@@ -233,43 +232,11 @@ public class AParent extends ABase implements Serializable {
 
     /**
      * <p>
-     * Starts status reporting thread.
-     * This is a thread that periodically reports
-     * to the supervisor agent the status of this
-     * agent.
-     * This will stop previously running  status
-     * reporting thread just making sure that we
-     * have only one status reporting thread at all
-     * times.
-     * </p>
-     */
-    public void startStatusReporting() {
-        stopStatusReporting();
-        ReportStatus t = new ReportStatus(this, true);
-        stRpT = new Thread(t);
-        stRpT.start();
-    }
-
-    /**
-     * <p>
-     * Stops status reporting thread, if
-     * it is active.
-     * </p>
-     */
-    public void stopStatusReporting() {
-        if (stRpT != null) {
-            stRpT.stop();
-        }
-    }
-
-    /**
-     * <p>
      * Stops status reporting thread and
      * all active periodic processes.
      * </p>
      */
     protected void stop_rpp() {
-        stopStatusReporting();
         pm.stopAllPeriodicProcesses();
     }
 

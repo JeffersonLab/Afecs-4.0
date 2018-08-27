@@ -38,8 +38,8 @@ public class CCompiler {
     private Pattern closeP;
     private Pattern andorSim;
 
-    private LinkedHashMap<Integer, Integer> Scopes = new LinkedHashMap<Integer, Integer>();
-    private LinkedHashMap<Integer, Integer> Conditions = new LinkedHashMap<Integer, Integer>();
+    private LinkedHashMap<Integer, Integer> Scopes = new LinkedHashMap<>();
+    private LinkedHashMap<Integer, Integer> Conditions = new LinkedHashMap<>();
     // local instance of the logger object
 
     /**

@@ -32,7 +32,6 @@ import org.jlab.coda.afecs.cool.ontology.AProcess;
 import org.jlab.coda.afecs.cool.ontology.AService;
 import org.jlab.coda.afecs.cool.parser.ACondition;
 import org.jlab.coda.afecs.supervisor.thread.AStatusReportT;
-import org.jlab.coda.afecs.supervisor.thread.MoveToStateT;
 import org.jlab.coda.afecs.supervisor.thread.ServiceExecutionT;
 import org.jlab.coda.afecs.system.ACodaType;
 import org.jlab.coda.afecs.system.AConstants;
@@ -347,7 +346,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                 me.getSession() + "_" + me.getRunType() + "/supervisor",
                 me.getRunTimeDataAsPayload());
 
-        // Asking supervised agents to configure.
+        // Asking all supervised agents to configure
         for (CodaRCAgent com : myComponents.values()) {
             com.agentControlRequestSetup();
         }
@@ -391,21 +390,32 @@ public class SupervisorAgent extends AParent implements Serializable {
         }
 // ======== added 10.11.16 ============================================================================
 
-        if (myComponents != null && !myComponents.isEmpty()) {
-            MoveToStateT moveToStateThread = new MoveToStateT(this, "all", stateName);
-            moveToStateThread.start();
+//        if (myComponents != null && !myComponents.isEmpty()) {
+//            MoveToStateT moveToStateThread = new MoveToStateT(this, "all", stateName);
+//            moveToStateThread.start();
+//            reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
+//                    myName,
+//                    1,
+//                    AConstants.
+//                            INFO,
+//                    " " + stateName + " is started.");
+//        }
+
+        // If required state is "reseted" set the
+        // state of this supervisor configured.
+        if (stateName.equals(AConstants.reseted) ||
+                stateName.equals(AConstants.emergencyreset)) {
             reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
                     myName,
                     1,
                     AConstants.
                             INFO,
                     " " + stateName + " is started.");
-        }
 
-        // If required state is "reseted" set the
-        // state of this supervisor configured.
-        if (stateName.equals(AConstants.reseted) ||
-                stateName.equals(AConstants.emergencyreset)) {
+            // Ask all components to set their run-numbers
+            for (CodaRCAgent cn : myComponents.values()) {
+                cn._moveToState(AConstants.reseted);
+            }
 
             // stop periodic processes
             stopPeriodicProcesses();
@@ -960,7 +970,6 @@ public class SupervisorAgent extends AParent implements Serializable {
                 case AConstants.SupervisorControlRequestReleaseRunType:
                     _un_subscribe_all();
                     stopAgentMonitors();
-                    stopStatusReporting();
                     stopServiceExecutionThread();
 
                     sortedComponentList.clear();

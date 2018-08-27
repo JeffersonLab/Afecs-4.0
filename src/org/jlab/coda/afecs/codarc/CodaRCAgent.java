@@ -36,7 +36,6 @@ import org.jlab.coda.afecs.system.AException;
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -377,10 +376,6 @@ public class CodaRCAgent extends AParent {
                 send(me.getSession(), me.getRunType(), me);
             }
         }
-        // Start thread of periodic reporting
-        // to supervisor and gui's
-        startStatusReporting();
-
         return stat;
     }
 
@@ -414,9 +409,6 @@ public class CodaRCAgent extends AParent {
             // Move to reset state
             b = transition(stateName);
             _reset();
-            AfecsTool.sleep(500);
-
-            send(me.getSession(), me.getRunType(), me);
         } else {
 
             // Reset rates if not request to end the run
