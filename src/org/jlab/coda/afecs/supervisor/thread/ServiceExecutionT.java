@@ -82,7 +82,8 @@ import java.util.*;
  *         Date: 11/13/14 Time: 2:51 PM
  * @version 4.x
  */
-public class ServiceExecutionT extends Thread {
+public class ServiceExecutionT implements Runnable {
+//public class ServiceExecutionT extends Thread {
 
     private String serviceName;
     private String stateName;
@@ -97,7 +98,7 @@ public class ServiceExecutionT extends Thread {
     }
 
     public void run() {
-        super.run();
+//        super.run();
 
         owner.isResetting.set(false);
         boolean failed = false;

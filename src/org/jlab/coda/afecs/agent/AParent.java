@@ -378,9 +378,6 @@ public class AParent extends ABase implements Serializable {
                         }
                     }
 
-                    // Report to the supervisor that we are transitioning
-//                    send(me.getSession(), me.getRunType(), me);
-
                     // See if we have processes scheduled to be executed
                     // before the state transition. Note that agent supports
                     // scripts/processes at only pre and post state transitions.
@@ -405,8 +402,6 @@ public class AParent extends ABase implements Serializable {
                                     // Set the state of the agent to failed.
                                     me.setState(AConstants.failed);
 
-                                    // Report to the supervisor that we failed to transitions
-//                                    send(me.getSession(), me.getRunType(), me);
                                     isTransitioning.set(false);
                                     return false;
                                 }

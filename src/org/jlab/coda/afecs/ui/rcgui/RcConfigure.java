@@ -23,7 +23,6 @@
 package org.jlab.coda.afecs.ui.rcgui;
 
 import org.jlab.coda.afecs.system.AConstants;
-import org.jlab.coda.afecs.system.AException;
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.cMsgException;
 import org.jlab.coda.cMsg.cMsgMessage;
@@ -52,7 +51,7 @@ public class RcConfigure extends SwingWorker<Integer, Void> {
     private CodaRcGui owner;
     private boolean start = false;
 
-    public RcConfigure(CodaRcGui owner) {
+    RcConfigure(CodaRcGui owner) {
         this.owner = owner;
         if (this.owner._runType.equals(AConstants.udf) ||
                 this.owner._session.equals(AConstants.udf)) {
@@ -155,10 +154,6 @@ public class RcConfigure extends SwingWorker<Integer, Void> {
                             owner._supervisorName, 1000);
                     trails++;
                     AfecsTool.sleep(50);
-//                    owner.updateDaLogTable(owner.base.myName,
-//                            " Configure in progress",
-//                            AConstants.INFO,
-//                            1);
                 } while ((trails < waitForSupervisor) &&
                         (msgB == null || msgB.getText().equals(AConstants.no)) &&
                         !owner.ResetRequest.get() &&
@@ -169,11 +164,9 @@ public class RcConfigure extends SwingWorker<Integer, Void> {
                 } else if (owner.ResetRequest.get()) {
                     out = 2;
                 } else {
-//                    if(waitConfigureSucceed()){
                     out = 3;
                     owner.defineDefaultWatch();
                     owner.addRemoveSelected2Graph(true);
-//                    } else {out = 4;}
                 }
             }
         }
@@ -191,30 +184,8 @@ public class RcConfigure extends SwingWorker<Integer, Void> {
                 case 2:
                     break;
                 case 3:
-//                    owner.updateDaLogTable(owner.base.myName,
-//                            " Supervisor is assigned. Waiting for the supervisor \"configured\" state.",
-//                            AConstants.INFO,
-//                            1);
                     break;
                 case 4:
-/*
-//                    owner.gDriver._updateControlBtNs(RcStates.FAILED);
-                    // @todo NEVER is called
-                    // create unset rtvs string
-                    StringBuilder sb = new StringBuilder();
-                    for(String s:owner.getUnsetRTVs()){
-                        sb.append(s).append(",");
-                    }
-                    if(sb.length()>0){
-                        sb.setCharAt(sb.lastIndexOf(","),' ');
-                        owner.updateDaLogTable(owner.base.myName,
-                                " Unset RTVs " + sb,
-                                AConstants.WARN, 5);
-                    }
-                    owner.gDriver._updateControlBtNs(RcStates.CONNECTED);
-
-                    break;
-*/
                 case 5:
                     owner.popupInfoDialog("  Problem communicating with the ControlDesigner agent.");
             }
@@ -222,37 +193,6 @@ public class RcConfigure extends SwingWorker<Integer, Void> {
             e.printStackTrace();
         }
 
-    }
-
-
-    private boolean waitConfigureSucceed() {
-        boolean res = true;
-        cMsgMessage msg = null;
-        AfecsTool.sleep(50);
-        do {
-            AfecsTool.sleep(50);
-            try {
-                msg = owner.base.p2pSend(owner._supervisorName,
-                        AConstants.AgentInfoRequestState,
-                        "", 1000);
-            } catch (AException e) {
-            }
-            if (msg != null) {
-                if (!owner.ResetRequest.get() &&
-                        (msg.getText().equals(AConstants.failed) ||
-                                msg.getText().equals(AConstants.booted) ||
-                                msg.getText().equals(AConstants.connected)
-                        )) {
-                    return false;
-                }
-            }
-        } while (msg == null || msg.getText().contains("ing"));
-        if (!owner.ResetRequest.get() &&
-                (msg.getText().equals(AConstants.failed) ||
-                        msg.getText().equals(AConstants.booted) ||
-                        msg.getText().equals(AConstants.connected)
-                )) res = false;
-        return res;
     }
 
     private void addSystemRTVs() {
@@ -265,7 +205,5 @@ public class RcConfigure extends SwingWorker<Integer, Void> {
         owner.addRTV("%(ddb)", owner.base.myConfig.getCoolHome() + File.separator +
                 owner.base.myConfig.getPlatformExpid() + File.separator + "ddb");
         owner.addRTV("%(udl)", owner.base.myConfig.getPlatformUdl());
-        // add user specified RTVs
-
     }
 }

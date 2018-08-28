@@ -46,7 +46,7 @@ public class PeriodicProcess extends Thread{
     private AComponent component;
     private ProcessManager pm;
 
-    private boolean isRunning = true;
+    private volatile boolean isRunning = true;
 
     /**
      * <p>
@@ -78,9 +78,10 @@ public class PeriodicProcess extends Thread{
 
     }
 
-    public void prStop(){
+    void prStop(){
         isRunning = false;
     }
+
     @Override
     /**
      * <p>
@@ -111,7 +112,5 @@ public class PeriodicProcess extends Thread{
                 }
             }
         }
-
-        stop();
     }
 }

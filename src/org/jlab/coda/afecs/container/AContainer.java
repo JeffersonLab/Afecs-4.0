@@ -194,7 +194,7 @@ public class AContainer extends ABase {
             }
 
             String stb = "**************************************************" + "\n" +
-                    "*             Afecs-3 Container                  *" + "\n" +
+                    "*             Afecs-4 Container                  *" + "\n" +
                     "**************************************************" + "\n" +
                     "- Name                  = " + myConfig.getContainerName() + "\n" +
                     "- Host                  = " + myConfig.getContainerHost() + "\n" +
@@ -484,7 +484,7 @@ public class AContainer extends ABase {
                     }
                     _agent.me.setClient(cif);
                     _agent._stopCommunications();
-                    _agent._stopClientHealthMonitor();
+                    _agent._stopClientHeartBeatMonitor();
                     _agent._reconnectResponse(_agent.me.getClient());
 
                 } else {

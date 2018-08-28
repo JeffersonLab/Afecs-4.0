@@ -133,7 +133,7 @@ public class SupervisorAgent extends AParent implements Serializable {
             myComponents = new ConcurrentHashMap<>();
 
     // Synchronized map holding agentReportingTimes
-    transient public ConcurrentHashMap<String, AReportingTime>
+    transient ConcurrentHashMap<String, AReportingTime>
             myCompReportingTimes = new ConcurrentHashMap<>();
 
     // Sorted component list to be reported to UIs
@@ -187,7 +187,7 @@ public class SupervisorAgent extends AParent implements Serializable {
     transient public AtomicBoolean activeServiceExec =
             new AtomicBoolean(false);
 
-    transient public AtomicBoolean haveCoda2Component =
+    transient AtomicBoolean haveCoda2Component =
             new AtomicBoolean(false);
 
     // Object references
@@ -229,6 +229,7 @@ public class SupervisorAgent extends AParent implements Serializable {
 
     transient private ScheduledFuture<?> agnetsCheck;
 
+    transient private ExecutorService es;
 
     /**
      * <p>
@@ -389,17 +390,6 @@ public class SupervisorAgent extends AParent implements Serializable {
             }
         }
 // ======== added 10.11.16 ============================================================================
-
-//        if (myComponents != null && !myComponents.isEmpty()) {
-//            MoveToStateT moveToStateThread = new MoveToStateT(this, "all", stateName);
-//            moveToStateThread.start();
-//            reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
-//                    myName,
-//                    1,
-//                    AConstants.
-//                            INFO,
-//                    " " + stateName + " is started.");
-//        }
 
         // If required state is "reseted" set the
         // state of this supervisor configured.
@@ -586,8 +576,9 @@ public class SupervisorAgent extends AParent implements Serializable {
      * </p>
      */
     private void stopServiceExecutionThread() {
-        if (serviceExecutionThread != null)
-            serviceExecutionThread.stop();
+        if(es !=null && !es.isTerminated() && !es.isShutdown()) {
+            es.shutdownNow();
+        }
     }
 
     /**
@@ -600,7 +591,8 @@ public class SupervisorAgent extends AParent implements Serializable {
         if (myServiceConditions.containsKey("CodaRcStartRun")) {
             serviceExecutionThread =
                     new ServiceExecutionT(mySelf, "CodaRcStartRun");
-            serviceExecutionThread.start();
+            es = Executors.newSingleThreadExecutor();
+            es.submit(serviceExecutionThread);
 
             String codaState =
                     coolServiceAnalyser.decodeCodaSMServiceName("CodaRcStartRun");
@@ -624,7 +616,9 @@ public class SupervisorAgent extends AParent implements Serializable {
 
             serviceExecutionThread =
                     new ServiceExecutionT(mySelf, "CodaRcEnd");
-            serviceExecutionThread.start();
+            es = Executors.newSingleThreadExecutor();
+            es.submit(serviceExecutionThread);
+
             String codaState =
                     coolServiceAnalyser.decodeCodaSMServiceName("CodaRcEnd");
             reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
@@ -930,7 +924,9 @@ public class SupervisorAgent extends AParent implements Serializable {
                         }
                         if (myServiceConditions.containsKey(requestData)) {
                             serviceExecutionThread = new ServiceExecutionT(mySelf, requestData);
-                            serviceExecutionThread.start();
+                            es = Executors.newSingleThreadExecutor();
+                            es.submit(serviceExecutionThread);
+
                             String codaState = coolServiceAnalyser.decodeCodaSMServiceName(requestData);
 
                             // added 04.14.16

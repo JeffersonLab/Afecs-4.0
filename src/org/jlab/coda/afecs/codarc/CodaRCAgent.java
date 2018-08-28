@@ -39,6 +39,8 @@ import org.jlab.coda.cMsg.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 
 
@@ -99,12 +101,6 @@ public class CodaRCAgent extends AParent {
     // buffer level.
     private cMsgSubscriptionHandle emuEventsPerEtBufferLevel;
 
-    // Client health watching thread
-    private ClientHeartBeatMonitor clientHealthMonitor;
-
-    // Transitioning to a state watching thread.
-    private StateTransitioningMonitor stateTransitionMonitor;
-
     // Used to calculate cumulative moving average
     // for event rate and data rate
     long averageCount;
@@ -118,6 +114,12 @@ public class CodaRCAgent extends AParent {
     private FcsEngine fcsEngine;
 
     private List<Float> averageRateStorage = new ArrayList<>();
+
+    // State transition monitor executor
+    private ExecutorService es;
+
+    //client heart beat monitor
+    boolean clientHeartBeatIsRunning;
 
     /**
      * <p>
@@ -167,24 +169,13 @@ public class CodaRCAgent extends AParent {
 
         // Subscribe control messages to this agent
         me.setState(AConstants.booted);
+
     }
 
     public void updateComponent(AComponent component){
         me = component;
     }
 
-    /**
-     * <p>
-     * Method for gracefully exiting this agent
-     * by stopping all running threads and
-     * removing subscriptions.
-     * </p>
-     */
-    public void rca_exit() throws cMsgException {
-        remove_registration();
-        _stopCommunications();
-        rcClientDisconnect();
-    }
 
     /**
      * <p>
@@ -319,7 +310,7 @@ public class CodaRCAgent extends AParent {
 
             // Start agent health watching thread.
             // This tells client to start reporting
-            _startClientHealthMonitor();
+             _startClientHeartBeatMonitor();
 
             // Tell client about the session and the runType.
             try {
@@ -366,14 +357,14 @@ public class CodaRCAgent extends AParent {
 
             me.setState(AConstants.failed);
             stat = false;
-            send(me.getSession(), me.getRunType(), me);
+//            send(me.getSession(), me.getRunType(), me);
 
             // finally check to see if we lost connection
             // with the client and set the state = disconnected.
             if (!isRcClientConnected()) {
                 me.setState(AConstants.disconnected);
                 stat = false;
-                send(me.getSession(), me.getRunType(), me);
+//                send(me.getSession(), me.getRunType(), me);
             }
         }
         return stat;
@@ -489,7 +480,7 @@ public class CodaRCAgent extends AParent {
         if (status.equals(AConstants.udf)) {
             // Stop client communications  and disconnect
             me.setState(AConstants.disconnected);
-            send(me.getSession(), me.getRunType(), me);
+//            send(me.getSession(), me.getRunType(), me);
             _stopCommunications();
             rcClientDisconnect();
         }
@@ -707,41 +698,13 @@ public class CodaRCAgent extends AParent {
 
     /**
      * <p>
-     * Stops client health monitoring thread.
-     * </p>
-     */
-    public void _stopClientHealthMonitor() {
-        if (clientHealthMonitor != null) {
-            clientHealthMonitor.stop();
-        }
-        if (clientLastReportedTime != null)
-            clientLastReportedTime.set(0);
-    }
-
-    /**
-     * <p>
-     * Starts client health monitoring thread.
-     * {@link ClientHeartBeatMonitor}
-     * </p>
-     */
-    private void _startClientHealthMonitor() {
-        _stopClientHealthMonitor();
-        int errorThreshold = 120000;
-        int warningThreshold = 20000;
-        clientHealthMonitor =
-                new ClientHeartBeatMonitor(this, errorThreshold, warningThreshold);
-        clientHealthMonitor.start();
-    }
-
-    /**
-     * <p>
      * Stops thread monitoring the client's
      * transitioning to a CODA state.
      * </p>
      */
     private void _stopStateTransitioningMonitor() {
-        if (stateTransitionMonitor != null) {
-            stateTransitionMonitor.stop();
+        if(es !=null && !es.isTerminated() && !es.isShutdown()) {
+            es.shutdownNow();
         }
     }
 
@@ -754,11 +717,26 @@ public class CodaRCAgent extends AParent {
      */
     private void _startStateTransitioningMonitor(String stateName) {
         _stopStateTransitioningMonitor();
-        stateTransitionMonitor =
-                new StateTransitioningMonitor(this, stateName);
-        stateTransitionMonitor.start();
 
+        StateTransitioningMonitor stateTransitionMonitor =
+                new StateTransitioningMonitor(this, stateName);
+        es = Executors.newSingleThreadExecutor();
+        es.submit(stateTransitionMonitor);
     }
+
+    private void _startClientHeartBeatMonitor(){
+        _stopClientHeartBeatMonitor();
+        ClientHeartBeatMonitor clientHealthMonitor =
+                new ClientHeartBeatMonitor(this, 120000, 20000);
+        clientHeartBeatIsRunning = true;
+        clientHealthMonitor.start();
+    }
+
+    public void _stopClientHeartBeatMonitor(){
+            clientHeartBeatIsRunning = false;
+            AfecsTool.sleep(1000);
+    }
+
 
     /**
      * <p>

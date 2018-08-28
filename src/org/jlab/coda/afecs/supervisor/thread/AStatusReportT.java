@@ -49,7 +49,7 @@ public class AStatusReportT extends Thread {
 
     private SupervisorAgent owner;
 
-    private boolean isRunning = true;
+    private volatile boolean isRunning = true;
 
     private static final int INFLUX_INJECT_DELAY = 5;
     private static final int RUNLOG_CREATE_DELAY = 10;
@@ -254,8 +254,6 @@ public class AStatusReportT extends Thread {
                                     owner.isClientProblemAtActive.set(true);
                                 }
                             } else {
-//                                owner.me.setState(AConstants.disconnected);
-//                                owner.isResetting.set(false);
                                 owner.me.setState(AConstants.booted);
                                 owner.isTransitioning.set(false);
                                 owner.isResetting.set(false);

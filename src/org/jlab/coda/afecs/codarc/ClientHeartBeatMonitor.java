@@ -47,7 +47,7 @@ import java.util.Date;
  * </p>
  */
 
-public class ClientHeartBeatMonitor extends Thread {
+public class ClientHeartBeatMonitor extends Thread{
 
     private long _timeAfterLastReporting;
     private long _absoluteTime;
@@ -67,86 +67,21 @@ public class ClientHeartBeatMonitor extends Thread {
      * @param warningLimit    time limit (in milli sec) after which warning
      *                        messages started to be generated
      */
-    public ClientHeartBeatMonitor(CodaRCAgent owner,
-                                  int disconnectLimit,
-                                  int warningLimit) {
+    ClientHeartBeatMonitor(CodaRCAgent owner,
+                           int disconnectLimit,
+                           int warningLimit) {
         this.owner = owner;
         _disconnectTimeLimit = disconnectLimit;
         _warningTimeLimit = warningLimit;
-    }
-
-    @Override
-    public void run() {
-        super.run();
-
-        // main loop of monitor
-        while (true) {
-            // Increment the absolute time
-            _absoluteTime++;
-
-            // N.B. every time status is reported the date will be
-            // stored in the owners clientLastReportingTime var.
-            if (owner.clientLastReportedTime.get() > 0) {
-
-                // Get the current time
-                long currentTime = new Date().getTime();
-
-                // Calculate how long time ago client had reported
-                _timeAfterLastReporting =
-                        currentTime - owner.clientLastReportedTime.get();
-
-                // No reporting for more than disconnect time limit
-                if (_timeAfterLastReporting >= _disconnectTimeLimit) {
-
-                    owner.a_println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
-                            owner.myName + ": --> heartbeat listening thread - timeAfterLastReporting = " + _timeAfterLastReporting +
-                            " disconnectTimeLimit = " + _disconnectTimeLimit);
-
-                    _issueError(currentTime);
-                    _stopWarning = true;
-                } else if (_timeAfterLastReporting >= _warningTimeLimit) {
-                    if (!_stopWarning) _issueWarning(10);
-                }
-            } else {
-                if (_hadWarning) {
-
-                    // There was at least one warning message
-                    // because client was not reporting.
-                    // Inform that client is reporting again
-                    owner.reportAlarmMsg(owner.me.getSession() +
-                                    "/" + owner.me.getRunType(),
-                            owner.myName,
-                            1,
-                            AConstants.INFO,
-                            " Client resumed reporting. ");
-                    owner.dalogMsg(owner.myName,
-                            1,
-                            AConstants.INFO,
-                            " Client resumed reporting. ");
-                    _hadWarning = false;
-                }
-            }
-
-            if (owner.me.getState().equals(AConstants.disconnected)) {
-                this.stop();
-            }
-            // sleep for a second
-            AfecsTool.sleep(1000);
-        }
     }
 
     /**
      * <p>
      * Broadcast warning message to GUIs.
      * </p>
-     *
-     * @param tReport int sec after which the warning
-     *                message must be broadcast
      */
-    private void _issueWarning(int tReport) {
-        if (_absoluteTime % tReport == 0) {
-//        if(_absoluteTime % tReport == 0 &&
-//                !(owner.me.getState().equals(AConstants.booted))) {
+    private void _issueWarning() {
+        if (_absoluteTime % 10 == 0) {
             owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
                     owner.myName,
                     5,
@@ -202,8 +137,6 @@ public class ClientHeartBeatMonitor extends Thread {
             // set last reported event and  data rates to 0
             owner.resetClientData();
 
-            // Stop this thread
-            this.stop();
 
         } else {
             owner.clientLastReportedTime.set(currentTime);
@@ -225,6 +158,63 @@ public class ClientHeartBeatMonitor extends Thread {
         }
     }
 
+    @Override
+    public void run() {
+
+        do {
+        // main loop of monitor
+        // Increment the absolute time
+        _absoluteTime++;
+
+        // N.B. every time status is reported the date will be
+        // stored in the owners clientLastReportingTime var.
+        if (owner.clientLastReportedTime.get() > 0) {
+
+            // Get the current time
+            long currentTime = new Date().getTime();
+
+            // Calculate how long time ago client had reported
+            _timeAfterLastReporting =
+                    currentTime - owner.clientLastReportedTime.get();
+
+            // No reporting for more than disconnect time limit
+            if (_timeAfterLastReporting >= _disconnectTimeLimit) {
+
+                owner.a_println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                        owner.myName + ": --> heartbeat listening thread - timeAfterLastReporting = " + _timeAfterLastReporting +
+                        " disconnectTimeLimit = " + _disconnectTimeLimit);
+
+                _issueError(currentTime);
+                _stopWarning = true;
+            } else if (_timeAfterLastReporting >= _warningTimeLimit) {
+                if (!_stopWarning) _issueWarning();
+            }
+        } else {
+            if (_hadWarning) {
+
+                // There was at least one warning message
+                // because client was not reporting.
+                // Inform that client is reporting again
+                owner.reportAlarmMsg(owner.me.getSession() +
+                                "/" + owner.me.getRunType(),
+                        owner.myName,
+                        1,
+                        AConstants.INFO,
+                        " Client resumed reporting. ");
+                owner.dalogMsg(owner.myName,
+                        1,
+                        AConstants.INFO,
+                        " Client resumed reporting. ");
+                _hadWarning = false;
+            }
+        }
+
+        if (owner.me.getState().equals(AConstants.disconnected)) {
+            owner.clientHeartBeatIsRunning = false;
+        }
+        AfecsTool.sleep(1000);
+        } while(owner.clientHeartBeatIsRunning);
+    }
 }
 
 

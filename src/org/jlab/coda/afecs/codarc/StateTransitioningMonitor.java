@@ -41,7 +41,7 @@ import java.util.ArrayList;
  *         Date: 11/12/14 Time: 2:51 PM
  * @version 4.x
  */
-public class StateTransitioningMonitor extends Thread {
+public class StateTransitioningMonitor implements Runnable {
 
     private String            state2transition;
     private CodaRCAgent       owner;
@@ -79,7 +79,6 @@ public class StateTransitioningMonitor extends Thread {
 
     @Override
     public void run() {
-        super.run();
 
         long startTime = AfecsTool.getCurrentTimeInMs();
 
@@ -158,10 +157,6 @@ public class StateTransitioningMonitor extends Thread {
             System.out.println("DDD -----| Info: " + owner.me.getName() + " transitioned to " +
                     state2transition + " in " + (endTime - startTime) + " msec.");
 
-            // Report supervisor and GUIs
-            owner.send(owner.me.getSession(),
-                    owner.me.getRunType(),
-                    owner.me);
         }
     }
 }

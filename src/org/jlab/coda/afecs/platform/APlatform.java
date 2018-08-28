@@ -218,7 +218,7 @@ public class APlatform extends ABase {
 
 
         stb.append("**************************************************").append("\n");
-        stb.append("*               Afecs-3 Platform                 *").append("\n");
+        stb.append("*               Afecs-4 Platform                 *").append("\n");
         stb.append("**************************************************").append("\n");
         stb.append("- Name         = ").append(myConfig.getPlatformName()).append("\n");
         stb.append("- Host         = ").append(myConfig.getLocalHost()).append("\n");

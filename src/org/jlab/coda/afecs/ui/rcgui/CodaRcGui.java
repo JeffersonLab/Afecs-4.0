@@ -373,7 +373,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
 
         startTime = AfecsTool.getCurrentTime();
         System.out.println("**************************************************");
-        System.out.println("*             Afecs-3   RunControl GUI           *");
+        System.out.println("*             Afecs-4   RunControl GUI           *");
         System.out.println("**************************************************");
         System.out.println("- Name                  = " + base.myName);
         if (isMulticast) {

@@ -100,9 +100,9 @@ public class AConfig {
         }
 
         platformName                      = platformExpid;
-        platformDescription               = "Afecs-3 Platform for experiment "+platformExpid;
+        platformDescription               = "Afecs-4 Platform for experiment "+platformExpid;
         platformRcDomainServerName        = "undefined";
-        platformRcDomainServerDescription = "Afecs-3 Platform rc domain for experiment "+platformExpid;
+        platformRcDomainServerDescription = "Afecs-4 Platform rc domain for experiment "+platformExpid;
         session = System.getenv("SESSION");
         if(session == null) session = AConstants.udf;
         try {
