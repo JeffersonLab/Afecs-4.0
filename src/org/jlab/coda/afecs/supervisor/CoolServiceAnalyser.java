@@ -33,7 +33,7 @@ import org.jlab.coda.afecs.system.AConstants;
 
 import org.jlab.coda.afecs.system.util.AfecsTool;
 
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * <p>
@@ -185,7 +185,7 @@ public class CoolServiceAnalyser {
                                 owner.myComponents.get(st.getLeft())._moveToState(st.getRight());
                                 break;
                             case "do":
-                                owner.myComponents.get(st.getLeft()).requestStartProcess( st.getRight());
+                                owner.myComponents.get(st.getLeft()).requestStartProcess(st.getRight());
                                 break;
                             default:
                                 owner.reportAlarmMsg(owner.me.getSession() +
@@ -232,7 +232,7 @@ public class CoolServiceAnalyser {
                     owner.myComponents.get(s)._moveToState(st.getRight());
                     break;
                 case "do":
-                    owner.myComponents.get(s).requestStartProcess( st.getRight());
+                    owner.myComponents.get(s).requestStartProcess(st.getRight());
                     break;
                 default:
                     owner.reportAlarmMsg(owner.me.getSession() +
@@ -664,6 +664,7 @@ public class CoolServiceAnalyser {
 //     *
 //     * @param c AControl object as a result parsing rdf configuration
 //     * file for the control.
+
     /**
      * <p>
      * Basic differentiation of the supervisor agent.
@@ -726,6 +727,138 @@ public class CoolServiceAnalyser {
      */
     private void sortForReporting() {
 
+        // list for each type
+        List< AComponent> usrList = new ArrayList<>();
+        List< AComponent> smsList = new ArrayList<>();
+        List< AComponent> slcList = new ArrayList<>();
+        List< AComponent> erList = new ArrayList<>();
+        List< AComponent> fcsList = new ArrayList<>();
+        List< AComponent> pebList = new ArrayList<>();
+        List< AComponent> sebList = new ArrayList<>();
+        List< AComponent> ebList = new ArrayList<>();
+        List< AComponent> cdebList = new ArrayList<>();
+        List< AComponent> dcList = new ArrayList<>();
+        List< AComponent> rocList = new ArrayList<>();
+        List< AComponent> gtList = new ArrayList<>();
+        List< AComponent> tsList = new ArrayList<>();
+
+        //fill type lists
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.USR.name())) {
+                usrList.add(c.me);
+            } else if (c.me.getType().equals(ACodaType.SMS.name())) {
+                smsList.add(c.me);
+            } else if (c.me.getType().equals(ACodaType.SLC.name())) {
+                slcList.add(c.me);
+            } else if (c.me.getType().equals(ACodaType.ER.name())) {
+                erList.add(c.me);
+            } else if (c.me.getType().equals(ACodaType.FCS.name())) {
+                fcsList.add(c.me);
+            } else if (c.me.getType().equals(ACodaType.PEB.name())) {
+                pebList.add(c.me);
+            } else if (c.me.getType().equals(ACodaType.SEB.name())) {
+                sebList.add(c.me);
+            } else if (c.me.getType().equals(ACodaType.EB.name())) {
+                ebList.add(c.me);
+            } else if (c.me.getType().equals(ACodaType.CDEB.name())) {
+                cdebList.add(c.me);
+            } else if (c.me.getType().equals(ACodaType.DC.name())) {
+                dcList.add(c.me);
+            } else if (c.me.getType().equals(ACodaType.ROC.name())) {
+                rocList.add(c.me);
+            } else if (c.me.getType().equals(ACodaType.GT.name())) {
+                gtList.add(c.me);
+            } else if (c.me.getType().equals(ACodaType.TS.name())) {
+                tsList.add(c.me);
+            }
+        }
+
+        // sort type lists
+        usrList.sort(Comparator.comparingInt(AComponent::getPriority));
+        smsList.sort(Comparator.comparingInt(AComponent::getPriority));
+        slcList.sort(Comparator.comparingInt(AComponent::getPriority));
+        erList.sort(Comparator.comparingInt(AComponent::getPriority));
+        fcsList.sort(Comparator.comparingInt(AComponent::getPriority));
+        pebList.sort(Comparator.comparingInt(AComponent::getPriority));
+        sebList.sort(Comparator.comparingInt(AComponent::getPriority));
+        ebList.sort(Comparator.comparingInt(AComponent::getPriority));
+        cdebList.sort(Comparator.comparingInt(AComponent::getPriority));
+        dcList.sort(Comparator.comparingInt(AComponent::getPriority));
+        rocList.sort(Comparator.comparingInt(AComponent::getPriority));
+        gtList.sort(Comparator.comparingInt(AComponent::getPriority));
+        tsList.sort(Comparator.comparingInt(AComponent::getPriority));
+
+        // fill sorted components map
+        owner.sortedComponentList.clear();
+
+        for(AComponent c:usrList){
+            owner.sortedComponentList.put(c.getName(), c);
+        }
+        for(AComponent c:smsList){
+            owner.sortedComponentList.put(c.getName(), c);
+        }
+        for(AComponent c:slcList){
+            owner.sortedComponentList.put(c.getName(), c);
+        }
+        for(AComponent c:erList){
+            owner.sortedComponentList.put(c.getName(), c);
+        }
+        if (erList.size() > 1) {
+            AComponent nc = new AComponent();
+            nc.setName("ER_class");
+            nc.setType(ACodaType.ER.name());
+            nc.setState("na");
+            nc.setObjectType("coda3");
+            owner.sortedComponentList.put(nc.getName(), nc);
+        }
+
+        for(AComponent c:fcsList){
+            owner.sortedComponentList.put(c.getName(), c);
+        }
+        for(AComponent c:pebList){
+            owner.sortedComponentList.put(c.getName(), c);
+        }
+        if (pebList.size() > 1) {
+            AComponent nc = new AComponent();
+            nc.setName("PEB_class");
+            nc.setType(ACodaType.PEB.name());
+            nc.setState("na");
+            nc.setObjectType("coda3");
+            owner.sortedComponentList.put(nc.getName(), nc);
+        }
+
+        for(AComponent c:sebList){
+            owner.sortedComponentList.put(c.getName(), c);
+        }
+        if (sebList.size() > 1) {
+            AComponent nc = new AComponent();
+            nc.setName("SEB_class");
+            nc.setType(ACodaType.SEB.name());
+            nc.setState("na");
+            nc.setObjectType("coda3");
+            owner.sortedComponentList.put(nc.getName(), nc);
+        }
+
+        for(AComponent c:ebList){
+            owner.sortedComponentList.put(c.getName(), c);
+        }
+        for(AComponent c:cdebList){
+            owner.sortedComponentList.put(c.getName(), c);
+        }
+        for(AComponent c:dcList){
+            owner.sortedComponentList.put(c.getName(), c);
+        }
+        for(AComponent c:rocList){
+            owner.sortedComponentList.put(c.getName(), c);
+        }
+        for(AComponent c:gtList){
+            owner.sortedComponentList.put(c.getName(), c);
+        }
+        for(AComponent c:tsList){
+            owner.sortedComponentList.put(c.getName(), c);
+        }
+
+        /*
         int count;
         owner.sortedComponentList.clear();
         for (CodaRCAgent c : owner.myComponents.values()) {
@@ -751,7 +884,7 @@ public class CoolServiceAnalyser {
         for (CodaRCAgent c : owner.myComponents.values()) {
             if (c.me.getType().equals(ACodaType.ER.name())) {
                 owner.sortedComponentList.put(c.me.getName(), c.me);
-                    count++;
+                count++;
             }
         }
         if (count > 1) {
@@ -786,7 +919,7 @@ public class CoolServiceAnalyser {
             nc.setObjectType("coda3");
             owner.sortedComponentList.put(nc.getName(), nc);
         }
-         // End of PEB sorting
+        // End of PEB sorting
 
         // SEB sorting
         count = 0;
@@ -841,6 +974,7 @@ public class CoolServiceAnalyser {
                 owner.sortedComponentList.put(c.me.getName(), c.me);
             }
         }
+        */
 
     }
 
