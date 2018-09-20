@@ -1093,97 +1093,99 @@ class AControlDesigner extends ABase {
             // Assign configuration id to the runType
             int conf_id = myPlatform.registrar.addConfigId(runType);
 
-            for (AComponent com : c.getComponents()) {
+                c.getComponents().parallelStream().forEach((com) -> {
+//            for (AComponent com : c.getComponents()) {
 
-                AClientInfo ci = null;
-                com.setExpid(getPlEXPID());
-                com.setSession(session);
-                com.setRunType(runType);
-                com.setConfigID(conf_id);
-                com.setSupervisor("sms_" + runType);
+                    AClientInfo ci = null;
+                    com.setExpid(getPlEXPID());
+                    com.setSession(session);
+                    com.setRunType(runType);
+                    com.setConfigID(conf_id);
+                    com.setSupervisor("sms_" + runType);
 
 //                 set the client of the agent if client already requested an agent
-                if (myPlatform.registrar.getClientDir() != null &&
-                        myPlatform.registrar.getClientDir().containsKey(com.getName())) {
-                    ci = myPlatform.registrar.getClientDir().get(com.getName());
-                    com.setClient(ci);
-                }
+                    if (myPlatform.registrar.getClientDir() != null &&
+                            myPlatform.registrar.getClientDir().containsKey(com.getName())) {
+                        ci = myPlatform.registrar.getClientDir().get(com.getName());
+                        com.setClient(ci);
+                    }
 
-                // See if component in the control description is already active
-                if (myPlatform.registrar.getAgentDir() != null &&
-                        myPlatform.registrar.getAgentDir().containsKey(com.getName())) {
+                    // See if component in the control description is already active
+                    if (myPlatform.registrar.getAgentDir() != null &&
+                            myPlatform.registrar.getAgentDir().containsKey(com.getName())) {
 
-                    AComponent regComp = myPlatform.registrar.getAgentDir().get(com.getName());
+                        AComponent regComp = myPlatform.registrar.getAgentDir().get(com.getName());
 
-                    // Configured in a different session
-                    if (!regComp.getSession().equals(AConstants.udf) &&
-                            !regComp.getSession().equals(com.getSession())) {
+                        // Configured in a different session
+                        if (!regComp.getSession().equals(AConstants.udf) &&
+                                !regComp.getSession().equals(com.getSession())) {
 
-                        // Deny configuration/design
-                        ArrayList<cMsgPayloadItem> al = new ArrayList<>();
-                        try {
-                            al.add(new cMsgPayloadItem("MSGCONTENT",
-                                    "Configuration is Denied !\n\nComponent " +
-                                            regComp.getName() +
-                                            "is configured in \nsession = " +
-                                            regComp.getSession() +
-                                            "\nruntype = " +
-                                            regComp.getRunType()));
+                            // Deny configuration/design
+                            ArrayList<cMsgPayloadItem> al = new ArrayList<>();
+                            try {
+                                al.add(new cMsgPayloadItem("MSGCONTENT",
+                                        "Configuration is Denied !\n\nComponent " +
+                                                regComp.getName() +
+                                                "is configured in \nsession = " +
+                                                regComp.getSession() +
+                                                "\nruntype = " +
+                                                regComp.getRunType()));
 
-                            al.add(new cMsgPayloadItem("MSGACTION",
-                                    "GLOBALRESET"));
-                        } catch (cMsgException e) {
-                            e.printStackTrace();
-                            e.printStackTrace();
+                                al.add(new cMsgPayloadItem("MSGACTION",
+                                        "GLOBALRESET"));
+                            } catch (cMsgException e) {
+                                e.printStackTrace();
+                                e.printStackTrace();
+                            }
+
+                            // Inform GUIs
+                            send(session + "/" + runType,
+                                    AConstants.UIControlPopupInfo,
+                                    al);
+//                        return false;
+
+                            // Not configured, i.e. session = undefined
+                        } else {
+                            com.setClient(ci);
+                            myPlatform.container.getContainerAgents().get(regComp.getName()).updateComponent(com);
                         }
 
-                        // Inform GUIs
-                        send(session + "/" + runType,
-                                AConstants.UIControlPopupInfo,
-                                al);
-                        return false;
-
-                        // Not configured, i.e. session = undefined
+                        // No registration of the required agent
+                        // has been found. This is a new request
                     } else {
-                        com.setClient(ci);
-                        myPlatform.container.getContainerAgents().get(regComp.getName()).updateComponent(com);
+
+                        // Container of the agent is undefined
+                        if (com.getHost().equals(AConstants.udf)) {
+
+                            // See if there is a client with the same name
+                            // registered. Assign this agent to the registered client
+                            // and set the container host to be the platform host
+                            com.setHost(myConfig.getPlatformHost());
+                        }
+
+                        myPlatform.container.startAgent(com);
+                        // Ask container admin to start a new agent
+
+                        // wait for agent registration
+                        int tout = 0;
+                        do {
+                            AfecsTool.sleep(100);
+                            tout++;
+                        } while ((tout < AConstants.TIMEOUT) &&
+                                !myPlatform.registrar.getAgentDir().containsKey(com.getName()));
+                        if (tout > AConstants.TIMEOUT) {
+                            reportAlarmMsg(session + "/" + runType,
+                                    myName,
+                                    9,
+                                    AConstants.ERROR,
+                                    "Agent " + com.getName() + " is not registered.");
+                            System.out.println(myName +
+                                    ":  Agent " + com.getName() + " is not registered.");
+//                        return false;
+                        }
                     }
-
-                    // No registration of the required agent
-                    // has been found. This is a new request
-                } else {
-
-                    // Container of the agent is undefined
-                    if (com.getHost().equals(AConstants.udf)) {
-
-                        // See if there is a client with the same name
-                        // registered. Assign this agent to the registered client
-                        // and set the container host to be the platform host
-                        com.setHost(myConfig.getPlatformHost());
-                    }
-
-                    myPlatform.container.startAgent(com);
-                    // Ask container admin to start a new agent
-
-                    // wait for agent registration
-                    int tout = 0;
-                    do {
-                        AfecsTool.sleep(100);
-                        tout++;
-                    } while ((tout < AConstants.TIMEOUT) &&
-                            !myPlatform.registrar.getAgentDir().containsKey(com.getName()));
-                    if (tout > AConstants.TIMEOUT) {
-                        reportAlarmMsg(session + "/" + runType,
-                                myName,
-                                9,
-                                AConstants.ERROR,
-                                "Agent " + com.getName() + " is not registered.");
-                        System.out.println(myName +
-                                ":  Agent " + com.getName() + " is not registered.");
-                        return false;
-                    }
-                }
-            }
+//            }
+                });
 
             // Update client database in the COOL_HOME
             myPlatform.registrar.dumpClientDatabase();

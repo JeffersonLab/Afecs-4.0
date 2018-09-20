@@ -497,6 +497,7 @@ public class ABase implements Serializable {
         if (status &&
                 AConstants.debug.get() &&
                 !subject.equals(getPlEXPID()) &&
+                !subject.equals("GUI") &&
                 !subject.equals(myConfig.getSession())) {
             a_println(AfecsTool.getCurrentTime("HH:mm:ss") +
                     " " + myName +
@@ -671,7 +672,6 @@ public class ABase implements Serializable {
                     msg.addPayloadItem(item);
                 }
             }
-
             myCRCClientConnection.send(msg);
 
         } else {
@@ -1098,6 +1098,8 @@ public class ABase implements Serializable {
     }
 
     public void runControlSetRunNumber(int i) throws cMsgException {
+        a_println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                myName + ": --> setRunNumber "+i);
         ArrayList<cMsgPayloadItem> nl = new ArrayList<>();
         nl.add(new cMsgPayloadItem(AConstants.RUNNUMBER, i));
         rcSend(myName, AConstants.SessionControlSetRunNumber, "setRunNumber", nl);

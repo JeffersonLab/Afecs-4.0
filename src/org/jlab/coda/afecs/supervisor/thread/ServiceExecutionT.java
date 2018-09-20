@@ -183,8 +183,9 @@ public class ServiceExecutionT implements Runnable {
 
                     try {
 
-                        // Ask all components to set their run-numbers
+                        // Ask all components to set their run-numbers.
                         for (CodaRCAgent cn : owner.myComponents.values()) {
+                            cn.me.setRunNumber(rn);
                             cn.runControlSetRunNumber(rn);
                         }
                     } catch (cMsgException e) {
