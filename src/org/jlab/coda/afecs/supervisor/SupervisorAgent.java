@@ -348,9 +348,11 @@ public class SupervisorAgent extends AParent implements Serializable {
                 me.getRunTimeDataAsPayload());
 
         // Asking all supervised agents to configure
-        for (CodaRCAgent com : myComponents.values()) {
+        myComponents.values().parallelStream().forEach((com) -> {
+//        for (CodaRCAgent com : myComponents.values()) {
             com.agentControlRequestSetup();
-        }
+        });
+//        }
 
     }
 
