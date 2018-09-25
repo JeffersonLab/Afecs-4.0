@@ -158,7 +158,7 @@ public class CParser {
      * @param comps List of control agents
      */
     private void defineStreams(List<AComponent> comps) {
-        System.out.println("DDD-Carl -----| Info: StreamCount = "+numberOfFileComponents);
+        System.out.println("DDD -----| Info: StreamCount = "+numberOfFileComponents);
         for (AComponent comp : comps) {
             comp.setStreamCount(numberOfFileComponents);
         }
