@@ -158,7 +158,7 @@ public class CParser {
      * @param comps List of control agents
      */
     private void defineStreams(List<AComponent> comps) {
-        System.out.println("DDD -----| Info: StreamCount = "+numberOfFileComponents);
+//        System.out.println("DDD -----| Info: StreamCount = "+numberOfFileComponents);
         for (AComponent comp : comps) {
             comp.setStreamCount(numberOfFileComponents);
         }
@@ -410,7 +410,7 @@ public class CParser {
             tmps = getValue(x, "hasType");
             if (tmps != null) {
                 if (tmps.equals(ACodaType.FILE.name())) {
-                    numberOfFileComponents++;
+//                    numberOfFileComponents++;   // commented 09.25.18
                     continue;
                 }else if (tmps.equals(ACodaType.USR.name())) {
                     continue;
@@ -423,6 +423,7 @@ public class CParser {
                         pebId++;
                         cmp.setStreamId(pebId);
                     } else if (tmps.equals(ACodaType.SEB.name())){
+                        numberOfFileComponents++;
                         sebId++;
                         cmp.setStreamId(sebId);
                     } else if (tmps.equals(ACodaType.EB.name())){
