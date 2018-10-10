@@ -467,12 +467,6 @@ public class ABase implements Serializable {
                 try {
                     msg.setByteArray(AfecsTool.O2B(obj));
                 } catch (IOException e) {
-
-                    System.out.println("DDD ----------- DDD");
-                    e.printStackTrace();
-                    System.out.println("DDD ----------- DDD");
-
-
                     e.printStackTrace();
                     status = false;
                 }
@@ -481,12 +475,6 @@ public class ABase implements Serializable {
             try {
                 myPlatformConnection.send(msg);
             } catch (cMsgException e) {
-
-                System.out.println("DDD ----------- DDD");
-                e.printStackTrace();
-                System.out.println("DDD ----------- DDD");
-
-
                 e.printStackTrace();
                 status = false;
             }

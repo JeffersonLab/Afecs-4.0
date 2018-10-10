@@ -681,11 +681,13 @@ public class CoolServiceAnalyser {
         // Store locally all registered components for this supervisor
         if (c.getComponents() != null && !c.getComponents().isEmpty()) {
             for (AComponent comp : c.getComponents()) {
+
                 if (!comp.getName().equals(owner.myName)) {
                     if (comp.getCoda2Component().equals(AConstants.seton)) {
                         owner.haveCoda2Component.set(true);
                     }
                     owner.myComponents.put(comp.getName(), owner.myContainer.getContainerAgents().get(comp.getName()));
+
 //                    owner.myComponents.put(comp.getName(), comp);
                     owner.myCompReportingTimes.put(comp.getName(), new AReportingTime());
                 }

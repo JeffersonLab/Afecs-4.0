@@ -123,7 +123,7 @@ public class JinFluxDriver extends JinFlux {
                 }
             }
         } catch (Exception e) {
-            System.out.println("DDD: Error writing into influxDB");
+            System.out.println("DDD ----| Error: writing into influxDB");
         }
     }
 

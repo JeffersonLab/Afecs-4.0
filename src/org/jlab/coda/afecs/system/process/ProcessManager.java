@@ -22,6 +22,7 @@
 
 package org.jlab.coda.afecs.system.process;
 
+import com.sun.scenario.effect.impl.sw.java.JSWBlend_SRC_OUTPeer;
 import org.jlab.coda.afecs.agent.AParent;
 import org.jlab.coda.afecs.cool.ontology.*;
 import org.jlab.coda.afecs.plugin.IAClientCommunication;
@@ -224,7 +225,6 @@ public class ProcessManager {
         if (comp.getProcesses() != null && !comp.getProcesses().isEmpty()) {
             for (AProcess p : comp.getProcesses()) {
                 if (p.getName().equals(processName)) {
-
                     executeProcess(p, plugin, comp);
                     break;
                 }
@@ -535,7 +535,6 @@ public class ProcessManager {
     private boolean _async_sendPckgUsingRc(APackage pck,
                                            AComponent comp) {
         boolean b = true;
-
         ArrayList<cMsgPayloadItem> al = _defineSendPackagePayload(pck, comp);
 
         try {

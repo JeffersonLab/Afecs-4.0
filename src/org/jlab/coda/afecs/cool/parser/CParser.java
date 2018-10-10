@@ -25,6 +25,9 @@ package org.jlab.coda.afecs.cool.parser;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.rdql.*;
 
+import org.jlab.coda.afecs.client.AClientInfo;
+import org.jlab.coda.afecs.codarc.CodaRCAgent;
+import org.jlab.coda.afecs.container.AContainer;
 import org.jlab.coda.afecs.cool.ontology.*;
 import org.jlab.coda.afecs.system.ACodaType;
 import org.jlab.coda.afecs.system.AConfig;
@@ -63,14 +66,16 @@ public class CParser {
     private int numberOfFileComponents;
     private int erId = -1, pebId = -1, sebId = -1, ebId = -1, cdebId = -1, dcId = -1;
 
+    private AContainer myContainer;
 
-    public CParser(Map<String, String> usrSetRTVs) {
+
+    public CParser(Map<String, String> usrSetRTVs, AContainer con) {
         if (usrSetRTVs != null) {
             this.setRTVs = usrSetRTVs;
         } else {
             setRTVs = new HashMap<>();
         }
-
+        myContainer = con;
     }
 
     /**
@@ -104,9 +109,45 @@ public class CParser {
 
         AControl c = new AControl();
         c.setName(runType);
-        c.setComponents(parseComponent(AConstants.COOL_HTTP_BASE + "Control" +
+        ArrayList<AComponent> al = parseComponent(AConstants.COOL_HTTP_BASE + "Control" +
                 File.separator + runType +
-                File.separator + runType + "#" + runType, "hasComponent"));
+                File.separator + runType + "#" + runType, "hasComponent");
+        c.setComponents(al);
+
+        // update Container agentMap with new configuration data
+        for (AComponent agent : al) {
+
+            if (myContainer.getContainerAgents().containsKey(agent.getName())) {
+                // update registered agent information on the container
+                CodaRCAgent cAgent = myContainer.getContainerAgents().get(agent.getName());
+                // saving IP information
+                Map<String, String[]> lip = cAgent.me.getLinkedIp();
+                Map<String, String[]> lba = cAgent.me.getLinkedBa();
+                AClientInfo ai = cAgent.me.getClient();
+                // updating the new configuration info
+                cAgent.updateComponent(agent);
+                // putting back IP information
+                cAgent.me.setClient(ai);
+                cAgent.me.setLinkedIp(lip);
+                cAgent.me.setLinkedBa(lba);
+                // update registration
+                myContainer.myPlatform.registrar.addAgent(cAgent.me);
+                myContainer.myPlatform.registrar.addClient(cAgent.me.getClient());
+
+                // update linked components IP information
+                for (String linkedCompName : cAgent.me.getLinkedComponentNames()) {
+                    CodaRCAgent linkedAgent = cAgent.myContainer.getContainerAgents().get(linkedCompName);
+                    linkedAgent.agentControlRequestNetworkDetails(
+                            cAgent.myName,
+                            cAgent.me.getClient().getHostIps(),
+                            cAgent.me.getClient().getHostBroadcastAddresses()
+                    );
+                    // update registration
+                    myContainer.myPlatform.registrar.addClient(linkedAgent.me.getClient());
+                }
+
+            }
+        }
 
         if (!onlyComponents) {
 
@@ -412,27 +453,27 @@ public class CParser {
                 if (tmps.equals(ACodaType.FILE.name())) {
 //                    numberOfFileComponents++;   // commented 09.25.18
                     continue;
-                }else if (tmps.equals(ACodaType.USR.name())) {
+                } else if (tmps.equals(ACodaType.USR.name())) {
                     continue;
                 } else {
                     cmp.setType(tmps);
-                    if(tmps.equals(ACodaType.ER.name())){
+                    if (tmps.equals(ACodaType.ER.name())) {
                         erId++;
                         cmp.setStreamId(erId);
-                    } else if (tmps.equals(ACodaType.PEB.name())){
+                    } else if (tmps.equals(ACodaType.PEB.name())) {
                         pebId++;
                         cmp.setStreamId(pebId);
-                    } else if (tmps.equals(ACodaType.SEB.name())){
+                    } else if (tmps.equals(ACodaType.SEB.name())) {
                         numberOfFileComponents++;
                         sebId++;
                         cmp.setStreamId(sebId);
-                    } else if (tmps.equals(ACodaType.EB.name())){
+                    } else if (tmps.equals(ACodaType.EB.name())) {
                         ebId++;
                         cmp.setStreamId(ebId);
-                    } else if (tmps.equals(ACodaType.CDEB.name())){
+                    } else if (tmps.equals(ACodaType.CDEB.name())) {
                         cdebId++;
                         cmp.setStreamId(cdebId);
-                    } else if (tmps.equals(ACodaType.DC.name())){
+                    } else if (tmps.equals(ACodaType.DC.name())) {
                         dcId++;
                         cmp.setStreamId(dcId);
                     }

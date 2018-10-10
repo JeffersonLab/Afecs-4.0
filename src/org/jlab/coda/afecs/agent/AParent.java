@@ -198,7 +198,6 @@ public class AParent extends ABase implements Serializable {
         pm = new ProcessManager(this);
     }
 
-
     /**
      * <p>
      * Register with the platform
@@ -394,7 +393,6 @@ public class AParent extends ABase implements Serializable {
                     if (s.getProcesses() != null) {
                         for (AProcess p : s.getProcesses()) {
                             if (p != null) {
-
                                 status = pm.executeProcess(p, myPlugin, me);
                                 if (!status) {
 
@@ -425,7 +423,6 @@ public class AParent extends ABase implements Serializable {
                                         while (me.getState().contains("ing")) {
                                             AfecsTool.sleep(300);
                                         }
-
                                         pm.executeProcess(ap, myPlugin, me);
                                     }
                                 }

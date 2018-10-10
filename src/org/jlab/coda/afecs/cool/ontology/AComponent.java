@@ -755,7 +755,9 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
     }
 
     public void addLinkedIp(String name, String[] linkedIpa) {
-        this.linkedIp.put(name,linkedIpa);
+        if(linkedIpa.length > 0 && !linkedIpa[0].equals("")) {
+            this.linkedIp.put(name, linkedIpa);
+        }
     }
 
     public Map<String,String[]> getLinkedBa() {

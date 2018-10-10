@@ -348,12 +348,9 @@ public class SupervisorAgent extends AParent implements Serializable {
                 me.getRunTimeDataAsPayload());
 
         // Asking all supervised agents to configure
-        myComponents.values().parallelStream().forEach((com) -> {
-//        for (CodaRCAgent com : myComponents.values()) {
-            com.agentControlRequestSetup();
-        });
+        //        for (CodaRCAgent com : myComponents.values()) {
+        myComponents.values().parallelStream().forEach(CodaRCAgent::agentControlRequestSetup);
 //        }
-
     }
 
     /**
@@ -578,7 +575,7 @@ public class SupervisorAgent extends AParent implements Serializable {
      * </p>
      */
     private void stopServiceExecutionThread() {
-        if(es !=null && !es.isTerminated() && !es.isShutdown()) {
+        if (es != null && !es.isTerminated() && !es.isShutdown()) {
             es.shutdownNow();
         }
     }
@@ -816,7 +813,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                     case "ER_class":
                         for (CodaRCAgent c : myComponents.values()) {
                             if (c.me.getType().equals(ACodaType.ER.name())) {
-                                System.out.println("DDD ------- setting fileWriting = " +
+                                System.out.println("DDD ----| Info: setting fileWriting = " +
                                         s_fileWriting + " for component = " + c.me.getName());
                                 c.agentControlRequestSetFileWriting(s_fileWriting);
                             }
@@ -1459,7 +1456,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                         break;
                 }
             } else {
-                System.out.println("DDD MESSAGE IS NULL");
+                System.out.println("DDD ----| Warning: message is NULL");
                 me.setState(AConstants.booted);
             }
         }

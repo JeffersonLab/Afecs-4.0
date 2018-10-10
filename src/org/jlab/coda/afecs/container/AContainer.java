@@ -246,7 +246,6 @@ public class AContainer extends ABase {
      * Registration of the container
      * control agent with the platform
      * </p>
-     *
      */
     private void register() {
         myPlatform.platformRegistrationRequestAdd(me);
@@ -287,18 +286,18 @@ public class AContainer extends ABase {
      *          the {@link AComponent} object
      */
     public void startAgent(AComponent a) {
-        if(!containerAgents.containsKey(a.getName())) {
+        if (!containerAgents.containsKey(a.getName())) {
             boolean stat = true;
             CodaRCAgent agent = null;
-                if (a.getClassName().equals(AConstants.udf)) {
-                    agent = new CodaRCAgent(a, this);
-                } else {
+            if (a.getClassName().equals(AConstants.udf)) {
+                agent = new CodaRCAgent(a, this);
+            } else {
 
-                    // Dynamically load the requested agent class
-                    if (!_dynLoadAgentClass(a)) {
-                        stat = false;
-                    }
+                // Dynamically load the requested agent class
+                if (!_dynLoadAgentClass(a)) {
+                    stat = false;
                 }
+            }
             if (stat && (agent != null) && (a.getName() != null)) {
                 containerAgents.put(a.getName(), agent);
             }
@@ -389,7 +388,6 @@ public class AContainer extends ABase {
     }
 
 
-
     /**
      * <p>
      * Message is coming from the real world client.
@@ -471,7 +469,7 @@ public class AContainer extends ABase {
                     CodaRCAgent _agent = containerAgents.get(sender);
                     String clientState = _agent._getClientState(3000, 1000);
                     if (!clientState.equals(AConstants.udf)) {
-                        System.out.println("DDD =============== Rejecting (state = " +
+                        System.out.println("DDD ----| Warning: Rejecting (state = " +
                                 clientState + ") " +
                                 sender +
                                 " request to connect...");
@@ -480,13 +478,12 @@ public class AContainer extends ABase {
 
                     if (_agent.me.getClient() != null &&
                             _agent.me.getClient().getRequestId() != cif.getRequestId()) {
-                        System.out.println("DDD ===== Reconnecting to the client = " + sender);
+                        System.out.println("DDD ----| Info: Reconnecting to the client = " + sender);
                     }
                     _agent.me.setClient(cif);
                     _agent._stopCommunications();
                     _agent._stopClientHeartBeatMonitor();
                     _agent._reconnectResponse(_agent.me.getClient());
-
                 } else {
                     // Create AComponent object for this client
                     AComponent comp = new AComponent();
@@ -494,10 +491,18 @@ public class AContainer extends ABase {
                     comp.setHost(myConfig.getContainerHost());
                     comp.setClient(cif);
                     startAgent(comp);
-
-
                 }
             }
+            CodaRCAgent newUpdatedAgent = getContainerAgents().get(sender);
+            for (String linkedCompName : newUpdatedAgent.me.getLinkedComponentNames()) {
+                CodaRCAgent linkedAgent = getContainerAgents().get(linkedCompName);
+                linkedAgent.agentControlRequestNetworkDetails(
+                        newUpdatedAgent.myName,
+                        newUpdatedAgent.me.getClient().getHostIps(),
+                        newUpdatedAgent.me.getClient().getHostBroadcastAddresses()
+                );
+            }
+
         });
         executorService.shutdown();
     }

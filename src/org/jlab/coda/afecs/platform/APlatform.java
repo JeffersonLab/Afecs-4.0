@@ -438,6 +438,58 @@ public class APlatform extends ABase {
         return registrar.getSessionRunNumber(session);
     }
 
+    public void platformControlRegisterClient(AClientInfo cfo) {
+        if (cfo == null) {
+            System.out.println(myName + ":warning platform request to register Null client");
+            return;
+        }
+
+        // Check to see if any other DB registered client
+        // share the same host and port, remove if there is.
+        registrar.checkDeleteClientDB(cfo.getName(),
+                cfo.getHostName(),
+                cfo.getPortNumber());
+
+        if (registrar.getClientDir().containsKey(cfo.getName())) {
+            registrar.getClient(cfo.getName()).setHostName(cfo.getHostName());
+            registrar.getClient(cfo.getName()).setPortNumber(cfo.getPortNumber());
+            registrar.getClient(cfo.getName()).setContainerHost(cfo.getContainerHost());
+        } else {
+
+            // This is the first JoinThePlatform request
+            registrar.addClient(cfo);
+        }
+
+        // Open a file in the CoolHome and
+        // write ClientDir hash table content
+        registrar.dumpClientDatabase();
+
+        if (registrar.getAgentDir().containsKey(cfo.getName())) {
+            if (AConstants.debug.get())
+                System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") +
+                        " " + myName +
+                        ": Info -  agent for " + cfo.getName() +
+                        " exists on the platform, adding new client information.");
+
+            // Add new client information to the agent
+            registrar.getAgentDir().get(cfo.getName()).setClient(cfo);
+        }
+        System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") +
+                " " + myName +
+                ": Info -  Component = " +
+                cfo.getName() +
+                " Host = " + cfo.getHostName() +
+                " registered with the platform.");
+        dalogMsg(myName, 3,
+                "INFO",
+                " Component = " +
+                        cfo.getName() +
+                        " Host = " +
+                        cfo.getHostName() +
+                        " registered with the platform.");
+
+    }
+
     public Collection<String> getPlatform_ips() {
         return platform_ips;
     }
@@ -495,69 +547,6 @@ public class APlatform extends ABase {
                         break;
 
                     case AConstants.PlatformControlRegisterClient:
-                        try {
-                            if (msg.getByteArray() == null) {
-                                System.out.println(myName + ":warning platform request to register Null client");
-                                return;
-                            }
-                            AClientInfo cfo = (AClientInfo) AfecsTool.B2O(msg.getByteArray());
-
-                            if (cfo != null) {
-
-                                // Check to see if any other DB registered client
-                                // share the same host and port, remove if there is.
-                                registrar.checkDeleteClientDB(cfo.getName(),
-                                        cfo.getHostName(),
-                                        cfo.getPortNumber());
-
-                                if (registrar.getClientDir().containsKey(cfo.getName())) {
-                                    registrar.getClient(cfo.getName()).setHostName(cfo.getHostName());
-                                    registrar.getClient(cfo.getName()).setPortNumber(cfo.getPortNumber());
-                                    registrar.getClient(cfo.getName()).setContainerHost(cfo.getContainerHost());
-                                } else {
-
-                                    // This is the first JoinThePlatform request
-                                    registrar.addClient(cfo);
-                                }
-
-                                // Open a file in the CoolHome and
-                                // write ClientDir hash table content
-                                registrar.dumpClientDatabase();
-
-                                if (registrar.getAgentDir().containsKey(cfo.getName())) {
-                                    if (AConstants.debug.get())
-                                        System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") +
-                                                " " + myName +
-                                                ": Info -  agent for " + cfo.getName() +
-                                                " exists on the platform, adding new client information.");
-
-                                    // Add new client information to the agent
-                                    registrar.getAgentDir().get(cfo.getName()).setClient(cfo);
-                                }
-                                System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") +
-                                        " " + myName +
-                                        ": Info -  Component = " +
-                                        cfo.getName() +
-                                        " Host = " + cfo.getHostName() +
-                                        " registered with the platform.");
-                                dalogMsg(myName, 3,
-                                        "INFO",
-                                        " Component = " +
-                                                cfo.getName() +
-                                                " Host = " +
-                                                cfo.getHostName() +
-                                                " registered with the platform.");
-                            }
-                            if (msg.isGetRequest()) {
-                                cMsgMessage mr = msg.response();
-                                mr.setSubject(AConstants.udf);
-                                mr.setType(AConstants.udf);
-                                myPlatformConnection.send(mr);
-
-                            }
-                        } catch (IOException | ClassNotFoundException | cMsgException e) {
-                            e.printStackTrace();
-                        }
                         break;
 
                     case AConstants.PlatformControlUpdateOptions:

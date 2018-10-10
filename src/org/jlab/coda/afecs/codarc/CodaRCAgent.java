@@ -30,6 +30,7 @@ import org.jlab.coda.afecs.cool.ontology.APackage;
 import org.jlab.coda.afecs.cool.ontology.AProcess;
 import org.jlab.coda.afecs.cool.ontology.AState;
 import org.jlab.coda.afecs.fcs.FcsEngine;
+import org.jlab.coda.afecs.supervisor.SupervisorAgent;
 import org.jlab.coda.afecs.system.ACodaType;
 import org.jlab.coda.afecs.system.AConstants;
 import org.jlab.coda.afecs.system.AException;
@@ -38,7 +39,6 @@ import org.jlab.coda.cMsg.*;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
@@ -113,8 +113,6 @@ public class CodaRCAgent extends AParent {
     // we need to create FcsEngine object.
     private FcsEngine fcsEngine;
 
-    private List<Float> averageRateStorage = new ArrayList<>();
-
     // State transition monitor executor
     private ExecutorService es;
 
@@ -172,7 +170,7 @@ public class CodaRCAgent extends AParent {
 
     }
 
-    public void updateComponent(AComponent component){
+    public void updateComponent(AComponent component) {
         me = component;
     }
 
@@ -294,8 +292,8 @@ public class CodaRCAgent extends AParent {
                 sessionControlStartReporting();
 
                 // tell client linked component network information
-
                 for (String com : me.getLinkedComponentNames()) {
+
                     if (myContainer.getContainerAgents().containsKey(com)) {
                         myContainer.getContainerAgents().get(com).agentControlRequestNetworkDetails(
                                 myName,
@@ -310,7 +308,7 @@ public class CodaRCAgent extends AParent {
 
             // Start agent health watching thread.
             // This tells client to start reporting
-             _startClientHeartBeatMonitor();
+            _startClientHeartBeatMonitor();
 
             // Tell client about the session and the runType.
             try {
@@ -525,34 +523,6 @@ public class CodaRCAgent extends AParent {
 
 
     /**
-     * Stores in the local map the values of average event rates.
-     * This is to present smoothed average event rate to GUIs.
-     *
-     * @param evtRate average event rate. the result of moving average calculation
-     */
-    private float smoothRate(float evtRate) {
-
-        int averageOver = 10;
-        if (averageRateStorage.size() >= AConstants.AVERAGING_SIZE) {
-            averageRateStorage.remove(0);
-            averageRateStorage.add(evtRate);
-        }
-
-        float tmpv = 0.0f;
-        int ind = 0;
-        if (averageRateStorage.size() > 0) {
-            for (int i = averageRateStorage.size() - averageOver; i < averageRateStorage.size(); i++) {
-                if (averageRateStorage.get(i) != null && averageRateStorage.get(i) > 0.0f) {
-                    tmpv += averageRateStorage.get(i);
-                    ind++;
-                }
-            }
-            if (ind != 0) tmpv = tmpv / ind;
-        }
-        return tmpv;
-    }
-
-    /**
      * <p>
      * Calculates average values
      * for event rate and data rate
@@ -565,11 +535,11 @@ public class CodaRCAgent extends AParent {
                 me.getDataRate() >= 0 &&
                 me.getEventRate() >= 0) {
 
-            long time = (long) ((AfecsTool.getCurrentTimeInMs()) / 1000.0);
-            if (time > 0) {
-
-                me.setEventRateAverage(smoothRate(me.getEventNumber() / time));
-            }
+            float evtAv =
+                    me.getEventRateAverage() +
+                            ((me.getEventRate() - me.getEventRateAverage()) /
+                                    averageCount);
+            me.setEventRateAverage(evtAv);
             double datAv =
                     me.getDataRateAverage() +
                             ((me.getDataRate() - me.getDataRateAverage()) /
@@ -703,7 +673,7 @@ public class CodaRCAgent extends AParent {
      * </p>
      */
     private void _stopStateTransitioningMonitor() {
-        if(es !=null && !es.isTerminated() && !es.isShutdown()) {
+        if (es != null && !es.isTerminated() && !es.isShutdown()) {
             es.shutdownNow();
         }
     }
@@ -724,7 +694,7 @@ public class CodaRCAgent extends AParent {
         es.submit(stateTransitionMonitor);
     }
 
-    private void _startClientHeartBeatMonitor(){
+    private void _startClientHeartBeatMonitor() {
         _stopClientHeartBeatMonitor();
         ClientHeartBeatMonitor clientHealthMonitor =
                 new ClientHeartBeatMonitor(this, 120000, 20000);
@@ -732,9 +702,9 @@ public class CodaRCAgent extends AParent {
         clientHealthMonitor.start();
     }
 
-    public void _stopClientHeartBeatMonitor(){
-            clientHeartBeatIsRunning = false;
-            AfecsTool.sleep(1000);
+    public void _stopClientHeartBeatMonitor() {
+        clientHeartBeatIsRunning = false;
+        AfecsTool.sleep(1000);
     }
 
 
@@ -858,20 +828,12 @@ public class CodaRCAgent extends AParent {
     public void _reconnectResponse(AClientInfo cInfo) {
 
         boolean b = _connect2Client();
-
         // if client connection is successful ask platform
         // registration service to register the client
         // This will write a record in the cool_home/ddb/clientRegistration.xml
         if (b) {
             // Ask platform to register client
-            try {
-                p2pSend(myConfig.getPlatformName(),
-                        AConstants.PlatformControlRegisterClient,
-                        cInfo, 15000);
-            } catch (AException e) {
-                e.printStackTrace();
-                System.out.println("ERROR:" + cInfo.getName() + " can not register client.");
-            }
+            myPlatform.platformControlRegisterClient(cInfo);
 
             // Differentiate agent
             differentiate(me);
@@ -1284,7 +1246,7 @@ public class CodaRCAgent extends AParent {
         me.setState(AConstants.disconnected);
     }
 
-    private void agentControlRequestNetworkDetails(String sender, String[] ip, String[] br) {
+    public void agentControlRequestNetworkDetails(String sender, String[] ip, String[] br) {
         // store linked component network information
         me.addLinkedIp(sender, ip);
         me.addLinkedBa(sender, br);
@@ -1300,6 +1262,8 @@ public class CodaRCAgent extends AParent {
 
 
     public void agentControlRequestSetup() {
+
+
         // differentiate agent
         differentiate(me);
 

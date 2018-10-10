@@ -132,7 +132,7 @@ class AControlDesigner extends ABase {
     public boolean parseControlDescription(String session, String runType) {
         boolean stat = true;
 
-        CParser p = new CParser(null);
+        CParser p = new CParser(null, myPlatform.container);
         if (p.openFile(runType + "/" + runType + ".rdf", false)) {
 
             // parse control for only components, do not add supervisor agent to the control
@@ -196,7 +196,7 @@ class AControlDesigner extends ABase {
                                            Map<String, String> usrSetRTVs) {
         boolean stat = true;
 
-        CParser p = new CParser(usrSetRTVs);
+        CParser p = new CParser(usrSetRTVs, myPlatform.container);
 
         if (p.openFile(runType + "/" + runType + ".rdf", false)) {
 
@@ -315,7 +315,7 @@ class AControlDesigner extends ABase {
                                       Map<String, String> usrSetRTVs) {
 
         boolean stat = true;
-        CParser p = new CParser(usrSetRTVs);
+        CParser p = new CParser(usrSetRTVs, myPlatform.container);
 
         if (p.openFile(runType + "/" + runType + ".rdf", false)) {
 
