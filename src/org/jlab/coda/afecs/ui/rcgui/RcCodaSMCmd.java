@@ -70,7 +70,7 @@ public class RcCodaSMCmd extends SwingWorker<Integer, Void>{
                     owner.popupWarningDialog("Heavy network traffic detected!");
                     System.out.println("Heavy network traffic detected!" +
                             "\nError: cMsg p2pSend command timeout. " +
-                            "\nIt is recommended to restart the GUI and try the command again." );
+                            "\nTry the command again." );
                     return out;
                 } else {
                     // update gui
