@@ -1160,7 +1160,6 @@ public class SupervisorAgent extends AParent implements Serializable {
                     try {
                         String type = msg.getType();
                         String txt = msg.getText();
-                        if (txt == null) return;
                         cMsgMessage mr = msg.response();
                         mr.setSubject(AConstants.udf);
                         mr.setType(AConstants.udf);
