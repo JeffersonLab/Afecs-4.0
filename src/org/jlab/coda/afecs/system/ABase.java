@@ -487,7 +487,7 @@ public class ABase implements Serializable {
                 !subject.equals(getPlEXPID()) &&
                 !subject.equals("GUI") &&
                 !subject.equals(myConfig.getSession())) {
-            a_println(AfecsTool.getCurrentTime("HH:mm:ss") +
+            System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") +
                     " " + myName +
                     ": Info -  cmsg_send subject = " + subject +
                     " type = " + type +
@@ -669,7 +669,7 @@ public class ABase implements Serializable {
                 AConstants.debug.get() &&
                 !subject.equals(getPlEXPID()) &&
                 !subject.equals(myConfig.getSession())) {
-            a_println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+            System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
                     myName + ": Info - rc_send subject = " + subject +
                     " type = " + type);
         }
@@ -733,15 +733,18 @@ public class ABase implements Serializable {
             }
 
             try {
+                System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                        myName + "----|: Info - rc_sendAndGet subject = " + subject +
+                        " type = " + type);
+
                 msgBack = myCRCClientConnection.sendAndGet(msg, timeout);
-//                a_println(msgBack.toString());
             } catch (Exception e) {
                 if (e.getMessage() == null) {
-                    a_println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                    System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
                             myName + ": Error - rc_sendAndGet subject = " + subject +
                             " type = " + type + " => timed out.");
                 } else {
-                    a_println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                    System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
                             myName + ": Error - rc_sendAndGet subject = " + subject +
                             " type = " + type + " => exception message = " + e.getMessage());
                 }
@@ -750,7 +753,7 @@ public class ABase implements Serializable {
                 throw new AException(e.getMessage(), e);
             }
             if (msgBack == null) {
-                a_println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
                         myName + ": Error - rc_sendAndGet subject = " + subject +
                         " type = " + type + " => null response from the client");
                 throw new AException(myName + "-Error: null response from the client");
@@ -759,7 +762,7 @@ public class ABase implements Serializable {
 //                System.out.println(AfecsTool.getCurrentTime("HH:mm:ss")+" "+
 //                        myName+": Info - rc_sendAndGet subject = "+subject+
 //                        " type = "+type+" => "+msgBack);
-//                a_println(AfecsTool.getCurrentTime("HH:mm:ss")+" "+
+//                System.out.println(AfecsTool.getCurrentTime("HH:mm:ss")+" "+
 //                        myName+": Info - rc_sendAndGet subject = "+subject+
 //                        " type = "+type+" => "+msgBack);
 //            }
@@ -1064,7 +1067,7 @@ public class ABase implements Serializable {
     // ----------------------------------------------------------------------
     public void sessionControlStartReporting() throws cMsgException {
 
-        a_println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+        System.out.println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
                 myName + ": --> startReporting");
 
         rcSend(myName, AConstants.SessionControlStartReporting, "startReporting");
@@ -1077,7 +1080,7 @@ public class ABase implements Serializable {
 
     public void sessionControlSetSession(String s) throws cMsgException {
 
-        a_println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+        System.out.println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
                 myName + ": --> setSession");
 
         ArrayList<cMsgPayloadItem> nl = new ArrayList<>();
@@ -1086,7 +1089,7 @@ public class ABase implements Serializable {
     }
 
     public void runControlSetRunNumber(int i) throws cMsgException {
-        a_println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+        System.out.println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
                 myName + ": --> setRunNumber "+i);
         ArrayList<cMsgPayloadItem> nl = new ArrayList<>();
         nl.add(new cMsgPayloadItem(AConstants.RUNNUMBER, i));
@@ -1095,7 +1098,7 @@ public class ABase implements Serializable {
 
     public void runControlSetRunType(String s) throws cMsgException {
 
-        a_println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+        System.out.println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
                 myName + ": --> setRunType");
 
         ArrayList<cMsgPayloadItem> nl = new ArrayList<>();
@@ -1103,19 +1106,6 @@ public class ABase implements Serializable {
         rcSend(myName, AConstants.SessionControlSetRunType, "setRunType", nl);
     }
 
-    /**
-     * <p>
-     * Broadcasts information about the platform,
-     * along with a message passed as a parameter.
-     * </p>
-     *
-     * @param info message text
-     */
-    public void a_println(String info) {
-        if (isPlatformConnected()) {
-//            send(getPlEXPID(), AConstants.RcConsoleReport, info);
-            System.out.println(info);
-        }
-    }
+
 
 }

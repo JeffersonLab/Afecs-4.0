@@ -873,6 +873,7 @@ public class CParser {
             if (status != null) {
                 process.setStatus(status);
             }
+
             initiator = getValue(x, "isInitiator");
             if (initiator != null) {
                 process.setInitiator(initiator);

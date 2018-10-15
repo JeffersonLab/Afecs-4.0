@@ -46,7 +46,7 @@ public class StateTransitioningMonitor implements Runnable {
     private String            state2transition;
     private CodaRCAgent       owner;
     private ArrayList<String>
-            stateExpectedResponses = new ArrayList<>();
+            stateExpectedResponses;
 
     /**
      * Constructor

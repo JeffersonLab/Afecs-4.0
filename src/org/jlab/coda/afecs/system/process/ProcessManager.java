@@ -501,8 +501,8 @@ public class ProcessManager {
                         al,
                         to));
             }
-        } catch (AException ignored) {
-//            e.printStackTrace();
+        } catch (AException e) {
+            e.printStackTrace();
             __reconnect();
         }
         // check the return message
