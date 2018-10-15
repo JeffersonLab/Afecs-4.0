@@ -51,7 +51,7 @@ public class AStatusReportT extends Thread {
 
     private volatile boolean isRunning = true;
 
-    private static final int INFLUX_INJECT_DELAY = 5;
+    private static final int INFLUX_INJECT_DELAY = 1;
     private static final int RUNLOG_CREATE_DELAY = 10;
 
     public AStatusReportT(SupervisorAgent owner) {
@@ -412,7 +412,7 @@ public class AStatusReportT extends Thread {
                             !owner.me.getRunStartTime().equals("0") &&
                             influx_delay <= 0) {
                         influx_delay = INFLUX_INJECT_DELAY;
-                        // push state info of entire runType into influxDB
+//                         push state info of entire runType into influxDB
                         owner.myPlatform.influxInjector.jinFluxDriver.push(owner);
 //                        owner.send("afecswebmon" + "_" + owner.myConfig.getPlatformExpid(),
 //                                AConstants.InfluxDBInjectRequestPlatformData,
