@@ -152,7 +152,7 @@ public class ClientHeartBeatMonitor extends Thread{
                 e.printStackTrace();
             }
 
-            owner.a_println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " + owner.myName +
+            System.out.println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " + owner.myName +
                     ": --> heartbeat listening thread - getClientState = " + owner.me.getState());
 
         }
@@ -180,7 +180,7 @@ public class ClientHeartBeatMonitor extends Thread{
             // No reporting for more than disconnect time limit
             if (_timeAfterLastReporting >= _disconnectTimeLimit) {
 
-                owner.a_println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                System.out.println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
                         owner.myName + ": --> heartbeat listening thread - timeAfterLastReporting = " + _timeAfterLastReporting +
                         " disconnectTimeLimit = " + _disconnectTimeLimit);
 

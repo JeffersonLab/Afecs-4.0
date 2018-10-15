@@ -460,7 +460,7 @@ public class CodaRCAgent extends AParent {
         for (int i = 0; i < to; i++) {
             try {
 
-                a_println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                System.out.println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
                         myName + ": --> rc_syncGetState time=" + stepTimeout);
 
                 tmp = rcClientInfoSyncGetState(stepTimeout);
@@ -469,7 +469,7 @@ public class CodaRCAgent extends AParent {
                     break;
                 }
 
-                a_println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                System.out.println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
                         myName + ": <-- rc_syncGetState = " + tmp);
             } catch (AException e) {
                 if (e.getMessage() != null && e.getMessage().trim().equals("Broken pipe")) break;
