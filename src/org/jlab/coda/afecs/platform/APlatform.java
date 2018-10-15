@@ -65,6 +65,9 @@ public class APlatform extends ABase {
     // Platform control designer object
     public AControlDesigner designer;
 
+    //influx injection for Graphana visualization
+    public InfluxInjector influxInjector;
+
     private static boolean DaLogArchiveRequest = false;
     private static String DaLogArchivePath = "default";
 
@@ -253,7 +256,7 @@ public class APlatform extends ABase {
         if (influxDb) {
             new Thread(() -> {
                 try {
-                    new InfluxInjector(true);
+                    influxInjector =  new InfluxInjector(true);
                 } catch (JinFluxException e) {
                     e.printStackTrace();
                 }

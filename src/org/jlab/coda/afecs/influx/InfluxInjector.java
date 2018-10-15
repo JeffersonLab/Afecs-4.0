@@ -20,7 +20,7 @@ import java.util.Map;
 public class InfluxInjector extends ABase {
 
     // JinFluxDriver object
-    private JinFluxDriver jinFluxDriver;
+    public JinFluxDriver jinFluxDriver;
 
     private static final String name   = "afecswebmon";
     private static final String dbNode = "claraweb.jlab.org";

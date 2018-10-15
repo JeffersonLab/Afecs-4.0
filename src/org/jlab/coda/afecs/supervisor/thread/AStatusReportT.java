@@ -413,10 +413,11 @@ public class AStatusReportT extends Thread {
                             influx_delay <= 0) {
                         influx_delay = INFLUX_INJECT_DELAY;
                         // push state info of entire runType into influxDB
-                        owner.send("afecswebmon" + "_" + owner.myConfig.getPlatformExpid(),
-                                AConstants.InfluxDBInjectRequestPlatformData,
-                                owner,
-                                null);
+                        owner.myPlatform.influxInjector.jinFluxDriver.push(owner);
+//                        owner.send("afecswebmon" + "_" + owner.myConfig.getPlatformExpid(),
+//                                AConstants.InfluxDBInjectRequestPlatformData,
+//                                owner,
+//                                null);
                     }
                 }
             } catch (InterruptedException e) {
