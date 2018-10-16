@@ -77,7 +77,7 @@ public class APlatform extends ABase {
     // network cards of a local host
     private Collection<String> platform_ips;
 
-    private static boolean influxDb = false;
+    public static boolean influxDb = false;
 
     /**
      * <p>

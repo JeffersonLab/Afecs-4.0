@@ -373,7 +373,7 @@ public class AStatusReportT extends Thread {
                                 owner.me.getSession() + "_" + owner.me.getRunType() + "/supervisor",
                                 owner.me.getRunTimeDataAsPayload());
 //                        if (!owner.isClientProblemAtActive.get()) {
-                        if(!owner.wasConfigured) {
+                        if (!owner.wasConfigured) {
                             owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
                                     owner.myName,
                                     1,
@@ -407,17 +407,19 @@ public class AStatusReportT extends Thread {
                                 al);
 
                     }
-                    // request influx-db injection
-                    if (owner.me.getState().equals(AConstants.active) &&
-                            !owner.me.getRunStartTime().equals("0") &&
-                            influx_delay <= 0) {
-                        influx_delay = INFLUX_INJECT_DELAY;
+                    if (owner.myPlatform.influxDb) {
+                        // request influx-db injection
+                        if (owner.me.getState().equals(AConstants.active) &&
+                                !owner.me.getRunStartTime().equals("0") &&
+                                influx_delay <= 0) {
+                            influx_delay = INFLUX_INJECT_DELAY;
 //                         push state info of entire runType into influxDB
-                        owner.myPlatform.influxInjector.jinFluxDriver.push(owner);
+                            owner.myPlatform.influxInjector.jinFluxDriver.push(owner);
 //                        owner.send("afecswebmon" + "_" + owner.myConfig.getPlatformExpid(),
 //                                AConstants.InfluxDBInjectRequestPlatformData,
 //                                owner,
 //                                null);
+                        }
                     }
                 }
             } catch (InterruptedException e) {
