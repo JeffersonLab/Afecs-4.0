@@ -1,6 +1,7 @@
 package org.jlab.coda.afecs.influx;
 
 import org.influxdb.dto.Point;
+import org.jlab.coda.afecs.platform.APlatform;
 import org.jlab.coda.afecs.supervisor.SupervisorAgent;
 import org.jlab.coda.afecs.system.ABase;
 import org.jlab.coda.afecs.system.AConstants;
@@ -17,108 +18,41 @@ import java.util.Map;
  *
  * @author gurjyan on 3/9/18.
  */
-public class InfluxInjector extends ABase {
+public class InfluxInjector {
 
     // JinFluxDriver object
     public JinFluxDriver jinFluxDriver;
 
-    private static final String name   = "afecswebmon";
+    private static final String name = "afecswebmon";
     private static final String dbNode = "claraweb.jlab.org";
     private static final String dbName = "afecs";
+    private SupervisorAgent owner;
 
-    public InfluxInjector(String name, String dbNode, String dbName, boolean isLocal) throws JinFluxException {
+    public InfluxInjector(SupervisorAgent sup, String dbNode, String dbName) throws JinFluxException {
         super();
-        myName = name+"_"+myConfig.getPlatformExpid();
+        owner = sup;
 
         // connect to the influxDB and create JinFlux connection
         jinFluxDriver = new JinFluxDriver(dbNode, dbName, null);
 
-        // Connect to the platform cMsg domain server
-        if(isLocal){
-            // Connect to the platform cMsg domain server
-            try {
-                myPlatformConnection = platformConnect("cMsg://localhost" +
-                        ":" + myConfig.getPlatformTcpPort() +
-                        "/cMsg/" + myConfig.getPlatformName() + "?cmsgpassword=" + myConfig.getPlatformExpid());
-            } catch (cMsgException e) {
-                e.printStackTrace();
-            }
-        } else {
-            remoteConnect();
-        }
-        if (isPlatformConnected()) {
-            // Subscribe messages asking to inject data into influxDB
-            try {
-                myPlatformConnection.subscribe(myName,
-                        AConstants.InfluxDBInjectRequest,
-                        new InjectRequestCB(),
-                        null);
-            } catch (cMsgException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
-    public InfluxInjector(boolean isLocal) throws JinFluxException {
-        this(name, dbNode, dbName, isLocal);
-    }
-
-    private void remoteConnect() {
-        String plHost;
-        if (!isPlatformConnected()) {
-            // Connect to the rc domain multicast
-            // server and request platform host name
-            cMsgMessage m = null;
-            for (int i = 0; i < 100; i++) {
-                m = rcMonitor(300);
-                if (m != null) break;
-            }
-            if (m != null) {
-                plHost = m.getSenderHost();
-                cMsgPayloadItem item = m.getPayloadItem("IpAddresses");
-                try {
-                    String[] plHosts = item.getStringArray();
-                    // connect with the hostname
-                    System.out.println("Info: Please wait... connecting to the platform host = " + plHost);
-                    String UIMulticastUDL = updateHostUdl(plHost, myConfig.getPlatformTcpPort());
-                    try {
-                        myPlatformConnection = platformConnect(UIMulticastUDL);
-                    } catch (cMsgException e) {
-                        System.out.println("Failed to connect to IP address = " + plHost);
-                    }
-                    if (!isPlatformConnected()) {
-
-                        // update platform udl and connect
-                        if (plHosts.length > 0) {
-                            for (String ph : plHosts) {
-                                System.out.println("Info: Please wait... connecting to the platform host = " + ph);
-                                UIMulticastUDL = updateHostUdl(ph, myConfig.getPlatformTcpPort());
-                                try {
-                                    myPlatformConnection = platformConnect(UIMulticastUDL);
-                                } catch (cMsgException e) {
-                                    System.out.println("Failed to connect to IP address = " + ph);
-                                    continue;
-                                }
-                                break;
-                            }
-                        }
-                    }
-                } catch (cMsgException e) {
-                    e.printStackTrace();
-                    System.exit(1);
+        do {
+            if (owner.myPlatform.influxDb) {
+                // request influx-db injection
+                if (owner.me.getState().equals(AConstants.active) &&
+                        !owner.me.getRunStartTime().equals("0")) {
+                    jinFluxDriver.push(owner);
                 }
-                if (!isPlatformConnected()) {
-                    System.out.println(" Can not connect to the " + getPlEXPID() + " platform.");
-                    System.exit(1);
-                } else {
-                    System.out.println("Info:Connected to the " + getPlEXPID() + " platform.");
-                }
-            } else {
-                System.out.println(" Can not find a platform for EXPID = " + getPlEXPID());
-                System.exit(1);
             }
-        }
+            AfecsTool.sleep(5000);
+        } while (true);
+
     }
+
+    public InfluxInjector(SupervisorAgent sup, boolean isLocal) throws JinFluxException {
+        this(sup, dbNode, dbName);
+    }
+
 
     /**
      * Method that injects user defined message into influxDB
@@ -186,44 +120,4 @@ public class InfluxInjector extends ABase {
         }
     }
 
-    /**
-     * <p>
-     * Private inner class for responding
-     * to the platform info request messages
-     * </p>
-     */
-    private class InjectRequestCB extends cMsgCallbackAdapter {
-        public void callback(cMsgMessage msg, Object userObject) {
-            if (msg != null) {
-
-                String type = msg.getType();
-                switch (type) {
-                    case AConstants.InfluxDBInjectRequestUserData:
-                        userRequestJinFluxInject(msg);
-                        break;
-                    case AConstants.InfluxDBInjectRequestPlatformData:
-                        try {
-                            if(msg.getByteArray()!=null) {
-                                SupervisorAgent ac = (SupervisorAgent) AfecsTool.B2O(msg.getByteArray());
-                                if (ac != null) {
-                                    System.out.println("DDD -----| Info: push data to InfluxDB");
-                                    jinFluxDriver.push(ac);
-                                }
-                            }
-                        } catch (IOException | ClassNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                }
-            }
-        }
-    }
-
-    public static void main(String[] args) {
-        try {
-            new InfluxInjector(false);
-        } catch (JinFluxException e) {
-            e.printStackTrace();
-        }
-    }
 }

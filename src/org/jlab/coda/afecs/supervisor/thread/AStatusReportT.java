@@ -407,20 +407,6 @@ public class AStatusReportT extends Thread {
                                 al);
 
                     }
-                    if (owner.myPlatform.influxDb) {
-                        // request influx-db injection
-                        if (owner.me.getState().equals(AConstants.active) &&
-                                !owner.me.getRunStartTime().equals("0") &&
-                                influx_delay <= 0) {
-                            influx_delay = INFLUX_INJECT_DELAY;
-//                         push state info of entire runType into influxDB
-                            owner.myPlatform.influxInjector.jinFluxDriver.push(owner);
-//                        owner.send("afecswebmon" + "_" + owner.myConfig.getPlatformExpid(),
-//                                AConstants.InfluxDBInjectRequestPlatformData,
-//                                owner,
-//                                null);
-                        }
-                    }
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();

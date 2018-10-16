@@ -31,6 +31,7 @@ import org.jlab.coda.afecs.cool.ontology.AControl;
 import org.jlab.coda.afecs.cool.ontology.AProcess;
 import org.jlab.coda.afecs.cool.ontology.AService;
 import org.jlab.coda.afecs.cool.parser.ACondition;
+import org.jlab.coda.afecs.influx.InfluxInjector;
 import org.jlab.coda.afecs.supervisor.thread.AStatusReportT;
 import org.jlab.coda.afecs.supervisor.thread.ServiceExecutionT;
 import org.jlab.coda.afecs.system.ACodaType;
@@ -39,6 +40,7 @@ import org.jlab.coda.afecs.system.AException;
 
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.*;
+import org.jlab.coda.jinflux.JinFluxException;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -263,6 +265,17 @@ public class SupervisorAgent extends AParent implements Serializable {
         wasConfigured = false;
 
         mySelf = this;
+        // start influxDB injector thread
+        if (myPlatform.influxDb) {
+            new Thread(() -> {
+                try {
+                    new InfluxInjector(this,true);
+                } catch (JinFluxException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        }
+
     }
 
     /**

@@ -251,17 +251,6 @@ public class APlatform extends ABase {
         // (i.e. multicast server) on the console. No action will be taken. It is up to user
         // to stop the conflicting platform.
         new Thread(new PlatformSpy()).start();
-
-        // start influxDB injector thread
-        if (influxDb) {
-            new Thread(() -> {
-                try {
-                    influxInjector =  new InfluxInjector(true);
-                } catch (JinFluxException e) {
-                    e.printStackTrace();
-                }
-            }).start();
-        }
     }
 
 
