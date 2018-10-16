@@ -30,7 +30,6 @@ import org.jlab.coda.afecs.cool.ontology.APackage;
 import org.jlab.coda.afecs.cool.ontology.AProcess;
 import org.jlab.coda.afecs.cool.ontology.AState;
 import org.jlab.coda.afecs.fcs.FcsEngine;
-import org.jlab.coda.afecs.supervisor.SupervisorAgent;
 import org.jlab.coda.afecs.system.ACodaType;
 import org.jlab.coda.afecs.system.AConstants;
 import org.jlab.coda.afecs.system.AException;
