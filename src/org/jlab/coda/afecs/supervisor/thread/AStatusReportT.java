@@ -51,7 +51,7 @@ public class AStatusReportT extends Thread {
 
     private volatile boolean isRunning = true;
 
-    private static final int INFLUX_INJECT_DELAY = 1;
+    private static final int INFLUX_INJECT_DELAY = 5;
     private static final int RUNLOG_CREATE_DELAY = 10;
 
     public AStatusReportT(SupervisorAgent owner) {

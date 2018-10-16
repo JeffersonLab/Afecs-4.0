@@ -666,7 +666,7 @@ public class ABase implements Serializable {
             status = false;
         }
         if (status &&
-                AConstants.debug.get() &&
+//                AConstants.debug.get() &&
                 !subject.equals(getPlEXPID()) &&
                 !subject.equals(myConfig.getSession())) {
             System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +

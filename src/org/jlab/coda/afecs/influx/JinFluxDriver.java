@@ -112,14 +112,17 @@ public class JinFluxDriver extends JinFlux {
                     Map<String, Integer> ib = component.getInBuffers();
                     for (String s : ib.keySet()) {
                         addDP(p, "I." + s, ib.get(s));
+                        System.out.println("DDD inject InfluxDB: name = I."+s+" value = "+ib.get(s));
+
                     }
                     // add output buffers
                     Map<String, Integer> ob = component.getOutBuffers();
                     for (String s : ob.keySet()) {
                         addDP(p, "O." + s, ob.get(s));
+                        System.out.println("DDD inject InfluxDB: name = O."+s+" value = "+ob.get(s));
                     }
                     write(dbName, p);
-                    AfecsTool.sleep(1);
+                    AfecsTool.sleep(500);
                 }
             }
         } catch (Exception e) {

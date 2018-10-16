@@ -389,6 +389,7 @@ public class CodaRCAgent extends AParent {
     public boolean _moveToState(String stateName) {
         boolean b;
 
+        System.out.println("DDD ----| Info: "+ myName +" requested to transition to "+stateName);
         // First stop dangling transition
         // monitor threads if any
         _stopStateTransitioningMonitor();
