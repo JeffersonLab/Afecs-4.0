@@ -1303,7 +1303,8 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
      * @param message text
      */
     void popupInfoDialog(String message) {
-        JOptionPane.showMessageDialog(this, message);
+        updateDaLogTable(getName(),"message",AConstants.INFO,1);
+//        JOptionPane.showMessageDialog(this, message);
     }
 
     void popupWarningDialog(String message) {
@@ -3334,7 +3335,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
                     SessionMenu.add(mi);
                     SessionMenu.addSeparator();
                 } else {
-                    popupInfoDialog("  Request failed!");
+                    updateDaLogTable(getName(),"New session request failed", AConstants.ERROR, 9);
                 }
             }
         }
@@ -3385,7 +3386,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
             }
             if (msg != null) {
                 if (msg.getText().equals(AConstants.yes)) {
-                    popupInfoDialog("  Platform daLogMsgArchiver is active.");
+                    updateDaLogTable(getName(),"Platform daLogMsgArchiver is active.",AConstants.INFO,1);
                 } else if (msg.getText().equals(AConstants.no)) {
                     String message = "  Are you sure to start archiving daLog messages?";
                     String[] buttons = {"Archive", "Cancel"};
@@ -3424,7 +3425,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
             }
             if (msg != null) {
                 if (msg.getText().equals(AConstants.no)) {
-                    popupInfoDialog("  Platform daLogMsgArchiver is not active.");
+                    updateDaLogTable(getName(),"Platform daLogMsgArchiver is not active.",AConstants.INFO,1);
                 } else if (msg.getText().equals(AConstants.yes)) {
                     String message = "  Are you sure to stop archiving daLog messages?";
                     String[] buttons = {"Stop", "Cancel"};
@@ -3635,8 +3636,8 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
 //                xyz();
 
             } else {
-                popupInfoDialog("  Reset first if you need to " +
-                        "configure a new run control !\n");
+                updateDaLogTable(getName(),"Reset first if you need to " +
+                        "configure a new run control",AConstants.WARN,7);
             }
         }
 

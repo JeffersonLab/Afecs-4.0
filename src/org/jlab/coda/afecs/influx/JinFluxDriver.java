@@ -122,7 +122,6 @@ public class JinFluxDriver extends JinFlux {
 //                        System.out.println("DDD inject InfluxDB: name = O."+s+" value = "+ob.get(s));
                     }
                     write(dbName, p);
-                    AfecsTool.sleep(500);
                 }
             }
         } catch (Exception e) {
@@ -133,8 +132,10 @@ public class JinFluxDriver extends JinFlux {
     public void push(SupervisorAgent supervisor) {
         if (jinFxConnected) {
             push(supervisor.me);
+            AfecsTool.sleep(3);
             for (AComponent component : supervisor.sortedComponentList.values()) {
                 push(component);
+                AfecsTool.sleep(3);
             }
         }
     }

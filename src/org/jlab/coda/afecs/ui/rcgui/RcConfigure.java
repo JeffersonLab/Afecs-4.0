@@ -55,8 +55,9 @@ public class RcConfigure extends SwingWorker<Integer, Void> {
         this.owner = owner;
         if (this.owner._runType.equals(AConstants.udf) ||
                 this.owner._session.equals(AConstants.udf)) {
-            this.owner.popupInfoDialog("  Select or set session and runType !");
-
+            this.owner.updateDaLogTable(this.owner.getName(),
+                    "Select or set session and runType",
+                    AConstants.WARN,7);
         } else {
 
             this.owner.resetScheduler();
@@ -105,13 +106,12 @@ public class RcConfigure extends SwingWorker<Integer, Void> {
 
                 // ask control designer to configure the run and send back the list of user
                 // defined RTVs in the cool file (%()) that are not defined
-                int timeout = 15000;
                 cMsgMessage m = owner.base.p2pSend(AConstants.CONTROLDESIGNER,
                         AConstants.DesignerControlRequestConfigureControl,
                         "",
                         owner.getRTVMap(),
                         al,
-                        timeout);
+                        AConstants.TIMEOUT);
 
 
                 if (m != null && m.getByteArray() != null) {
@@ -147,7 +147,7 @@ public class RcConfigure extends SwingWorker<Integer, Void> {
                 int trails = 0;
                 cMsgMessage msgB;
                 // wait for 20 seconds in the loop
-                int waitForSupervisor = 20;
+                int waitForSupervisor = 30;
                 do {
                     msgB = owner.base.p2pSend(owner.base.getPlEXPID(),
                             AConstants.PlatformInfoRequestisRegistered,
@@ -179,7 +179,10 @@ public class RcConfigure extends SwingWorker<Integer, Void> {
         try {
             switch (get()) {
                 case 1:
-                    owner.popupInfoDialog("  Control supervisor is not registered.");
+                    owner.updateDaLogTable(owner.getName(),
+                            "  Control supervisor is not registered. Try configuring again",
+                            AConstants.WARN,7);
+                    System.out.println("Control supervisor is not registered. Try configuring again");
                     break;
                 case 2:
                     break;
@@ -187,7 +190,10 @@ public class RcConfigure extends SwingWorker<Integer, Void> {
                     break;
                 case 4:
                 case 5:
-                    owner.popupInfoDialog("  Problem communicating with the ControlDesigner agent.");
+                    owner.updateDaLogTable(owner.getName(),
+                            "  Problem communicating with the ControlDesigner agent. Try configuring again.",
+                            AConstants.WARN,7);
+                    System.out.println("Problem communicating with the ControlDesigner agent. Try configuring again.");
             }
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();

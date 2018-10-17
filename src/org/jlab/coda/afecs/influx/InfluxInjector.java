@@ -39,8 +39,7 @@ public class InfluxInjector {
         do {
             if (owner.myPlatform.influxDb) {
                 // request influx-db injection
-                if (owner.me.getState().equals(AConstants.active) &&
-                        !owner.me.getRunStartTime().equals("0")) {
+                if (owner.me.getState().equals(AConstants.active)) {
                     jinFluxDriver.push(owner);
                 }
             }

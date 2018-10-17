@@ -60,7 +60,7 @@ public class RcConnect extends SwingWorker<String, Void> {
 
 
         if(owner.getSessionTextField().getText().equals(AConstants.udf)){
-            owner.popupInfoDialog("  Session is not defined!");
+            owner.updateDaLogTable(owner.getName(),"Session is not defined", AConstants.WARN,7);
             isSessionDefined = false;
         } else {
 
@@ -80,7 +80,8 @@ public class RcConnect extends SwingWorker<String, Void> {
                 start = true;
 
             } else {
-                owner.popupInfoDialog("  Session and/or runType is not defined !");
+                owner.updateDaLogTable(owner.getName(),"Session and/or runType is not defined",
+                        AConstants.WARN,7);
                 isSessionDefined = false;
             }
         }
@@ -186,8 +187,9 @@ public class RcConnect extends SwingWorker<String, Void> {
                 switch (res) {
                     case "error":
                         // supervisor is no responding
-                        owner.popupInfoDialog("  Problem communicating with the " +
-                                "supervisor agent.\n  (State request)");
+                        owner.updateDaLogTable(owner.getName(),
+                                "Problem communicating with the supervisor agent",
+                                AConstants.ERROR,9);
                         break;
 
                     case "undefined":
@@ -206,8 +208,11 @@ public class RcConnect extends SwingWorker<String, Void> {
 
                     case "busy":
                         // supervisor is configured in another session
-                        owner.popupInfoDialog("  RunType is in the session = " +
-                                supSession + "\n  Change the session if you want to join.");
+                        owner.updateDaLogTable(owner.base.myName,
+                                "RunType is in the session = "+supSession
+                                        +  ".Change the session if you want to join",
+                                AConstants.WARN,
+                                5);
                         break;
 
                     default:

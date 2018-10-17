@@ -84,14 +84,15 @@ public class RcSetRunNumber extends SwingWorker <int[], Void> {
             if(o!=null && o.length==2){
                 switch (o[0]){
                     case -1:
-                        owner.popupInfoDialog(" Error !\n" +
-                                "  Communicating with the platform admin agent");
+                        owner.updateDaLogTable(owner.getName(),"Communicating with the platform admin agent",
+                                AConstants.ERROR,9);
                         break;
                     case -2:
-                        owner.popupInfoDialog(" Attention !\n" +
-                                "  You can not reset run number if runControl is \n" +
-                                "  in active or prestarted states, as well as in the \n" +
-                                "  process of transitioning between states.");
+                        owner.updateDaLogTable(owner.getName(),
+                                "  You can not reset run number if runControl is" +
+                                "  in active or prestarted states, as well as in the " +
+                                "  process of transitioning between states.",
+                                AConstants.WARN,7);
                         setRN = false;
                         break;
                 }
