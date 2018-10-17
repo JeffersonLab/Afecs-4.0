@@ -120,32 +120,35 @@ public class CParser {
             if (myContainer.getContainerAgents().containsKey(agent.getName())) {
                 // update registered agent information on the container
                 CodaRCAgent cAgent = myContainer.getContainerAgents().get(agent.getName());
-                // saving IP information
-                Map<String, String[]> lip = cAgent.me.getLinkedIp();
-                Map<String, String[]> lba = cAgent.me.getLinkedBa();
-                AClientInfo ai = cAgent.me.getClient();
-                // updating the new configuration info
-                cAgent.updateComponent(agent);
-                // putting back IP information
-                cAgent.me.setClient(ai);
-                cAgent.me.setLinkedIp(lip);
-                cAgent.me.setLinkedBa(lba);
-                // update registration
-                myContainer.myPlatform.registrar.addAgent(cAgent.me);
-                myContainer.myPlatform.registrar.addClient(cAgent.me.getClient());
-
-                // update linked components IP information
-                for (String linkedCompName : cAgent.me.getLinkedComponentNames()) {
-                    CodaRCAgent linkedAgent = cAgent.myContainer.getContainerAgents().get(linkedCompName);
-                    linkedAgent.agentControlRequestNetworkDetails(
-                            cAgent.myName,
-                            cAgent.me.getClient().getHostIps(),
-                            cAgent.me.getClient().getHostBroadcastAddresses()
-                    );
+                if(cAgent!=null) {
+                    // saving IP information
+                    Map<String, String[]> lip = cAgent.me.getLinkedIp();
+                    Map<String, String[]> lba = cAgent.me.getLinkedBa();
+                    AClientInfo ai = cAgent.me.getClient();
+                    // updating the new configuration info
+                    cAgent.updateComponent(agent);
+                    // putting back IP information
+                    cAgent.me.setClient(ai);
+                    cAgent.me.setLinkedIp(lip);
+                    cAgent.me.setLinkedBa(lba);
                     // update registration
-                    myContainer.myPlatform.registrar.addClient(linkedAgent.me.getClient());
-                }
+                    myContainer.myPlatform.registrar.addAgent(cAgent.me);
+                    myContainer.myPlatform.registrar.addClient(cAgent.me.getClient());
 
+                    // update linked components IP information
+                    for (String linkedCompName : cAgent.me.getLinkedComponentNames()) {
+                        CodaRCAgent linkedAgent = cAgent.myContainer.getContainerAgents().get(linkedCompName);
+                        linkedAgent.agentControlRequestNetworkDetails(
+                                cAgent.myName,
+                                cAgent.me.getClient().getHostIps(),
+                                cAgent.me.getClient().getHostBroadcastAddresses()
+                        );
+                        // update registration
+                        myContainer.myPlatform.registrar.addClient(linkedAgent.me.getClient());
+                    }
+                } else {
+                    myContainer.getContainerAgents().remove(agent.getName());
+                }
             }
         }
 
@@ -451,7 +454,6 @@ public class CParser {
             tmps = getValue(x, "hasType");
             if (tmps != null) {
                 if (tmps.equals(ACodaType.FILE.name())) {
-//                    numberOfFileComponents++;   // commented 09.25.18
                     continue;
                 } else if (tmps.equals(ACodaType.USR.name())) {
                     continue;
@@ -461,6 +463,7 @@ public class CParser {
                         erId++;
                         cmp.setStreamId(erId);
                     } else if (tmps.equals(ACodaType.PEB.name())) {
+                        numberOfFileComponents++;
                         pebId++;
                         cmp.setStreamId(pebId);
                     } else if (tmps.equals(ACodaType.SEB.name())) {

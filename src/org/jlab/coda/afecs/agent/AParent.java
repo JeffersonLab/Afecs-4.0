@@ -365,6 +365,7 @@ public class AParent extends ABase implements Serializable {
                 if (s.getName().equals(sn)) {
                     isTransitioning.set(true);
                     status = true;
+                    System.out.println("DDD RESETTING  "+ myName +" 2");
 
                     // Set the state ing/ating mode
                     if (s.getDescription().equals("active")) {

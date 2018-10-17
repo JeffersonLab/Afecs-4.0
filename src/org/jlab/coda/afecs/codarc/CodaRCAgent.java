@@ -394,7 +394,7 @@ public class CodaRCAgent extends AParent {
         _stopStateTransitioningMonitor();
 
         if (stateName.equals(AConstants.reseted)) {
-
+            System.out.println("DDD RESETTING  "+ myName +" 1");
             // Move to reset state
             b = transition(stateName);
             _reset();
