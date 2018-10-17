@@ -3636,7 +3636,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
 //                xyz();
 
             } else {
-                updateDaLogTable(getName(),"Reset first if you need to " +
+                updateDaLogTable(getName(),"Reset or connect first if you need to " +
                         "configure a new run control",AConstants.WARN,7);
             }
         }
