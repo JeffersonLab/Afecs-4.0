@@ -74,6 +74,7 @@ public class AClientLessAgentsMonitorT extends ABase implements Runnable {
         if (!isPlatformConnected()) {
             System.out.println(" Problem starting OrphanAgentMonitor. " +
                     "Cannot connect to the platform.");
+            stopMe();
         }
     }
 
@@ -88,37 +89,27 @@ public class AClientLessAgentsMonitorT extends ABase implements Runnable {
             boolean stop = true;
             for (AComponent c : agents.values()) {
                 if (c.getState().equals(AConstants.udf) ||
-                        c.getState().equals(AConstants.checking) ||
-                        c.getState().equals(AConstants.connected) ||
-                        c.getState().equals(AConstants.disconnected)
+                        c.getState().equals(AConstants.checking)
                         ) {
                     stop = false;
                     if (myPlatform.container.getContainerAgents().containsKey(c.getName())) {
                         CodaRCAgent ta = myPlatform.container.getContainerAgents().get(c.getName());
-                        try {
-                            cMsgMessage msg = ta.rcp2pSend(c.getName(), AConstants.CodaInfoGetState, "getState", 3000);
-                            if (msg != null && msg.getText() != null) {
-                                c.setState(msg.getText());
-
-                            } else {
-                                c.setState(AConstants.udf);
-                            }
-                        } catch (AException e) {
-//                            e.printStackTrace();
-                        }
+                        c.setState(ta.me.getState());
                     }
                 }
             }
+            send(AConstants.GUI,
+                    session + "_" + runType + "/agents",
+                    "udf",
+                    agents);
+
             if (stop) {
+                System.out.println("DDD ----| "+myName +" Info: stop orphan client monitoring thread.");
                 stopMe();
-            } else {
-                // Report all GUIs sorted list of components
-                send(AConstants.GUI,
-                        session + "_" + runType + "/agents",
-                        "udf",
-                        agents);
             }
+
             AfecsTool.sleep(3000);
+
         }
     }
 }

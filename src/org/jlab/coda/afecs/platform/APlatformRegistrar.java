@@ -677,7 +677,7 @@ public class APlatformRegistrar {
      * </p>
      * @return map of {@link AComponent} objects
      */
-    ConcurrentHashMap<String, AComponent> getAgentDir() {
+    public ConcurrentHashMap<String, AComponent> getAgentDir() {
         return AgentDir;
     }
 

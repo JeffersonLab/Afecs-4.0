@@ -54,6 +54,8 @@ public class ATableCellRendererS extends DefaultTableCellRenderer {
                         sever.equals(AConstants.failed)
                         ){
                     cell.setBackground(Color.RED);
+                } else if (sever.equals(AConstants.busy)){
+                    cell.setBackground(Color.CYAN);
                 } else {
                     cell.setBackground(c);
                 }

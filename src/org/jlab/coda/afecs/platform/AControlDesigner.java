@@ -69,6 +69,7 @@ class AControlDesigner extends ABase {
     private Map<String, Thread> _orphanAgentMap = new ConcurrentHashMap<>();
 
     private APlatform myPlatform;
+
     /**
      * <p>
      * Constructor does cMsg connect
@@ -140,8 +141,12 @@ class AControlDesigner extends ABase {
             Map<String, AComponent> comps = new LinkedHashMap<>();
 
             for (AComponent c : control.getComponents()) {
-                c.setState(AConstants.udf);
-                comps.put(c.getName(), c);
+                if (myPlatform.container.getContainerAgents().containsKey(c.getName())) {
+                    comps.put(c.getName(), myPlatform.container.getContainerAgents().get(c.getName()).me);
+                } else {
+                    c.setState(AConstants.udf);
+                    comps.put(c.getName(), c);
+                }
             }
 
             // Report all GUIs sorted list of components
@@ -158,6 +163,8 @@ class AControlDesigner extends ABase {
             // from the map.
             String k = session + "_" + runType;
             if (!_orphanAgentMap.containsKey(k)) {
+                System.out.println("DDD ----| " + myName + " Info: starting orphan client monitoring thread.");
+                // remove from the map all the clients that already have agents
                 Thread v = new Thread(new AClientLessAgentsMonitorT(myPlatform, comps, session, runType, _orphanAgentMap));
                 v.start();
                 _orphanAgentMap.put(k, v);
@@ -288,89 +295,6 @@ class AControlDesigner extends ABase {
                     "Problem parsing control configuration file.");
             System.out.println(myName +
                     ": parsing configuration file.");
-            stat = false;
-        }
-        return stat;
-    }
-
-    /**
-     * <p>
-     * This method is called by the request of the supervisor
-     * that needed to restart an agent on some other container.
-     * Parses COOL control description file, if control contains
-     * requested agent start that agent on the specified container.
-     * </p>
-     *
-     * @param session       in which control runs
-     * @param runType       the name of the configuration file
-     * @param agentName     the name of the agent
-     * @param containerHost the name of the container
-     * @param usrSetRTVs    map containing user set rtvs and their values
-     * @return parsing status
-     */
-    public boolean parseAndStartAgent(String session,
-                                      String runType,
-                                      String agentName,
-                                      String containerHost,
-                                      Map<String, String> usrSetRTVs) {
-
-        boolean stat = true;
-        CParser p = new CParser(usrSetRTVs, myPlatform.container);
-
-        if (p.openFile(runType + "/" + runType + ".rdf", false)) {
-
-            // false operator means to create and add supervisor agent for the control
-            AControl control = p.parseControl(runType, false);
-            if (control != null) {
-                for (AComponent c : control.getComponents()) {
-                    if (c.getName().equals(agentName)) {
-                        if (c.getCodaComponent().equals(AConstants.seton)) {
-
-                            // Add configured state
-                            c.addState(createConfiguredState());
-
-                            // Add downloaded state
-                            c.addState(createDownloadedState(c.getCoda2Component()));
-
-                            // Add prestarted state
-                            c.addState(createPrestartedState(c.getCoda2Component()));
-
-                            // Add active state
-                            c.addState(createActiveState(c.getCoda2Component()));
-
-                            // Add ended state
-                            c.addState(createEndedState(c.getCoda2Component()));
-
-                            // Add paused state
-                            c.addState(createPausedState());
-
-                            // Add reseted state
-                            c.addState(createResetedState(c.getCoda2Component()));
-                        }
-
-                        // Defines default priority if it is not cool defined
-                        definePriority(c);
-                        startAgent(c, session, runType, containerHost);
-                        break;
-                    }
-                }
-            } else {
-                reportAlarmMsg(session + "/" + runType,
-                        myName,
-                        9,
-                        AConstants.ERROR,
-                        "Problem parsing a control.");
-                System.out.println(myName +
-                        ": Problem parsing a control.");
-            }
-        } else {
-            reportAlarmMsg(session + "/" + runType,
-                    myName,
-                    9,
-                    AConstants.ERROR,
-                    "Configuration file was not found.");
-            System.out.println(myName +
-                    ": Configuration file was not found.");
             stat = false;
         }
         return stat;
@@ -1093,99 +1017,99 @@ class AControlDesigner extends ABase {
             // Assign configuration id to the runType
             int conf_id = myPlatform.registrar.addConfigId(runType);
 
-                c.getComponents().parallelStream().forEach((com) -> {
+            c.getComponents().parallelStream().forEach((com) -> {
 //            for (AComponent com : c.getComponents()) {
 
-                    AClientInfo ci = null;
-                    com.setExpid(getPlEXPID());
-                    com.setSession(session);
-                    com.setRunType(runType);
-                    com.setConfigID(conf_id);
-                    com.setSupervisor("sms_" + runType);
+                AClientInfo ci = null;
+                com.setExpid(getPlEXPID());
+                com.setSession(session);
+                com.setRunType(runType);
+                com.setConfigID(conf_id);
+                com.setSupervisor("sms_" + runType);
 
 //                 set the client of the agent if client already requested an agent
-                    if (myPlatform.registrar.getClientDir() != null &&
-                            myPlatform.registrar.getClientDir().containsKey(com.getName())) {
-                        ci = myPlatform.registrar.getClientDir().get(com.getName());
-                        com.setClient(ci);
-                    }
+                if (myPlatform.registrar.getClientDir() != null &&
+                        myPlatform.registrar.getClientDir().containsKey(com.getName())) {
+                    ci = myPlatform.registrar.getClientDir().get(com.getName());
+                    com.setClient(ci);
+                }
 
-                    // See if component in the control description is already active
-                    if (myPlatform.registrar.getAgentDir() != null &&
-                            myPlatform.registrar.getAgentDir().containsKey(com.getName())) {
+                // See if component in the control description is already active
+                if (myPlatform.registrar.getAgentDir() != null &&
+                        myPlatform.registrar.getAgentDir().containsKey(com.getName())) {
 
-                        AComponent regComp = myPlatform.registrar.getAgentDir().get(com.getName());
+                    AComponent regComp = myPlatform.registrar.getAgentDir().get(com.getName());
 
-                        // Configured in a different session
-                        if (!regComp.getSession().equals(AConstants.udf) &&
-                                !regComp.getSession().equals(com.getSession())) {
+                    // Configured in a different session
+                    if (!regComp.getSession().equals(AConstants.udf) &&
+                            !regComp.getSession().equals(com.getSession())) {
 
-                            // Deny configuration/design
-                            ArrayList<cMsgPayloadItem> al = new ArrayList<>();
-                            try {
-                                al.add(new cMsgPayloadItem("MSGCONTENT",
-                                        "Configuration is Denied !\n\nComponent " +
-                                                regComp.getName() +
-                                                "is configured in \nsession = " +
-                                                regComp.getSession() +
-                                                "\nruntype = " +
-                                                regComp.getRunType()));
+                        // Deny configuration/design
+                        ArrayList<cMsgPayloadItem> al = new ArrayList<>();
+                        try {
+                            al.add(new cMsgPayloadItem("MSGCONTENT",
+                                    "Configuration is Denied !\n\nComponent " +
+                                            regComp.getName() +
+                                            "is configured in \nsession = " +
+                                            regComp.getSession() +
+                                            "\nruntype = " +
+                                            regComp.getRunType()));
 
-                                al.add(new cMsgPayloadItem("MSGACTION",
-                                        "GLOBALRESET"));
-                            } catch (cMsgException e) {
-                                e.printStackTrace();
-                                e.printStackTrace();
-                            }
-
-                            // Inform GUIs
-                            send(session + "/" + runType,
-                                    AConstants.UIControlPopupInfo,
-                                    al);
-//                        return false;
-
-                            // Not configured, i.e. session = undefined
-                        } else {
-                            com.setClient(ci);
-                            myPlatform.container.getContainerAgents().get(regComp.getName()).updateComponent(com);
+                            al.add(new cMsgPayloadItem("MSGACTION",
+                                    "GLOBALRESET"));
+                        } catch (cMsgException e) {
+                            e.printStackTrace();
+                            e.printStackTrace();
                         }
 
-                        // No registration of the required agent
-                        // has been found. This is a new request
+                        // Inform GUIs
+                        send(session + "/" + runType,
+                                AConstants.UIControlPopupInfo,
+                                al);
+//                        return false;
+
+                        // Not configured, i.e. session = undefined
                     } else {
-
-                        // Container of the agent is undefined
-                        if (com.getHost().equals(AConstants.udf)) {
-
-                            // See if there is a client with the same name
-                            // registered. Assign this agent to the registered client
-                            // and set the container host to be the platform host
-                            com.setHost(myConfig.getPlatformHost());
-                        }
-
-                        myPlatform.container.startAgent(com);
-                        // Ask container admin to start a new agent
-
-                        // wait for agent registration
-                        int tout = 0;
-                        do {
-                            AfecsTool.sleep(100);
-                            tout++;
-                        } while ((tout < AConstants.TIMEOUT) &&
-                                !myPlatform.registrar.getAgentDir().containsKey(com.getName()));
-                        if (tout > AConstants.TIMEOUT) {
-                            reportAlarmMsg(session + "/" + runType,
-                                    myName,
-                                    9,
-                                    AConstants.ERROR,
-                                    "Agent " + com.getName() + " is not registered.");
-                            System.out.println(myName +
-                                    ":  Agent " + com.getName() + " is not registered.");
-//                        return false;
-                        }
+                        com.setClient(ci);
+                        myPlatform.container.getContainerAgents().get(regComp.getName()).updateComponent(com);
                     }
+
+                    // No registration of the required agent
+                    // has been found. This is a new request
+                } else {
+
+                    // Container of the agent is undefined
+                    if (com.getHost().equals(AConstants.udf)) {
+
+                        // See if there is a client with the same name
+                        // registered. Assign this agent to the registered client
+                        // and set the container host to be the platform host
+                        com.setHost(myConfig.getPlatformHost());
+                    }
+
+                    myPlatform.container.startAgent(com);
+                    // Ask container admin to start a new agent
+
+                    // wait for agent registration
+                    int tout = 0;
+                    do {
+                        AfecsTool.sleep(100);
+                        tout++;
+                    } while ((tout < AConstants.TIMEOUT) &&
+                            !myPlatform.registrar.getAgentDir().containsKey(com.getName()));
+                    if (tout > AConstants.TIMEOUT) {
+                        reportAlarmMsg(session + "/" + runType,
+                                myName,
+                                9,
+                                AConstants.ERROR,
+                                "Agent " + com.getName() + " is not registered.");
+                        System.out.println(myName +
+                                ":  Agent " + com.getName() + " is not registered.");
+//                        return false;
+                    }
+                }
 //            }
-                });
+            });
 
             // Update client database in the COOL_HOME
             myPlatform.registrar.dumpClientDatabase();
@@ -1204,7 +1128,7 @@ class AControlDesigner extends ABase {
                 if (myPlatform.registrar.getAgentDir().containsKey(c.getSupervisor().getName())) {
 
                     SupervisorAgent sa = myPlatform.container.getContainerSupervisors().get(c.getSupervisor().getName());
-                    if(sa!=null){
+                    if (sa != null) {
                         sa.supervisorControlRequestSetup(c);
                     }
 
@@ -1230,7 +1154,7 @@ class AControlDesigner extends ABase {
 
                         // Send setup message to the supervisor. 2 attempts.
                         SupervisorAgent sa = myPlatform.container.getContainerSupervisors().get(c.getSupervisor().getName());
-                        if(sa!=null){
+                        if (sa != null) {
                             sa.supervisorControlRequestSetup(c);
                         } else {
                             reportAlarmMsg(session + "/" + runType,
@@ -1432,51 +1356,6 @@ class AControlDesigner extends ABase {
                             // design the control system
                             parseControlDescription(session, runType, definedRTVs);
 
-                            myPlatformConnection.send(mr);
-                        }
-
-                    } else if (type.equals(AConstants.DesignerControlRequestConfigureAgent)) {
-
-                        // This message is sent by supervisor agent, asking
-                        // to start specific agent on the specific container
-                        if (msg.getPayloadItem(AConstants.AGENT) == null ||
-                                msg.getPayloadItem(AConstants.CONTAINER) == null) return;
-                        String agentName = msg.getPayloadItem(AConstants.AGENT).getString();
-                        String containerHost = msg.getPayloadItem(AConstants.CONTAINER).getString();
-                        if (msg.isGetRequest()) {
-                            cMsgMessage mr;
-                            mr = msg.response();
-                            mr.setSubject(AConstants.udf);
-                            mr.setType(AConstants.udf);
-                            mr.setText("success");
-
-                            mr.setByteArray(AfecsTool.O2B(definedRTVs));
-
-                            try {
-
-                                // If there are unset RTVs other than %(rn)tell gui's
-                                // that configuration fails due to unset RTVs
-                                if (definedRTVs != null) {
-                                    for (String s : definedRTVs.keySet()) {
-                                        if (!s.equals("%(rn)") && definedRTVs.get(s).equals("unset")) {
-                                            mr.setText("config_failed");
-                                            myPlatformConnection.send(mr);
-                                            return;
-                                        }
-                                    }
-                                }
-
-                                // design the component
-                                parseAndStartAgent(session,
-                                        runType,
-                                        agentName,
-                                        containerHost,
-                                        definedRTVs);
-
-                            } catch (cMsgException e) {
-                                e.printStackTrace();
-                                mr.setText("config_failed");
-                            }
                             myPlatformConnection.send(mr);
                         }
                     }

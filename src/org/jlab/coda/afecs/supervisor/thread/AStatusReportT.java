@@ -77,6 +77,10 @@ public class AStatusReportT extends Thread {
 
         while (isRunning) {
 
+            owner.send(AConstants.GUI,
+                    owner.me.getSession() + "_" + owner.me.getRunType() + "/supervisor",
+                    owner.me.getRunTimeDataAsPayload());
+
             // aggregate ER class component parameters
             if (owner.sortedComponentList.containsKey("ER_class")) {
                 long eventNumber = 0L;
@@ -359,6 +363,30 @@ public class AStatusReportT extends Thread {
                                         " transition failed. "
                                                 + c.getName()
                                                 + " is removed. Possible restart/power-cycle of the client might be required.");
+                                owner.isClientProblemAtActive.set(true);
+                            }
+                            break;
+                        } else if (c.getState().equalsIgnoreCase(AConstants.busy)) {
+                            owner.me.setState(AConstants.booted);
+                            owner.isTransitioning.set(false);
+                            owner.isResetting.set(false);
+                            owner.send(AConstants.GUI,
+                                    owner.me.getSession() + "_" + owner.me.getRunType() + "/supervisor",
+                                    owner.me.getRunTimeDataAsPayload());
+                            if (!owner.isClientProblemAtActive.get()) {
+                                owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
+                                        owner.me.getName(),
+                                        7,
+                                        AConstants.WARN,
+                                        " Component "
+                                                + c.getName()
+                                                + " is owned by an other runType.");
+                                owner.dalogMsg(owner.me,
+                                        7,
+                                        "WARNING",
+                                        " Component "
+                                                + c.getName()
+                                                + " is owned by an other runType.");
                                 owner.isClientProblemAtActive.set(true);
                             }
                             break;

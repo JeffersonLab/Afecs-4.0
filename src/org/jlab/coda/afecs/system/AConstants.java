@@ -57,6 +57,7 @@ public class AConstants {
     public static final String unattached = "unattached";
     public static final String checking = "checking";
     public static final String removed = "removed";
+    public static final String busy = "busy";
     public static final String disabled = "disabled";
     public static final String disconnected = "disconnected";
     public static final String connected = "connected";
@@ -425,7 +426,7 @@ public class AConstants {
     public static final String SupervisorReportRunEndTime = "supervisor/user/request/runEndTime";
     public static final String SupervisorReportRunEndTime_p = "supervisor/user/request/runEndTime/pl";
     public static final String SupervisorReportRtvs_p = "supervisor/user/request/rtvs/pl";
-    public static final String SupervisorReportPersistencyComponent = "supervisor/user/request/presistency/component";
+    public static final String SupervisorReportPersistencyComponent = "supervisor/user/request/persistency/component";
     public static final String SupervisorReportTriggerSourceComponent = "supervisor/user/request/trigger/component";
 
 

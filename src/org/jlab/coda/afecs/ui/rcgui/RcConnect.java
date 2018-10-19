@@ -91,9 +91,11 @@ public class RcConnect extends SwingWorker<String, Void> {
     protected String doInBackground() throws Exception {
         String out = "missing";
 
-        if(start){
+//        if(start){
             // supervisor is already configured in the required session
             // start subscriptions
+
+            owner.un_Subscribe();
             owner.doSubscriptions();
 
             List<cMsgPayloadItem> al = new ArrayList<>();
@@ -132,6 +134,7 @@ public class RcConnect extends SwingWorker<String, Void> {
                     al,
                     AConstants.TIMEOUT);
 
+            /*
             // Ask platform registrar if supervisor is registered.
             // N.B. supervisor name = sms_config name (runType)
             cMsgMessage msgb = owner.base.p2pSend(
@@ -173,7 +176,8 @@ public class RcConnect extends SwingWorker<String, Void> {
                     }
                 }
             }
-        }
+            */
+//        }
         return out;
     }
 

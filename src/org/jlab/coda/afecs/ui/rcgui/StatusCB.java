@@ -22,6 +22,7 @@
 
 package org.jlab.coda.afecs.ui.rcgui;
 
+import com.sun.scenario.effect.impl.sw.java.JSWBlend_SRC_OUTPeer;
 import org.jlab.coda.afecs.cool.ontology.AComponent;
 import org.jlab.coda.afecs.system.ACodaType;
 import org.jlab.coda.afecs.system.AConstants;
@@ -208,12 +209,17 @@ class StatusCB extends cMsgCallbackAdapter {
             }
 
             // sort according to their types
-            LinkedHashMap<String, AComponent> cmp = AfecsTool.getSortedByType(cmpU);
+            Map<String, AComponent> cmp = AfecsTool.getSortedByType(cmpU);
+
+            if(cmp.isEmpty()) {
+                cmp = cmpU;
+            }
 
             if (!AfecsTool.containsState(cmp, AConstants.checking) &&
                     !AfecsTool.containsState(cmp, AConstants.connected) &&
                     !AfecsTool.containsState(cmp, AConstants.booted) &&
                     !AfecsTool.containsState(cmp, AConstants.udf)) {
+
                 if (owner.monitoredComponent.equals(AConstants.udf)) {
                     owner.defineDefaultWatch();
                     if (owner.isEnable_fx()) {
@@ -222,6 +228,7 @@ class StatusCB extends cMsgCallbackAdapter {
                         owner.softResetCharts_cosy();
                     }
                 }
+
             }
 
             // Check to see if javaFX is supported by the OS
@@ -382,6 +389,13 @@ class StatusCB extends cMsgCallbackAdapter {
             // to the local reporting components map,
             // by creating AAgentData object
             AAgentData _ad;
+
+            if (!comp.getRunType().equals(owner._runType) &&
+                    !comp.getRunType().equals(AConstants.udf) &&
+                    !comp.getState().equals(AConstants.udf)) {
+                comp.setState(AConstants.busy);
+            }
+
             if (owner.reportingCompDataMap.containsKey(comp.getName())) {
                 _ad = owner.reportingCompDataMap.get(comp.getName());
                 _ad.setType(comp.getType());

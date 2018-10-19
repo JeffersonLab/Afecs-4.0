@@ -120,13 +120,11 @@ public class CParser {
             if (myContainer.getContainerAgents().containsKey(agent.getName())) {
                 // update registered agent information on the container
                 CodaRCAgent cAgent = myContainer.getContainerAgents().get(agent.getName());
-                if(cAgent!=null) {
+                if(cAgent!=null && cAgent.me.getClient()!=null) {
                     // saving IP information
                     Map<String, String[]> lip = cAgent.me.getLinkedIp();
                     Map<String, String[]> lba = cAgent.me.getLinkedBa();
                     AClientInfo ai = cAgent.me.getClient();
-                    // updating the new configuration info
-                    cAgent.updateComponent(agent);
                     // putting back IP information
                     cAgent.me.setClient(ai);
                     cAgent.me.setLinkedIp(lip);
@@ -146,8 +144,6 @@ public class CParser {
                         // update registration
                         myContainer.myPlatform.registrar.addClient(linkedAgent.me.getClient());
                     }
-                } else {
-                    myContainer.getContainerAgents().remove(agent.getName());
                 }
             }
         }

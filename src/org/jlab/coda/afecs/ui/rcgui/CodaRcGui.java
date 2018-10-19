@@ -403,7 +403,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
         // Create cMsg connection heartbeat
         // checking timer. Timer will started at
         // RcInit (see below)
-        cMsgConHB = new RcMsgHeartBeat(iam);
+//        cMsgConHB = new RcMsgHeartBeat(iam);
 
         // Create graphics updating timer object.
         // After successful connect this timer will
@@ -476,7 +476,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
         agentsSubRType = _session + "_" + _runType + "/agents";
         supervisorSubRType = _session + "_" + _runType + "/supervisor";
         String supervisorSubRSubject = _session + "/" + _runType;
-
+        System.out.println("DDDD subscribing "+ supervisorSubRSubject);
         if (status = un_Subscribe()) {
             try {
                 // Subscribe messages from the control supervisor
