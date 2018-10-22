@@ -49,6 +49,7 @@ import java.net.UnknownHostException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Useful methods (tools) used in the project.
@@ -1182,6 +1183,16 @@ public class AfecsTool {
             e.printStackTrace();
         }
         return addr.getHostName();
+    }
+
+    public static <T> Object[] concatenate(T[] a, T[] b)
+    {
+        // Function to merge two arrays of
+        // same type
+        return Stream.of(a, b)
+                .flatMap(Stream::of)
+                .toArray();
+
     }
 
     public static void main(String[] args) {

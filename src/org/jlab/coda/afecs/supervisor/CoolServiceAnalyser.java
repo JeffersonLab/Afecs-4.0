@@ -661,9 +661,6 @@ public class CoolServiceAnalyser {
         }
         return names;
     }
-//     *
-//     * @param c AControl object as a result parsing rdf configuration
-//     * file for the control.
 
     /**
      * <p>
@@ -693,7 +690,7 @@ public class CoolServiceAnalyser {
                 }
             }
             sortForReporting();
-            sortForOutputFile();
+            sortForDestinationNames();
         }
 
         // Start thread that monitors owned agents
@@ -860,123 +857,6 @@ public class CoolServiceAnalyser {
             owner.sortedComponentList.put(c.getName(), c);
         }
 
-        /*
-        int count;
-        owner.sortedComponentList.clear();
-        for (CodaRCAgent c : owner.myComponents.values()) {
-            if (c.me.getType().equals(ACodaType.USR.name())) {
-                owner.sortedComponentList.put(c.me.getName(), c.me);
-            }
-        }
-
-        for (CodaRCAgent c : owner.myComponents.values()) {
-            if (c.me.getType().equals(ACodaType.SMS.name())) {
-                owner.sortedComponentList.put(c.me.getName(), c.me);
-            }
-        }
-
-        for (CodaRCAgent c : owner.myComponents.values()) {
-            if (c.me.getType().equals(ACodaType.SLC.name())) {
-                owner.sortedComponentList.put(c.me.getName(), c.me);
-            }
-        }
-
-        // ER sorting
-        count = 0;
-        for (CodaRCAgent c : owner.myComponents.values()) {
-            if (c.me.getType().equals(ACodaType.ER.name())) {
-                owner.sortedComponentList.put(c.me.getName(), c.me);
-                count++;
-            }
-        }
-        if (count > 1) {
-            AComponent nc = new AComponent();
-            nc.setName("ER_class");
-            nc.setType(ACodaType.ER.name());
-            nc.setState("na");
-            nc.setObjectType("coda3");
-            owner.sortedComponentList.put(nc.getName(), nc);
-        }
-        // End ER sorting
-
-        for (CodaRCAgent c : owner.myComponents.values()) {
-            if (c.me.getType().equals(ACodaType.FCS.name())) {
-                owner.sortedComponentList.put(c.me.getName(), c.me);
-            }
-        }
-
-        // PEB sorting
-        count = 0;
-        for (CodaRCAgent c : owner.myComponents.values()) {
-            if (c.me.getType().equals(ACodaType.PEB.name())) {
-                owner.sortedComponentList.put(c.me.getName(), c.me);
-                count++;
-            }
-        }
-        if (count > 1) {
-            AComponent nc = new AComponent();
-            nc.setName("PEB_class");
-            nc.setType(ACodaType.PEB.name());
-            nc.setState("na");
-            nc.setObjectType("coda3");
-            owner.sortedComponentList.put(nc.getName(), nc);
-        }
-        // End of PEB sorting
-
-        // SEB sorting
-        count = 0;
-        for (CodaRCAgent c : owner.myComponents.values()) {
-            if (c.me.getType().equals(ACodaType.SEB.name())) {
-                owner.sortedComponentList.put(c.me.getName(), c.me);
-                count++;
-            }
-        }
-        if (count > 1) {
-            AComponent nc = new AComponent();
-            nc.setName("SEB_class");
-            nc.setType(ACodaType.SEB.name());
-            nc.setState("na");
-            nc.setObjectType("coda3");
-            owner.sortedComponentList.put(nc.getName(), nc);
-        }
-        // End of SEB sorting
-
-        for (CodaRCAgent c : owner.myComponents.values()) {
-            if (c.me.getType().equals(ACodaType.EB.name())) {
-                owner.sortedComponentList.put(c.me.getName(), c.me);
-            }
-        }
-
-        for (CodaRCAgent c : owner.myComponents.values()) {
-            if (c.me.getType().equals(ACodaType.CDEB.name())) {
-                owner.sortedComponentList.put(c.me.getName(), c.me);
-            }
-        }
-
-        for (CodaRCAgent c : owner.myComponents.values()) {
-            if (c.me.getType().equals(ACodaType.DC.name())) {
-                owner.sortedComponentList.put(c.me.getName(), c.me);
-            }
-        }
-
-        for (CodaRCAgent c : owner.myComponents.values()) {
-            if (c.me.getType().equals(ACodaType.ROC.name())) {
-                owner.sortedComponentList.put(c.me.getName(), c.me);
-            }
-        }
-
-        for (CodaRCAgent c : owner.myComponents.values()) {
-            if (c.me.getType().equals(ACodaType.GT.name())) {
-                owner.sortedComponentList.put(c.me.getName(), c.me);
-            }
-        }
-
-        for (CodaRCAgent c : owner.myComponents.values()) {
-            if (c.me.getType().equals(ACodaType.TS.name())) {
-                owner.sortedComponentList.put(c.me.getName(), c.me);
-            }
-        }
-        */
 
     }
 
@@ -986,7 +866,7 @@ public class CoolServiceAnalyser {
      * being allowed to write an output file
      * </p>
      */
-    private void sortForOutputFile() {
+    private void sortForDestinationNames() {
 
         owner.sortedByOutputList.clear();
         for (CodaRCAgent c : owner.myComponents.values()) {

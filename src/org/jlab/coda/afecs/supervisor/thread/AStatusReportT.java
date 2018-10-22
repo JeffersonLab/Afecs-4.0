@@ -76,7 +76,6 @@ public class AStatusReportT extends Thread {
         states.add(AConstants.udf);
 
         while (isRunning) {
-
             owner.send(AConstants.GUI,
                     owner.me.getSession() + "_" + owner.me.getRunType() + "/supervisor",
                     owner.me.getRunTimeDataAsPayload());
@@ -92,7 +91,7 @@ public class AStatusReportT extends Thread {
                 int maxEventSize = 0;
                 int minEventSize = 0;
                 int avgEventSize = 0;
-                String outFile = "";
+                String[] destinationNameArray = new String[0];
 
                 for (AComponent c : owner.sortedComponentList.values()) {
                     if (c.getType().equals(ACodaType.ER.name()) && !c.getName().contains("class")) {
@@ -105,7 +104,10 @@ public class AStatusReportT extends Thread {
                         maxEventSize += c.getMaxEventSize();
                         minEventSize += c.getMinEventSize();
                         avgEventSize += c.getAvgEventSize();
-                        outFile += c.getFileName() + " [" + c.getName() + "]" + "?";
+                        if(c.getDestinationNames()!=null) {
+                            destinationNameArray = (String[]) AfecsTool.concatenate(
+                                    destinationNameArray, c.getDestinationNames());
+                        }
                     }
                 }
 
@@ -119,7 +121,7 @@ public class AStatusReportT extends Thread {
                 tc.setMaxEventSize(maxEventSize);
                 tc.setMinEventSize(minEventSize);
                 tc.setAvgEventSize(avgEventSize);
-                tc.setFileName(outFile);
+                tc.setDestinationNames(destinationNameArray);
                 tc.setExpid(owner.getPlEXPID());
             }
 
@@ -134,7 +136,8 @@ public class AStatusReportT extends Thread {
                 int maxEventSize = 0;
                 int minEventSize = 0;
                 int avgEventSize = 0;
-                String outFile = "";
+                String[] destinationNameArray = new String[0];
+
 
                 for (AComponent c : owner.sortedComponentList.values()) {
                     if (c.getType().equals(ACodaType.SEB.name()) && !c.getName().contains("class")) {
@@ -147,7 +150,10 @@ public class AStatusReportT extends Thread {
                         maxEventSize += c.getMaxEventSize();
                         minEventSize += c.getMinEventSize();
                         avgEventSize += c.getAvgEventSize();
-                        outFile += c.getFileName() + " [" + c.getName() + "]" + "?";
+                        if(c.getDestinationNames()!=null) {
+                            destinationNameArray = (String[]) AfecsTool.concatenate(
+                                    destinationNameArray, c.getDestinationNames());
+                        }
                     }
                 }
                 AComponent tc = owner.sortedComponentList.get("SEB_class");
@@ -160,7 +166,7 @@ public class AStatusReportT extends Thread {
                 tc.setMaxEventSize(maxEventSize);
                 tc.setMinEventSize(minEventSize);
                 tc.setAvgEventSize(avgEventSize);
-                tc.setFileName(outFile);
+                tc.setDestinationNames(destinationNameArray);
                 tc.setExpid(owner.getPlEXPID());
             }
             // aggregate PED class component parameters
@@ -174,7 +180,7 @@ public class AStatusReportT extends Thread {
                 int maxEventSize = 0;
                 int minEventSize = 0;
                 int avgEventSize = 0;
-                String outFile = "";
+                String[] destinationNameArray = new String[0];
 
                 for (AComponent c : owner.sortedComponentList.values()) {
                     if (c.getType().equals(ACodaType.PEB.name()) && !c.getName().contains("class")) {
@@ -187,7 +193,10 @@ public class AStatusReportT extends Thread {
                         maxEventSize += c.getMaxEventSize();
                         minEventSize += c.getMinEventSize();
                         avgEventSize += c.getAvgEventSize();
-                        outFile += c.getFileName() + " [" + c.getName() + "]" + "?";
+                        if(c.getDestinationNames()!=null) {
+                            destinationNameArray = (String[]) AfecsTool.concatenate(
+                                    destinationNameArray, c.getDestinationNames());
+                        }
                     }
                 }
                 AComponent tc = owner.sortedComponentList.get("PEB_class");
@@ -200,7 +209,7 @@ public class AStatusReportT extends Thread {
                 tc.setMaxEventSize(maxEventSize);
                 tc.setMinEventSize(minEventSize);
                 tc.setAvgEventSize(avgEventSize);
-                tc.setFileName(outFile);
+                tc.setDestinationNames(destinationNameArray);
                 tc.setExpid(owner.getPlEXPID());
             }
 

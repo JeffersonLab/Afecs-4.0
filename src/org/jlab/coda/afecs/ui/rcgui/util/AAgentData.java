@@ -38,7 +38,7 @@ public class AAgentData {
     private long eventNumber;
     private float evtRateA;
     private double dataRateA;
-    private String fileName;
+    private String[] destinationNames;
 
 
     public AAgentData(){
@@ -138,7 +138,12 @@ public class AAgentData {
         this.liveTime = liveTime;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+
+    public String[] getDestinationNames() {
+        return destinationNames;
+    }
+
+    public void setDestinationNames(String[] destinationNames) {
+        this.destinationNames = destinationNames;
     }
 }

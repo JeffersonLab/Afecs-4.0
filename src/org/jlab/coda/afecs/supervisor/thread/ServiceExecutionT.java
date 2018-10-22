@@ -383,7 +383,7 @@ public class ServiceExecutionT implements Runnable {
                         owner.me.setState(stateName);
                         owner.me.setRunStartTime(owner.startEndFormatter.format(new Date()));
                         owner.me.setRunEndTime("0");
-                        owner.me.setFileName(owner.defineOutputFile());
+                        owner.me.setDestinationNames(owner.defineDestinationNames());
                         owner.send(AConstants.GUI,
                                 owner.me.getSession() + "_" + owner.me.getRunType() + "/supervisor",
                                 owner.me.getState(),

@@ -56,6 +56,7 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
     private APlugin               plugin;
     private String                userConfig           = AConstants.udf;
 
+    private String[]              destinationNames;
     // runtime field parameters
     private String                expid                = AConstants.udf;
     private String                host                 = AConstants.udf;
@@ -522,6 +523,14 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public String[] getDestinationNames() {
+        return destinationNames;
+    }
+
+    public void setDestinationNames(String[] destinationNames) {
+        this.destinationNames = destinationNames;
     }
 
     public ArrayList<AService> getServices() {

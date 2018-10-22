@@ -476,7 +476,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
         agentsSubRType = _session + "_" + _runType + "/agents";
         supervisorSubRType = _session + "_" + _runType + "/supervisor";
         String supervisorSubRSubject = _session + "/" + _runType;
-        System.out.println("DDDD subscribing "+ supervisorSubRSubject);
         if (status = un_Subscribe()) {
             try {
                 // Subscribe messages from the control supervisor

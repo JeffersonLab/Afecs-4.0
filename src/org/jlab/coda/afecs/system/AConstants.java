@@ -129,6 +129,7 @@ public class AConstants {
     public static final String NUMBEROFLONGS = "dataCount";
     public static final String LIVETIME = "liveTime";
     public static final String FILENAME = "fileName";
+    public static final String DESTINATIONNAMES = "destinationNames";
     public static final String FILEDATE = "fileDate";
     public static final String FILECONTENT = "fileContent";
     public static final String ISCHANGED = "fileChanged";

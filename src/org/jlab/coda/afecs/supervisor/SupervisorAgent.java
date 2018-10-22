@@ -701,9 +701,9 @@ public class SupervisorAgent extends AParent implements Serializable {
      *
      * @return output file name
      */
-    public String defineOutputFile() {
+    public String[] defineDestinationNames() {
         AComponent c = sortedByOutputList.entrySet().iterator().next().getValue();
-        return c.getFileName();
+        return c.getDestinationNames();
     }
 
     /**
@@ -726,12 +726,11 @@ public class SupervisorAgent extends AParent implements Serializable {
         sb.append("      <run-number>").append(me.getRunNumber()).append("</run-number>").append("\n");
         sb.append("      <start-time>").append(me.getRunStartTime()).append("</start-time>").append("\n");
 
-        String fileName = me.getFileName();
-        if (fileName.contains("?") || fileName.contains("^") || fileName.contains("<") || fileName.contains(">")) {
-            fileName = "corrupted";
+        if(me.getDestinationNames()!=null) {
+            for (String fileName : me.getDestinationNames()) {
+                sb.append("      <out-file>").append(fileName).append("</out-file>").append("\n");
+            }
         }
-        sb.append("      <out-file>").append(fileName).append("</out-file>").append("\n");
-
         sb.append("      <components>").append("\n");
 
         // write components data
@@ -789,11 +788,12 @@ public class SupervisorAgent extends AParent implements Serializable {
             sb.append("            <average-evt-build-time>").append(comp.me.getMeanTimeToBuild()).append("</average-evt-build-time>").append("\n");
             sb.append("            <chunk-x-et-buffer>").append(comp.me.getChunkXEtBuffer()).append("</chunk-x-et-buffer>").append("\n");
 
-            String cFileName = comp.me.getFileName();
-            if (cFileName.contains("?") || cFileName.contains("^") || cFileName.contains("<") || cFileName.contains(">")) {
-                cFileName = "corrupted";
+
+            if(me.getDestinationNames()!=null) {
+                for (String cFileName : me.getDestinationNames()) {
+                    sb.append("            <out-file>").append(cFileName).append("</out-file>").append("\n");
+                }
             }
-            sb.append("            <out-file>").append(cFileName).append("</out-file>").append("\n");
 
             sb.append("         </component>").append("\n");
         }
@@ -1226,12 +1226,12 @@ public class SupervisorAgent extends AParent implements Serializable {
                                 }
                                 break;
 
-                            case AConstants.SupervisorReportComponentOutputFile:
-                                tmpCmp = myComponents.get(txt).me;
-                                if (tmpCmp != null) {
-                                    mr.setText(tmpCmp.getFileName());
-                                }
-                                break;
+//                            case AConstants.SupervisorReportComponentOutputFile:
+//                                tmpCmp = myComponents.get(txt).me;
+//                                if (tmpCmp != null) {
+//                                    mr.setText(tmpCmp.getFileName());
+//                                }
+//                                break;
 
                             case AConstants.SupervisorReportComponentEventRate:
                                 tmpCmp = myComponents.get(txt).me;
@@ -1311,8 +1311,8 @@ public class SupervisorAgent extends AParent implements Serializable {
 
                             case AConstants.SupervisorReportComponentOutputFile_p: {
                                 tmpCmp = myComponents.get(txt).me;
-                                if (tmpCmp != null) {
-                                    mr.addPayloadItem(new cMsgPayloadItem("outputfile_p", tmpCmp.getFileName()));
+                                if (tmpCmp != null && tmpCmp.getDestinationNames()!=null) {
+                                    mr.addPayloadItem(new cMsgPayloadItem("outputfile_p", tmpCmp.getDestinationNames()));
                                 }
                                 break;
                             }

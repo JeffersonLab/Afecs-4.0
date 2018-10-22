@@ -22,7 +22,6 @@
 
 package org.jlab.coda.afecs.ui.rcgui;
 
-import com.sun.scenario.effect.impl.sw.java.JSWBlend_SRC_OUTPeer;
 import org.jlab.coda.afecs.cool.ontology.AComponent;
 import org.jlab.coda.afecs.system.ACodaType;
 import org.jlab.coda.afecs.system.AConstants;
@@ -211,7 +210,7 @@ class StatusCB extends cMsgCallbackAdapter {
             // sort according to their types
             Map<String, AComponent> cmp = AfecsTool.getSortedByType(cmpU);
 
-            if(cmp.isEmpty()) {
+            if (cmp.isEmpty()) {
                 cmp = cmpU;
             }
 
@@ -241,17 +240,6 @@ class StatusCB extends cMsgCallbackAdapter {
                 }
             }
             out = 1;
-
-            // at least one component reports as undefined do not allow configuration
-//            if (!AfecsTool.containsState(cmp, AConstants.udf) && AfecsTool.containsState(cmp, AConstants.booted)) {
-//                if (!owner._runState.equals(AConstants.booted) &&
-//                        !owner._runState.equals(AConstants.active) &&
-//                        !owner._runState.equals("configuring")) {
-////                    owner.getRunStateTextField().setText(AConstants.booted);
-//                    owner.getConfigureButton().setEnabled(true);
-//                }
-//            }
-
 
             updateGuiComponentsData(cmp);
 
@@ -406,7 +394,6 @@ class StatusCB extends cMsgCallbackAdapter {
                 _ad.setLiveTime(comp.getLiveTime());
                 _ad.setEvtRateA(comp.getEventRateAverage());
                 _ad.setDataRateA(comp.getDataRateAverage());
-                _ad.setFileName(comp.getFileName());
             } else {
                 _ad = new AAgentData();
                 _ad.setName(comp.getName());
@@ -418,7 +405,6 @@ class StatusCB extends cMsgCallbackAdapter {
                 _ad.setLiveTime(comp.getLiveTime());
                 _ad.setEvtRateA(comp.getEventRateAverage());
                 _ad.setDataRateA(comp.getDataRateAverage());
-                _ad.setFileName(comp.getFileName());
                 owner.reportingCompDataMap.put(_ad.getName(), _ad);
             }
 
@@ -434,39 +420,23 @@ class StatusCB extends cMsgCallbackAdapter {
             // show currently monitored component event number and file name
             if (owner.monitoredComponent.equals(comp.getName())) {
                 _evtNumber = comp.getEventNumber();
-                if (!comp.getFileName().contains("?")) {
-                    if (!_outputFile.contains(comp.getFileName())) {
-                        _outputFile.clear();
-                        owner.getOutputFileComboBox().removeAllItems();
 
-                        _outputFile.add(0, comp.getFileName());
-                        owner.getOutputFileComboBox().addItem(_outputFile.get(0));
-                    }
-                } else {
-
-                    // this is aggregated output file name from the class component
-                    StringTokenizer st = new StringTokenizer(comp.getFileName(), "?");
-                    Set<String> l = new HashSet<>();
-                    while (st.hasMoreTokens()) {
-                        l.add(st.nextToken());
-                    }
+                if (comp.getDestinationNames() != null) {
+                    ArrayList<String> fNames = new ArrayList<>(Arrays.asList(comp.getDestinationNames()));
                     boolean isChanged = false;
-                    for (String s : l) {
+                    for (String s : fNames) {
                         if (!_outputFile.contains(s)) {
                             isChanged = true;
                         }
                     }
 
                     if (isChanged) {
-                        _outputFile.clear();
+                        _outputFile = fNames;
                         owner.getOutputFileComboBox().removeAllItems();
-
-                        for (String s : l) {
-                            _outputFile.add(s);
-                            owner.getOutputFileComboBox().addItem(s);
+                        for (String ss : fNames) {
+                            owner.getOutputFileComboBox().addItem(ss);
                         }
                     }
-
                 }
 
             }
@@ -534,6 +504,7 @@ class StatusCB extends cMsgCallbackAdapter {
      *
      * @param comp AComponent object
      */
+
     private void updateComponentIndividualData(AComponent comp) {
         if (comp.getName().equals(owner.selectedComponent)) {
             // update individual component data
@@ -630,7 +601,6 @@ class StatusCB extends cMsgCallbackAdapter {
         @Override
         public void doSomeWork() {
             if (deltaSupReportTime.get() > 60000) { // warning messages every 60sec.
-//                owner.updateDaLogTable(owner.getName(), "Supervisor is not reporting.", AConstants.WARN, 7);
                 count++;
             } else {
                 count = 0;
@@ -655,15 +625,6 @@ class StatusCB extends cMsgCallbackAdapter {
                 }
 
             }
-
-//                String message = "  Supervisor is not reporting\n" +
-//                        " Do you want me to disconnect? ";
-//                String[] buttons = {"Disconnect", "Cancel"};
-//                int a = owner.popupQuestionDialog(message, buttons);
-//                if (a == JOptionPane.OK_OPTION) {
-//                    new RcDisconnect(owner).execute();
-//                }
-//                count = 0;
         }
     }
 

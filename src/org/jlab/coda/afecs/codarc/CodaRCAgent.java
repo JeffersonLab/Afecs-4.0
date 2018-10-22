@@ -903,8 +903,8 @@ public class CodaRCAgent extends AParent {
                         if (msg.getPayloadItem(AConstants.LIVETIME) != null)
                             me.setLiveTime(msg.getPayloadItem(AConstants.LIVETIME).getFloat());
 
-                        if (msg.getPayloadItem(AConstants.FILENAME) != null)
-                            me.setFileName(msg.getPayloadItem(AConstants.FILENAME).getString());
+                        if (msg.getPayloadItem(AConstants.DESTINATIONNAMES) != null)
+                            me.setDestinationNames(msg.getPayloadItem(AConstants.DESTINATIONNAMES).getStringArray());
 
                         if (msg.getPayloadItem("minEventSize") != null)
                             me.setMinEventSize(msg.getPayloadItem("minEventSize").getInt());
@@ -1271,7 +1271,7 @@ public class CodaRCAgent extends AParent {
         boolean stat = _setup();
         if (stat) {
             // Move to configured
-            me.setFileName(AConstants.udf);
+            me.setDestinationNames(null);
             isResetting.set(false);
             _moveToState(AConstants.configured);
         }

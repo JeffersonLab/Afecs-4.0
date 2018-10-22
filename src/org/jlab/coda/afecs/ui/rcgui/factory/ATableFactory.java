@@ -261,6 +261,7 @@ public class ATableFactory {
                     break;
                 }
             }
+
             if (!found) {
                 getTableModel().addRow(data);
             } else {
