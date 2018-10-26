@@ -210,7 +210,11 @@ class StatusCB extends cMsgCallbackAdapter {
             // sort according to their types
             Map<String, AComponent> cmp = AfecsTool.getSortedByType(cmpU);
 
-            if (cmp.isEmpty()) {
+            if (msg.getSender().contains("sms_")) {
+                if (cmp.isEmpty()) {
+                    cmp = cmpU;
+                }
+            } else {
                 cmp = cmpU;
             }
 
@@ -220,7 +224,8 @@ class StatusCB extends cMsgCallbackAdapter {
                     !AfecsTool.containsState(cmp, AConstants.udf)) {
 
                 if (owner.monitoredComponent.equals(AConstants.udf)) {
-                    owner.defineDefaultWatch();
+
+                    if (msg.getSender().contains("sms_")) owner.defineDefaultWatch();
                     if (owner.isEnable_fx()) {
                         owner.updateFxCharts();
                     } else {
@@ -240,6 +245,7 @@ class StatusCB extends cMsgCallbackAdapter {
                 }
             }
             out = 1;
+
 
             updateGuiComponentsData(cmp);
 

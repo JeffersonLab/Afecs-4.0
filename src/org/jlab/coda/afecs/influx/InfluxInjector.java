@@ -21,9 +21,8 @@ import java.util.Map;
 public class InfluxInjector {
 
     // JinFluxDriver object
-    public JinFluxDriver jinFluxDriver;
+    private JinFluxDriver jinFluxDriver;
 
-    private static final String name = "afecswebmon";
     private static final String dbNode = "claraweb.jlab.org";
     private static final String dbName = "afecs";
     private SupervisorAgent owner;
@@ -43,7 +42,7 @@ public class InfluxInjector {
                     jinFluxDriver.push(owner);
                 }
             }
-            AfecsTool.sleep(5000);
+            AfecsTool.sleep(2000);
         } while (true);
 
     }

@@ -611,6 +611,7 @@ public class ABase implements Serializable {
             }
 
             if (msgBack == null) {
+                System.out.println(msg);
                 throw new AException(myName + "-Error: Receiver does not exists.");
             }
         }

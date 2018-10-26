@@ -25,7 +25,6 @@ package org.jlab.coda.afecs.platform;
 import org.jlab.coda.afecs.client.AClientInfo;
 import org.jlab.coda.afecs.container.AContainer;
 import org.jlab.coda.afecs.cool.ontology.AComponent;
-import org.jlab.coda.afecs.influx.InfluxInjector;
 import org.jlab.coda.afecs.platform.thread.PlatformSpy;
 import org.jlab.coda.afecs.platform.thread.cMsgPingT;
 import org.jlab.coda.afecs.system.ABase;
@@ -33,7 +32,6 @@ import org.jlab.coda.afecs.system.AConstants;
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.*;
 import org.jlab.coda.cMsg.cMsgDomain.server.cMsgNameServer;
-import org.jlab.coda.jinflux.JinFluxException;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -64,9 +62,6 @@ public class APlatform extends ABase {
 
     // Platform control designer object
     public AControlDesigner designer;
-
-    //influx injection for Graphana visualization
-    public InfluxInjector influxInjector;
 
     private static boolean DaLogArchiveRequest = false;
     private static String DaLogArchivePath = "default";

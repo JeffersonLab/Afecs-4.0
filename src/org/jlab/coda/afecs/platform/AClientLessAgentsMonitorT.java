@@ -98,12 +98,13 @@ public class AClientLessAgentsMonitorT extends ABase implements Runnable {
                     }
                 }
             }
+
             send(AConstants.GUI,
                     session + "_" + runType + "/agents",
                     "udf",
                     agents);
 
-            if (stop) {
+            if (stop && myPlatform.container.getContainerSupervisors().containsKey("sms_"+runType)) {
                 System.out.println("DDD ----| "+myName +" Info: stop orphan client monitoring thread.");
                 stopMe();
             }

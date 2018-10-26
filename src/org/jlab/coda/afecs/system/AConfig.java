@@ -92,7 +92,7 @@ public class AConfig {
         dbUrl = System.getenv("MSQL_TCP_HOST");
 
         if(dbUrl == null){
-            System.out.println("CODA2 SQL db host is not defined.");
+//            System.out.println("CODA2 SQL db host is not defined.");
             dbUrl = AConstants.udf;
         } else {
             dbUrl    = "jdbc:msql://"+dbUrl+":8101/"+platformExpid;

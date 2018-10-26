@@ -149,6 +149,7 @@ class AControlDesigner extends ABase {
                 }
             }
 
+
             // Report all GUIs sorted list of components
             send(AConstants.GUI,
                     session + "_" + runType + "/agents",
@@ -164,6 +165,7 @@ class AControlDesigner extends ABase {
             String k = session + "_" + runType;
             if (!_orphanAgentMap.containsKey(k)) {
                 System.out.println("DDD ----| " + myName + " Info: starting orphan client monitoring thread.");
+
                 // remove from the map all the clients that already have agents
                 Thread v = new Thread(new AClientLessAgentsMonitorT(myPlatform, comps, session, runType, _orphanAgentMap));
                 v.start();
