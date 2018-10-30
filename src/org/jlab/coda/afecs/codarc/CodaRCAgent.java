@@ -905,11 +905,11 @@ public class CodaRCAgent extends AParent {
 
                         if (msg.getPayloadItem(AConstants.DESTINATIONNAMES) != null) {
                             me.setDestinationNames(msg.getPayloadItem(AConstants.DESTINATIONNAMES).getStringArray());
-                            System.out.println("DDD --------------------");
+                            System.out.println("DDD -------------------------------------------------------");
                             for(String s:me.getDestinationNames()){
                                 System.out.println(s);
                             }
-                            System.out.println("DDD --------------------");
+                            System.out.println("DDD --------------------------------------------------------");
                         }
 
                         if (msg.getPayloadItem("minEventSize") != null)
