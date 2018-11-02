@@ -208,15 +208,17 @@ class StatusCB extends cMsgCallbackAdapter {
             }
 
             // sort according to their types
-            Map<String, AComponent> cmp = AfecsTool.getSortedByType(cmpU);
+//            Map<String, AComponent> cmp = AfecsTool.getSortedByType(cmpU);
+//
+//            if (msg.getSender().contains("sms_")) {
+//                if (cmp.isEmpty()) {
+//                    cmp = cmpU;
+//                }
+//            } else {
+//                cmp = cmpU;
+//            }
 
-            if (msg.getSender().contains("sms_")) {
-                if (cmp.isEmpty()) {
-                    cmp = cmpU;
-                }
-            } else {
-                cmp = cmpU;
-            }
+            Map<String, AComponent> cmp = cmpU;
 
             if (!AfecsTool.containsState(cmp, AConstants.checking) &&
                     !AfecsTool.containsState(cmp, AConstants.connected) &&
@@ -245,7 +247,6 @@ class StatusCB extends cMsgCallbackAdapter {
                 }
             }
             out = 1;
-
 
             updateGuiComponentsData(cmp);
 
@@ -523,16 +524,16 @@ class StatusCB extends cMsgCallbackAdapter {
             _id[6] = owner.formatter.format(comp.getDataRate());
             _id[7] = owner.formatter.format(comp.getNumberOfLongs());
             _id[8] = owner.formatter.format(comp.getLiveTime());
-//            if(comp.getDestinationNames() != null && comp.getDestinationNames().length > 0) {
-//                StringBuilder sb = new StringBuilder();
-//                for (String s : comp.getDestinationNames()) {
-//                    sb.append(s).append(" ;");
-//                }
-//                sb.deleteCharAt(sb.length() - 1);
-//                _id[9] = sb.toString();
-//            } else {
-//                _id[9] = "";
-//            }
+            if(comp.getDestinationNames() != null && comp.getDestinationNames().length > 0) {
+                StringBuilder sb = new StringBuilder();
+                for (String s : comp.getDestinationNames()) {
+                    sb.append(s).append(" ;");
+                }
+                sb.deleteCharAt(sb.length() - 1);
+                _id[9] = sb.toString();
+            } else {
+                _id[9] = "";
+            }
             _id[9] = "";
             _id[10] = Integer.toString(comp.getMinEventSize());
             _id[11] = Integer.toString(comp.getMaxEventSize());
