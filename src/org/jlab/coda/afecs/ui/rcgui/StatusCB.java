@@ -523,12 +523,16 @@ class StatusCB extends cMsgCallbackAdapter {
             _id[6] = owner.formatter.format(comp.getDataRate());
             _id[7] = owner.formatter.format(comp.getNumberOfLongs());
             _id[8] = owner.formatter.format(comp.getLiveTime());
-            StringBuilder sb = new StringBuilder();
-            for (String s : comp.getDestinationNames()) {
-                sb.append(s).append(" ;");
+            if(comp.getDestinationNames() != null && comp.getDestinationNames().length > 0) {
+                StringBuilder sb = new StringBuilder();
+                for (String s : comp.getDestinationNames()) {
+                    sb.append(s).append(" ;");
+                }
+                sb.deleteCharAt(sb.length() - 1);
+                _id[9] = sb.toString();
+            } else {
+                _id[9] = "";
             }
-            sb.deleteCharAt(sb.length() - 1);
-            _id[9] = sb.toString();
             _id[10] = Integer.toString(comp.getMinEventSize());
             _id[11] = Integer.toString(comp.getMaxEventSize());
             _id[12] = Integer.toString(comp.getAvgEventSize());
