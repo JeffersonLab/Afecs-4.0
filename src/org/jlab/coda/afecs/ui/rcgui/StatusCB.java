@@ -226,25 +226,31 @@ class StatusCB extends cMsgCallbackAdapter {
 
                 if (owner.monitoredComponent.equals(AConstants.udf)) {
 
-                    if (msg.getSender().contains("sms_")) owner.defineDefaultWatch();
+                    if (msg.getSender().contains("sms_")) {
+                        owner.defineDefaultWatch();
+                    }
                     if (owner.isEnable_fx()) {
                         owner.updateFxCharts();
                     } else {
                         owner.softResetCharts_cosy();
                     }
                 }
-
             }
 
-            // Check to see if javaFX is supported by the OS
-            if (owner.isEnable_fx()) {
-                // create data rate bar graph if not existed
-                if (!owner.isDrBgCreated.get()) createDataRateBGFx(cmp);
+            if (msg.getSender().contains("sms_")) {
+                // Check to see if javaFX is supported by the OS
+                if (owner.isEnable_fx()) {
+                    // create data rate bar graph if not existed
+                    if (!owner.isDrBgCreated.get()) {
+                        createDataRateBGFx(cmp);
+                    }
 
-                if (owner.FxEvtRateTG_Series.contains(AConstants.udf)) {
-                    owner.updateFxCharts();
+                    if (owner.FxEvtRateTG_Series.contains(AConstants.udf)) {
+                        owner.updateFxCharts();
+                    }
                 }
             }
+
             out = 1;
 
             updateGuiComponentsData(cmp);
