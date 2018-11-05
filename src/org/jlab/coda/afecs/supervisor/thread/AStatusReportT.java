@@ -104,12 +104,14 @@ public class AStatusReportT extends Thread {
                         maxEventSize += c.getMaxEventSize();
                         minEventSize += c.getMinEventSize();
                         avgEventSize += c.getAvgEventSize();
-                        if(c.getDestinationNames()!=null) {
-                            destinationNameArray = (String[]) AfecsTool.concatenate(
+                        if(c.getDestinationNames()!=null && c.getDestinationNames().length > 0) {
+
+                            destinationNameArray = AfecsTool.concatenate(
                                     destinationNameArray, c.getDestinationNames());
                         }
                     }
                 }
+
 
                 AComponent tc = owner.sortedComponentList.get("ER_class");
                 tc.setEventNumber(eventNumber);

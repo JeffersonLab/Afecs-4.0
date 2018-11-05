@@ -208,17 +208,16 @@ class StatusCB extends cMsgCallbackAdapter {
             }
 
             // sort according to their types
-//            Map<String, AComponent> cmp = AfecsTool.getSortedByType(cmpU);
-//
-//            if (msg.getSender().contains("sms_")) {
-//                if (cmp.isEmpty()) {
-//                    cmp = cmpU;
-//                }
-//            } else {
-//                cmp = cmpU;
-//            }
+            Map<String, AComponent> cmp = AfecsTool.getSortedByType(cmpU);
 
-            Map<String, AComponent> cmp = cmpU;
+            if (msg.getSender().contains("sms_")) {
+                if (cmp.isEmpty()) {
+                    cmp = cmpU;
+                }
+            } else {
+                cmp = cmpU;
+            }
+
 
             if (!AfecsTool.containsState(cmp, AConstants.checking) &&
                     !AfecsTool.containsState(cmp, AConstants.connected) &&

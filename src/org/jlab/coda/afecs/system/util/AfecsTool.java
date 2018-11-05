@@ -1185,14 +1185,11 @@ public class AfecsTool {
         return addr.getHostName();
     }
 
-    public static <T> Object[] concatenate(T[] a, T[] b)
-    {
-        // Function to merge two arrays of
-        // same type
-        return Stream.of(a, b)
-                .flatMap(Stream::of)
-                .toArray();
-
+    public static String[] concatenate (String [] a, String[] b){
+        ArrayList<String> al = new ArrayList<>(Arrays.asList(a));
+        ArrayList<String> bl = new ArrayList<>(Arrays.asList(b));
+        al.addAll(bl);
+        return al.toArray(new String[al.size()]);
     }
 
     public static void main(String[] args) {
