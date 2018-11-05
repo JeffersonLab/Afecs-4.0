@@ -268,8 +268,10 @@ class StatusCB extends cMsgCallbackAdapter {
                 if (msg.getPayloadItem(AConstants.STATE) != null) {
 
                     owner._runState = msg.getPayloadItem(AConstants.STATE).getString();
-
-                    if (owner._runState.equals(AConstants.downloaded) && tableUpdateFlag) {
+                    if (!owner._runState.equals(AConstants.connected) &&
+                            !owner._runState.equals(AConstants.booted) &&
+                            tableUpdateFlag) {
+//                    if (owner._runState.equals(AConstants.downloaded) && tableUpdateFlag) {
                         _data_m.clear();
                         owner._clearTables(false);
                         tableUpdateFlag = false;
@@ -523,7 +525,7 @@ class StatusCB extends cMsgCallbackAdapter {
             _id[6] = owner.formatter.format(comp.getDataRate());
             _id[7] = owner.formatter.format(comp.getNumberOfLongs());
             _id[8] = owner.formatter.format(comp.getLiveTime());
-            if(comp.getDestinationNames() != null && comp.getDestinationNames().length > 0) {
+            if (comp.getDestinationNames() != null && comp.getDestinationNames().length > 0) {
                 StringBuilder sb = new StringBuilder();
                 for (String s : comp.getDestinationNames()) {
                     sb.append(s).append(" ;");
