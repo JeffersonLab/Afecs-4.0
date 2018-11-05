@@ -533,7 +533,6 @@ class StatusCB extends cMsgCallbackAdapter {
             } else {
                 _id[9] = "";
             }
-            _id[9] = "";
             _id[10] = Integer.toString(comp.getMinEventSize());
             _id[11] = Integer.toString(comp.getMaxEventSize());
             _id[12] = Integer.toString(comp.getAvgEventSize());
