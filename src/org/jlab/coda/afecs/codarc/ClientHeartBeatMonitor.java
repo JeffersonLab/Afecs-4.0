@@ -88,13 +88,13 @@ public class ClientHeartBeatMonitor extends Thread{
                     AConstants.WARN,
                     " Client has not reported for " +
                             _timeAfterLastReporting / 1000 +
-                            " sec.");
+                            " sec. No operator action is required at this time. Be patient.");
             owner.dalogMsg(owner.myName,
                     5,
                     AConstants.WARN,
                     " Client has not reported for " +
                             _timeAfterLastReporting / 1000 +
-                            " sec.");
+                            " sec. No operator action is required at this time. Be patient.");
             _hadWarning = true;
         }
     }
