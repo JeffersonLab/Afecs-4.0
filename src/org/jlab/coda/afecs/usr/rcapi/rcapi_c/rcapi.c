@@ -769,13 +769,13 @@ getComponentEventNumber(const char *runType, const char *compName)
 
 /*--------------------------------------------------------*/
 
-const char *
-getComponentOutputFile(const char *runType, const char *compName)
+const char **
+getComponentOutputFiles(const char *runType, const char *compName)
 {
   void *replyMsg = NULL;
   char supName[50];
-  int err;
-  const char *result = NULL;
+  int err, len, istring;
+  const char **result;
 
   sprintf(supName, "sms_%s", runType);
 
@@ -791,28 +791,29 @@ getComponentOutputFile(const char *runType, const char *compName)
   if (err == CMSG_OK)
     {
       /* get the interested payload */
-      err = cMsgGetString(replyMsg, "outputfile_p", &result);
+      err = cMsgGetStringArray(replyMsg, "outputfile_p", &result, &len);
       if (err == CMSG_ERROR)
 	{
 	  fprintf(stderr, "%s: Error: payload = outputfile_p does not exist.\n",
 		 __func__);
-	  result = NULL;
 	}
       else if (err != CMSG_OK)
 	{
 	  fprintf(stderr, "%s: Error: %s\n", __func__, cMsgPerror(err));
-	  result = NULL;
 	}
-      else
-	strncpy(cMsgStringResult, result, 80 * sizeof(char));
+	      else
+    	for (istring = 0; istring < len; istring++)
+    	  strncpy(cMsgStringArrayResult[istring], result[istring],
+    		  80 * sizeof(char));
     }
+
 
   debugCmsg("recv", replyMsg);
 
   if (replyMsg)
     cMsgFreeMessage(&replyMsg);
 
-  return cMsgStringResult;
+    return (const char **) cMsgStringArrayResult;
 }
 
 /*--------------------------------------------------------*/
