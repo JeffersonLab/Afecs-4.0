@@ -2,8 +2,8 @@
 # author vhg
 
 env = Environment()
-env.Append(CPPPATH = ['.','/daqfs/home/gurjyan/Work/include'])
+env.Append(CPPPATH = ['.','$CODA/common/include'])
 env.Append(CCFLAGS = ['-g','-O3'])
-env.Append(LIBPATH = ['/daqfs/home/gurjyan/Work/Linux-x86_64/lib'])
+env.Append(LIBPATH = ['$CODA/Linux-x86_64/lib'])
 env.Append(LIBS = ['libcmsg', 'libcmsgRegex', 'libcmsgxx', 'librt', 'libpthread', 'libdl'])
 env.Object(source = 'rcapi.c' )

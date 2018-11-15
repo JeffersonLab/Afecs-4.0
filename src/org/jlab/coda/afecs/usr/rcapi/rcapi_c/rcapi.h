@@ -35,6 +35,7 @@ const char *getComponentOutputFile(const char *runType, const char *compName);
 float getComponentEventRate(const char *runType, const char *compName);
 double getComponentDataRate(const char *runType, const char *compName);
 const char *getComponentState(const char *runType, const char *compName);
+float getComponentLiveTime(const char *runType, const char *compName);
 
 int rcgConfigure(const char *session, const char *runType);
 int rcgReleaseAgents(const char *runType);
