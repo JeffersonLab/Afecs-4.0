@@ -1,6 +1,10 @@
 # scons build file for rcapi
 # author vhg
 
+import os
+env = Environment(ENV = os.environ)
+env['CODA'] = os.environ.get('CODA','default')
+
 env = Environment()
 env.Append(CPPPATH = ['.','$CODA/common/include'])
 env.Append(CCFLAGS = ['-g','-O3'])
