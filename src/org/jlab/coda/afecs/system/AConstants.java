@@ -231,6 +231,7 @@ public class AConstants {
 
     public static final String PlatformInfoRequest = "platform/info/request/*";
     public static final String PlatformInfoRequestActiveRunType = "platform/info/request/activeRunType";
+    public static final String PlatformInfoRequestActiveRunState = "platform/info/request/activeRunState";
     public static final String PlatformInfoRequestActiveRunTypes = "platform/info/request/activeRunTypes";
     public static final String PlatformInfoRequestAgents = "platform/info/request/agents";
     public static final String PlatformInfoRequestAgents_p = "platform/info/request/agents/pl";

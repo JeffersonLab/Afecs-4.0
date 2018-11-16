@@ -30,6 +30,7 @@ const char *getSupervisorSession(const char *runType);
 const char *getSupervisorRunStartTime(const char *runType);
 const char *getSupervisorRunEndTime(const char *runType);
 const char *getActiveRunType(const char *session);
+const char *getActiveRunState(const char *session);
 int64_t getComponentEventNumber(const char *runType, const char *compName);
 const char **getComponentOutputFiles(const char *runType, const char *compName);
 float getComponentEventRate(const char *runType, const char *compName);

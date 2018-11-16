@@ -1003,6 +1003,32 @@ public class APlatform extends ABase {
                             }
                         }
                         break;
+                    case AConstants.PlatformInfoRequestActiveRunState:
+
+                        // Sending through payload item so that it
+                        // would be possible to use c/c++ clients
+                        if (msg.isGetRequest()) {
+                            String rt = AConstants.udf;
+                            for (AComponent comp : registrar.getAgentDir().values()) {
+                                if (comp.getName().startsWith("sms_")) {
+                                    if (comp.getSession().equals(txt)) {
+                                        rt = comp.getState();
+                                        break;
+                                    }
+                                }
+                            }
+
+                            try {
+                                cMsgMessage mr = msg.response();
+                                mr.setSubject(AConstants.udf);
+                                mr.setType(AConstants.udf);
+                                mr.addPayloadItem(new cMsgPayloadItem("runstate_p", rt));
+                                myPlatformConnection.send(mr);
+                            } catch (cMsgException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        break;
                     case AConstants.PlatformInfoRequestActiveRunTypes:
 
                         // Sending through payload item so that it

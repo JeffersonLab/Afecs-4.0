@@ -394,6 +394,91 @@ getSupervisorRunNumber(const char *runType)
 /*--------------------------------------------------------*/
 
 const char *
+getActiveRunType(const char *session)
+{
+  void *replyMsg = NULL;
+  int err;
+  const char *result;
+
+  timeout.tv_sec = 3;
+  timeout.tv_nsec = 0;
+
+  err =
+    sendAndGetCmsg(__func__,
+		   myExPid,
+		   "platform/info/request/activeRunType",
+		   session, NULL, NULL, 0, &replyMsg, timeout);
+
+  if (err == CMSG_OK)
+    {
+      /* get the interested payload */
+      err = cMsgGetString(replyMsg, "activeruntype_p", &result);
+      if (err == CMSG_ERROR)
+	{
+	  fprintf(stderr, "%s: Error: payload = activeruntype_p does not exist.\n",
+		 __func__);
+	}
+      else if (err != CMSG_OK)
+	{
+	  fprintf(stderr, "%s: Error: %s\n", __func__, cMsgPerror(err));
+	}
+      else
+	strncpy(cMsgStringResult, result, 80 * sizeof(char));
+    }
+
+  debugCmsg("recv", replyMsg);
+
+  if (replyMsg)
+    cMsgFreeMessage(&replyMsg);
+
+  return cMsgStringResult;
+}
+
+/*--------------------------------------------------------*/
+const char *
+getActiveRunState(const char *session)
+{
+  void *replyMsg = NULL;
+  int err;
+  const char *result;
+
+  timeout.tv_sec = 3;
+  timeout.tv_nsec = 0;
+
+  err =
+    sendAndGetCmsg(__func__,
+		   myExPid,
+		   "platform/info/request/activeRunState",
+		   session, NULL, NULL, 0, &replyMsg, timeout);
+
+  if (err == CMSG_OK)
+    {
+      /* get the interested payload */
+      err = cMsgGetString(replyMsg, "runstate_p", &result);
+      if (err == CMSG_ERROR)
+	{
+	  fprintf(stderr, "%s: Error: payload = runstate_p does not exist.\n",
+		 __func__);
+	}
+      else if (err != CMSG_OK)
+	{
+	  fprintf(stderr, "%s: Error: %s\n", __func__, cMsgPerror(err));
+	}
+      else
+	strncpy(cMsgStringResult, result, 80 * sizeof(char));
+    }
+
+  debugCmsg("recv", replyMsg);
+
+  if (replyMsg)
+    cMsgFreeMessage(&replyMsg);
+
+  return cMsgStringResult;
+}
+
+/*--------------------------------------------------------*/
+
+const char *
 getSupervisorState(const char *runType)
 {
   void *replyMsg = NULL;
@@ -675,48 +760,6 @@ getSupervisorRunEndTime(const char *runType)
 
 /*--------------------------------------------------------*/
 
-const char *
-getActiveRunType(const char *session)
-{
-  void *replyMsg = NULL;
-  int err;
-  const char *result;
-
-  timeout.tv_sec = 3;
-  timeout.tv_nsec = 0;
-
-  err =
-    sendAndGetCmsg(__func__,
-		   myExPid,
-		   "platform/info/request/activeRunType",
-		   session, NULL, NULL, 0, &replyMsg, timeout);
-
-  if (err == CMSG_OK)
-    {
-      /* get the interested payload */
-      err = cMsgGetString(replyMsg, "activeruntype_p", &result);
-      if (err == CMSG_ERROR)
-	{
-	  fprintf(stderr, "%s: Error: payload = activeruntype_p does not exist.\n",
-		 __func__);
-	}
-      else if (err != CMSG_OK)
-	{
-	  fprintf(stderr, "%s: Error: %s\n", __func__, cMsgPerror(err));
-	}
-      else
-	strncpy(cMsgStringResult, result, 80 * sizeof(char));
-    }
-
-  debugCmsg("recv", replyMsg);
-
-  if (replyMsg)
-    cMsgFreeMessage(&replyMsg);
-
-  return cMsgStringResult;
-}
-
-/*--------------------------------------------------------*/
 
 int64_t
 getComponentEventNumber(const char *runType, const char *compName)
