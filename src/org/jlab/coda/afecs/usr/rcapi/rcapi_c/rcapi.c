@@ -393,24 +393,24 @@ getSupervisorRunNumber(const char *runType)
 
 /*--------------------------------------------------------*/
 
-
 const char *
 getSupervisorState(const char *runType)
 {
   void *replyMsg = NULL;
   char supName[50];
   int err;
-  const char *result = NULL;
+  const char *result;
 
   sprintf(supName, "sms_%s", runType);
 
   timeout.tv_sec = 3;
   timeout.tv_nsec = 0;
 
-  err = sendAndGetCmsg(__func__,
-		       supName,
-		       "supervisor/user/request/runState/pl",
-		       NULL, NULL, NULL, 0, &replyMsg, timeout);
+  err =
+    sendAndGetCmsg(__func__,
+		   supName,
+		   "supervisor/user/request/runState/pl",
+		   NULL, NULL, NULL, 0, &replyMsg, timeout);
 
   if (err == CMSG_OK)
     {
@@ -420,25 +420,20 @@ getSupervisorState(const char *runType)
 	{
 	  fprintf(stderr, "%s: Error: payload = runstate_p does not exist.\n",
 		 __func__);
-	  strncpy(cMsgStringResult, "", 80 * sizeof(char));
 	}
       else if (err != CMSG_OK)
 	{
 	  fprintf(stderr, "%s: Error: %s\n", __func__, cMsgPerror(err));
-//	  rcgSetDebugMask(0xf);
-	  strncpy(cMsgStringResult, "", 80 * sizeof(char));
 	}
-//      else
-//	strncpy(cMsgStringResult, result, 80 * sizeof(char));
+      else
+	strncpy(cMsgStringResult, result, 80 * sizeof(char));
     }
 
   debugCmsg("recv", replyMsg);
 
-//  rcgSetDebugMask(0);
-  
   if (replyMsg)
     cMsgFreeMessage(&replyMsg);
-  
+
   return cMsgStringResult;
 }
 
