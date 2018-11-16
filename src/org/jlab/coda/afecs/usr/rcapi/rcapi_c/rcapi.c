@@ -425,16 +425,16 @@ getSupervisorState(const char *runType)
       else if (err != CMSG_OK)
 	{
 	  fprintf(stderr, "%s: Error: %s\n", __func__, cMsgPerror(err));
-	  rcgSetDebugMask(0xf);
+//	  rcgSetDebugMask(0xf);
 	  strncpy(cMsgStringResult, "", 80 * sizeof(char));
 	}
-      else
-	strncpy(cMsgStringResult, result, 80 * sizeof(char));
+//      else
+//	strncpy(cMsgStringResult, result, 80 * sizeof(char));
     }
 
   debugCmsg("recv", replyMsg);
 
-  rcgSetDebugMask(0);
+//  rcgSetDebugMask(0);
   
   if (replyMsg)
     cMsgFreeMessage(&replyMsg);
@@ -984,7 +984,7 @@ getComponentState(const char *runType, const char *compName)
 	{
 	  fprintf(stderr, "%s: Error: %s\n", __func__, cMsgPerror(err));
 
-	  rcgSetDebugMask(0xf);
+//	  rcgSetDebugMask(0xf);
 
 	  result = NULL;
 	}
@@ -996,7 +996,7 @@ getComponentState(const char *runType, const char *compName)
 
   debugCmsg("recv", replyMsg);
 
-  rcgSetDebugMask(0);
+//  rcgSetDebugMask(0);
 
   if (replyMsg)
     cMsgFreeMessage(&replyMsg);
