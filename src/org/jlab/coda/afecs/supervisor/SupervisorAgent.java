@@ -1226,13 +1226,6 @@ public class SupervisorAgent extends AParent implements Serializable {
                                 }
                                 break;
 
-//                            case AConstants.SupervisorReportComponentOutputFile:
-//                                tmpCmp = myComponents.get(txt).me;
-//                                if (tmpCmp != null) {
-//                                    mr.setText(tmpCmp.getFileName());
-//                                }
-//                                break;
-
                             case AConstants.SupervisorReportComponentEventRate:
                                 tmpCmp = myComponents.get(txt).me;
                                 if (tmpCmp != null) {
@@ -1370,6 +1363,9 @@ public class SupervisorAgent extends AParent implements Serializable {
                             case AConstants.SupervisorReportTriggerSourceComponent:
                                 if (triggerComponent != null) mr.setText(triggerComponent.getName());
                                 else mr.setText(AConstants.udf);
+                                break;
+
+                            default:
                                 break;
                         }
 
