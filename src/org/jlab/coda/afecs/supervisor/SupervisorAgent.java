@@ -789,8 +789,8 @@ public class SupervisorAgent extends AParent implements Serializable {
             sb.append("            <chunk-x-et-buffer>").append(comp.me.getChunkXEtBuffer()).append("</chunk-x-et-buffer>").append("\n");
 
 
-            if(me.getDestinationNames()!=null) {
-                for (String cFileName : me.getDestinationNames()) {
+            if(comp.me.getDestinationNames()!=null) {
+                for (String cFileName : comp.me.getDestinationNames()) {
                     sb.append("            <out-file>").append(cFileName).append("</out-file>").append("\n");
                 }
             }
