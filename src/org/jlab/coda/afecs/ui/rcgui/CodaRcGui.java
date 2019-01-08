@@ -319,14 +319,19 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
         // If connection is not successful use
         // rc multicast to find a platform
         if (!base.isPlatformConnected()) {
-
             // Connect to the rc domain multicast
             // server and request platform host name
             cMsgMessage m = null;
-            for (int i = 0; i < 100; i++) {
-                m = base.rcMonitor(300);
-                if (m != null) break;
+            System.out.printf("Connecting to "+ base.getPlEXPID()+" platform");
+            for (int i = 0; i < 10; i++) {
+                m = base.rcMonitor(30);
+                if (m != null) {
+                    System.out.println("/n");
+                    break;
+                }
+                System.out.printf(".");
             }
+            System.out.println("/n");
             if (m != null) {
                 plHost = m.getSenderHost();
                 cMsgPayloadItem item = m.getPayloadItem("IpAddresses");
@@ -366,7 +371,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
                     System.exit(1);
                 }
             } else {
-                System.out.println(" Can not find a platform for EXPID = " + base.getPlEXPID());
+                System.out.println(" Can't find the EXPID = " + base.getPlEXPID()+" platform.");
                 System.exit(1);
             }
         }
