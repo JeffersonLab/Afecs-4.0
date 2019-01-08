@@ -64,7 +64,7 @@ public class RcInit extends SwingWorker<String, Void> {
 
         // Start cMsg connection
         // heart beat checking timer
-//        this.owner.cMsgConHB.start();
+        this.owner.cMsgConHB.start();
     }
 
     @Override

@@ -403,7 +403,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
         // Create cMsg connection heartbeat
         // checking timer. Timer will started at
         // RcInit (see below)
-//        cMsgConHB = new RcMsgHeartBeat(iam);
+        cMsgConHB = new RcMsgHeartBeat(iam);
 
         // Create graphics updating timer object.
         // After successful connect this timer will

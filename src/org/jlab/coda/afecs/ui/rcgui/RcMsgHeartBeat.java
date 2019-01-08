@@ -23,6 +23,7 @@
 package org.jlab.coda.afecs.ui.rcgui;
 
 import org.jlab.coda.afecs.system.AConstants;
+import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.cMsgMessage;
 
 import javax.swing.*;
@@ -62,7 +63,7 @@ public class RcMsgHeartBeat {
 
     public RcMsgHeartBeat(CodaRcGui owner) {
         this.owner = owner;
-        int delay = 2000;
+        int delay = 5000;
         timer = new Timer(delay, actionListener);
     }
 
@@ -78,6 +79,7 @@ public class RcMsgHeartBeat {
 
         @Override
         protected Integer doInBackground() throws Exception {
+            checked = false;
             if (!owner.base.isPlatformConnected()) {
                 // get a new name for a new connection
                 owner.base.myName = "rcGui-" + new Random().nextInt(100);
@@ -105,7 +107,6 @@ public class RcMsgHeartBeat {
                     checked = false;
                 }
             }
-
             return null;
         }
 
@@ -122,15 +123,16 @@ public class RcMsgHeartBeat {
                 owner.getConnectMenuItem().setEnabled(false);
             } else if (owner.base.isPlatformConnected() && !wasConnected) {
                 wasConnected = true;
+                owner.hardResetUi(true);
                 owner.updateDaLogTable(owner.base.myName,
                         " Restored connection to the platform",
                         AConstants.INFO,
                         1);
                 if (popUpFrame != null) popUpFrame.dispose();
                 popUpFrame = null;
-                owner.gDriver._updateControlBtNs(RcStates.CONNECTED);
-
-                owner.hardResetUi(true);
+//                new RcDisconnect(owner).execute();
+                owner.getConnectMenuItem().setEnabled(true);
+//                owner.gDriver._updateControlBtNs(RcStates.CONNECTED);
             }
         }
     }
