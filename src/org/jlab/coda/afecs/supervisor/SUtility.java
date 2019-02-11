@@ -100,6 +100,7 @@ public class SUtility {
         return false;
     }
 
+
     /**
      * Checks reporting components map to see if
      * any of the components have a required state.
