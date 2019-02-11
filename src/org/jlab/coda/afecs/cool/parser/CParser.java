@@ -64,7 +64,7 @@ public class CParser {
     private Map<String, String> setRTVs;
 
     private int numberOfFileComponents;
-    private int erId = -1, pebId = -1, sebId = -1, ebId = -1, cdebId = -1, dcId = -1;
+    private int erId = -1, pebId = -1, sebId = -1, ebId = -1, cdebId = -1, dcId = -1, usrId = -1;
 
     private AContainer myContainer;
 
@@ -101,7 +101,7 @@ public class CParser {
      */
     public AControl parseControl(String runType, boolean onlyComponents) {
         numberOfFileComponents = 0;
-        erId = pebId = sebId = ebId = cdebId = dcId = -1;
+        usrId = erId = pebId = sebId = ebId = cdebId = dcId = -1;
 
 //        default directory for option files
         String fn = _coolHome + "Control" + File.separator + runType + File.separator + "Options";
@@ -451,9 +451,7 @@ public class CParser {
             if (tmps != null) {
                 if (tmps.equals(ACodaType.FILE.name())) {
                     continue;
-                } else if (tmps.equals(ACodaType.USR.name())) {
-                    continue;
-                } else {
+                }  else {
                     cmp.setType(tmps);
                     if (tmps.equals(ACodaType.ER.name())) {
                         erId++;
@@ -475,6 +473,9 @@ public class CParser {
                     } else if (tmps.equals(ACodaType.DC.name())) {
                         dcId++;
                         cmp.setStreamId(dcId);
+                    } else if (tmps.equals(ACodaType.USR.name())) {
+                        usrId++;
+                        cmp.setStreamId(usrId);
                     }
                 }
             }
@@ -516,26 +517,32 @@ public class CParser {
                     e.printStackTrace();
                 }
             } else {
-                if (cmp.getType().equalsIgnoreCase(ACodaType.USR.name())) cmp.setPriority(ACodaType.USR.priority());
+                if (cmp.getType().equalsIgnoreCase(ACodaType.USR.name()))
+                    cmp.setPriority(ACodaType.USR.priority());
                 else if (cmp.getType().equalsIgnoreCase(ACodaType.SLC.name()))
                     cmp.setPriority(ACodaType.SLC.priority());
                 else if (cmp.getType().equalsIgnoreCase(ACodaType.WNC.name()))
                     cmp.setPriority(ACodaType.WNC.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.ER.name())) cmp.setPriority(ACodaType.ER.priority());
+                else if (cmp.getType().equalsIgnoreCase(ACodaType.ER.name()))
+                    cmp.setPriority(ACodaType.ER.priority());
                 else if (cmp.getType().equalsIgnoreCase(ACodaType.FCS.name()))
                     cmp.setPriority(ACodaType.FCS.priority());
                 else if (cmp.getType().equalsIgnoreCase(ACodaType.PEB.name()))
                     cmp.setPriority(ACodaType.PEB.priority());
                 else if (cmp.getType().equalsIgnoreCase(ACodaType.SEB.name()))
                     cmp.setPriority(ACodaType.SEB.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.EB.name())) cmp.setPriority(ACodaType.EB.priority());
+                else if (cmp.getType().equalsIgnoreCase(ACodaType.EB.name()))
+                    cmp.setPriority(ACodaType.EB.priority());
                 else if (cmp.getType().equalsIgnoreCase(ACodaType.CDEB.name()))
                     cmp.setPriority(ACodaType.CDEB.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.DC.name())) cmp.setPriority(ACodaType.DC.priority());
+                else if (cmp.getType().equalsIgnoreCase(ACodaType.DC.name()))
+                    cmp.setPriority(ACodaType.DC.priority());
                 else if (cmp.getType().equalsIgnoreCase(ACodaType.ROC.name()))
                     cmp.setPriority(ACodaType.ROC.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.GT.name())) cmp.setPriority(ACodaType.GT.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.TS.name())) cmp.setPriority(ACodaType.TS.priority());
+                else if (cmp.getType().equalsIgnoreCase(ACodaType.GT.name()))
+                    cmp.setPriority(ACodaType.GT.priority());
+                else if (cmp.getType().equalsIgnoreCase(ACodaType.TS.name()))
+                    cmp.setPriority(ACodaType.TS.priority());
                 else if (cmp.getType().equalsIgnoreCase(ACodaType.SMS.name()))
                     cmp.setPriority(ACodaType.SMS.priority());
                 else if (cmp.getType().equalsIgnoreCase(ACodaType.RCS.name()))
