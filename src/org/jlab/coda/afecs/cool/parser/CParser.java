@@ -94,7 +94,7 @@ public class CParser {
 
 
     /**
-     * parses Cool control concept and fills {@link org.jlab.coda.afecs.cool.ontology.AControl} objet
+     * parses Cool control concept and fills {@link org.jlab.coda.afecs.cool.ontology.AControl} objetc
      *
      * @param runType of the control
      * @return AControl object
@@ -118,9 +118,12 @@ public class CParser {
         for (AComponent agent : al) {
 
             if (myContainer.getContainerAgents().containsKey(agent.getName())) {
+   System.out.println("DDD ................... 1  "+agent.getName());
                 // update registered agent information on the container
                 CodaRCAgent cAgent = myContainer.getContainerAgents().get(agent.getName());
                 if(cAgent!=null && cAgent.me.getClient()!=null) {
+    System.out.println("DDD ................... 2  "+cAgent.me.getName());
+
                     // saving IP information
                     Map<String, String[]> lip = cAgent.me.getLinkedIp();
                     Map<String, String[]> lba = cAgent.me.getLinkedBa();
@@ -136,6 +139,7 @@ public class CParser {
                     // update linked components IP information
                     for (String linkedCompName : cAgent.me.getLinkedComponentNames()) {
                         CodaRCAgent linkedAgent = cAgent.myContainer.getContainerAgents().get(linkedCompName);
+  System.out.println("DDD ............................................................................................. Linked component is = " + linkedCompName +"  "+linkedAgent);
                         linkedAgent.agentControlRequestNetworkDetails(
                                 cAgent.myName,
                                 cAgent.me.getClient().getHostIps(),

@@ -120,10 +120,6 @@ public class AParent extends ABase implements Serializable {
     // This agent data object.
     public AComponent me;
 
-    // Status reporting thread object.
-    // Reports AComponent object,
-    transient private Thread stRpT;
-
     // Process manager object reference
     transient public ProcessManager pm;
 
@@ -501,7 +497,7 @@ public class AParent extends ABase implements Serializable {
                         }
                     }
                 } else {
-                    List<cMsgPayloadItem> res = myPlatform.platformInfoRequestReadConfgiFile(conf, comp.getDod());
+                    List<cMsgPayloadItem> res = myPlatform.platformInfoRequestReadConfigFile(conf, comp.getDod());
                     if (res != null && !res.isEmpty()) {
                         long lmd = 0;
                         String fileContent = AConstants.udf;
@@ -568,23 +564,6 @@ public class AParent extends ABase implements Serializable {
             e.printStackTrace();
         }
         return al;
-    }
-
-    public String agentInfoRequestState(String sender) {
-        try {
-            if (sender.contains(AConstants.ORPHANAGENTMONITOR)) {
-                String tmp = rcClientInfoSyncGetState(1000);
-                if (tmp != null && !tmp.equals(AConstants.failed)) {
-                    me.setState(tmp);
-                } else {
-                    me.setState(AConstants.udf);
-                }
-            }
-        } catch (AException e) {
-            me.setState(AConstants.disconnected);
-//            e.printStackTrace();
-        }
-        return me.getState();
     }
 
     /**

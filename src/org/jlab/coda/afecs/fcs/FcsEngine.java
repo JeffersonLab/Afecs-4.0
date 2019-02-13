@@ -31,7 +31,6 @@ import org.jlab.coda.afecs.system.util.*;
 import org.jlab.coda.cMsg.cMsgConstants;
 import org.jlab.coda.cMsg.cMsgDomain.server.cMsgNameServer;
 import org.jlab.coda.cMsg.cMsgException;
-import org.jlab.coda.cMsg.cMsgMessage;
 import org.jlab.coda.cMsg.cMsgPayloadItem;
 
 import java.io.IOException;
@@ -396,7 +395,7 @@ public class FcsEngine {
         if (!conf.equals(AConstants.udf)) {
             List<cMsgPayloadItem> res;
             try {
-                res = myAgent.myPlatform.platformInfoRequestReadConfgiFile(conf, comp.getDod());
+                res = myAgent.myPlatform.platformInfoRequestReadConfigFile(conf, comp.getDod());
                 if (res != null && !res.isEmpty()) {
                     for (cMsgPayloadItem pi : res) {
                         if (pi.getName().equals(AConstants.FILECONTENT)) {

@@ -524,10 +524,13 @@ public class AContainer extends ABase {
 
         public void callback(cMsgMessage msg, Object userObject) {
 
+
             if (msg != null &&
                     msg.getPayloadItem("packetCount") != null &&
                     msg.getPayloadItem("SenderId") != null) {
                 String sender = msg.getSender();
+
+                System.out.println("DDD : Received join the platform request from "+ sender);
 
                 try {
                     int packetCount = msg.getPayloadItem("packetCount").getInt();

@@ -60,9 +60,6 @@ public class APlatform extends ABase {
     // Platform container object
     public AContainer container;
 
-    // Platform control designer object
-    public AControlDesigner designer;
-
     private static boolean DaLogArchiveRequest = false;
     private static String DaLogArchivePath = "default";
 
@@ -141,12 +138,17 @@ public class APlatform extends ABase {
             }
 
             File fcf = new File(coolHome + File.separator + platformExpid + File.separator + "config" + File.separator + "Control");
-            if ((fcf.listFiles() != null) && (fcf.listFiles().length <= 0)) {
+            if (fcf.isDirectory() && fcf.exists()){
+                if ( fcf.list().length <0 ) {
+                    System.out.println("Afecs database for the EXPID = " + platformExpid +
+                            " is empty. Create a CODA configuration using JCedit. Exiting...");
+                    System.exit(1);
+                }
+            } else {
                 System.out.println("Afecs database for the EXPID = " + platformExpid +
-                        " is empty. Create a CODA configuration using JCedit. Exiting...");
+                        " does not exists. Exiting...");
                 System.exit(1);
             }
-
             if (!f.canWrite()) {
                 System.out.println("No write permission in COOL_HOME = " + coolHome + ". Exiting...");
                 System.exit(1);
@@ -238,7 +240,7 @@ public class APlatform extends ABase {
         if (DaLogArchiveRequest) daLogArchive = new ADaLogArchive(DaLogArchivePath);
 
         // Start Platform Control Designer
-        designer = new AControlDesigner(this);
+        new AControlDesigner(this);
 
         // Start a thread that periodically checks to see if other platform exists.
         // This is done by monitoring rcMulitcast servers with the same EXPID in the network.
@@ -698,7 +700,7 @@ public class APlatform extends ABase {
         }
     }
 
-    public List<cMsgPayloadItem> platformInfoRequestReadConfgiFile(String txt,
+    public List<cMsgPayloadItem> platformInfoRequestReadConfigFile(String txt,
                                                                    ArrayList<String> cif)
             throws IOException, cMsgException {
 
