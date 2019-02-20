@@ -565,26 +565,30 @@ public class APlatformRegistrar {
                     if(n.getNodeType() == Node.ELEMENT_NODE){
                         Element ne= (Element)n;
                         NodeList nnl;
-                        if(n.getNodeName().equals("name")){
-                            nnl = ne.getChildNodes();
-                            if(nnl!=null && nnl.getLength()>0){
-                                ci.setName(nnl.item(0).getNodeValue().trim());
-                            }
-                        } else if(n.getNodeName().equals("config")){
-                            nnl = ne.getChildNodes();
-                            if(nnl!=null && nnl.getLength()>0){
-                                ci.setConfigName(nnl.item(0).getNodeValue().trim());
-                            }
-                        } else if(n.getNodeName().equals("runnumber")){
-                            nnl = ne.getChildNodes();
-                            if(nnl!=null && nnl.getLength()>0){
-
-                                try{
-                                    ci.setRunNumber(Integer.parseInt(nnl.item(0).getNodeValue().trim()));
-                                } catch(NumberFormatException e){
-                                    e.printStackTrace();
+                        switch (n.getNodeName()) {
+                            case "name":
+                                nnl = ne.getChildNodes();
+                                if (nnl != null && nnl.getLength() > 0) {
+                                    ci.setName(nnl.item(0).getNodeValue().trim());
                                 }
-                            }
+                                break;
+                            case "config":
+                                nnl = ne.getChildNodes();
+                                if (nnl != null && nnl.getLength() > 0) {
+                                    ci.setConfigName(nnl.item(0).getNodeValue().trim());
+                                }
+                                break;
+                            case "runnumber":
+                                nnl = ne.getChildNodes();
+                                if (nnl != null && nnl.getLength() > 0) {
+
+                                    try {
+                                        ci.setRunNumber(Integer.parseInt(nnl.item(0).getNodeValue().trim()));
+                                    } catch (NumberFormatException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                break;
                         }
                     }
                 }

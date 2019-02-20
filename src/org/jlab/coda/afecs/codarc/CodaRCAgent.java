@@ -955,8 +955,10 @@ public class CodaRCAgent extends AParent {
                         // check the output buffer level from the ROC
                         if (msg.getPayloadItem("outputLevel") != null) {
                             String v = msg.getPayloadItem("outputLevel").getString();
-                            String[] value = v.split("\\.");
-                            me.getOutBuffers().put(me.getName() + "." + value[0], Integer.valueOf(value[1]));
+                            if (v.contains("\\.")) {
+                                String[] value = v.split("\\.");
+                                me.getOutBuffers().put(me.getName() + "." + value[0], Integer.valueOf(value[1]));
+                            }
                         }
 
                     } catch (cMsgException e) {

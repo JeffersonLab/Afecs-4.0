@@ -122,7 +122,6 @@ public class CParser {
                 // update registered agent information on the container
                 CodaRCAgent cAgent = myContainer.getContainerAgents().get(agent.getName());
                 if(cAgent!=null && cAgent.me.getClient()!=null) {
-    System.out.println("DDD ................... 2  "+cAgent.me.getName());
 
                     // saving IP information
                     Map<String, String[]> lip = cAgent.me.getLinkedIp();
@@ -139,7 +138,6 @@ public class CParser {
                     // update linked components IP information
                     for (String linkedCompName : cAgent.me.getLinkedComponentNames()) {
                         CodaRCAgent linkedAgent = cAgent.myContainer.getContainerAgents().get(linkedCompName);
-  System.out.println("DDD ............................................................................................. Linked component is = " + linkedCompName +"  "+linkedAgent);
                         linkedAgent.agentControlRequestNetworkDetails(
                                 cAgent.myName,
                                 cAgent.me.getClient().getHostIps(),
