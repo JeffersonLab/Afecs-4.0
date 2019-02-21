@@ -91,7 +91,6 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
     private AClientInfo           client;
     private int                   nScheduledRuns       = 0;
     private String                supervisor           = AConstants.udf;
-    private ArrayList<String>     MonDataItemNames     = new ArrayList<>();
 
     private Map<String,String[]> linkedIp = new HashMap<>();
     private Map<String,String[]> linkedBa = new HashMap<>();
@@ -177,10 +176,6 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
         this.type = type;
     }
 
-
-    public void setCode(String code) {
-        String code1 = code;
-    }
 
     public AClientInfo getClient() {
         return client;
@@ -522,6 +517,7 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
     }
 
     public void setFileName(String fileName) {
+        this.destinationNames[0] = fileName;
         this.fileName = fileName;
     }
 
@@ -725,34 +721,6 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
             for(cMsgPayloadItem s:MonitoredData.values()){
                 al.add(s);
             }
-        } catch (cMsgException e) {
-            if(AConstants.debug.get()) e.printStackTrace();
-        }
-        return al;
-    }
-
-    /**
-     * Returns the dynamic data of this class as an ArrayList of payloadItems
-     * @return  array list of payload items.
-     */
-    public ArrayList<cMsgPayloadItem> getDynamicDataAsPayload(){
-        ArrayList<cMsgPayloadItem> al = new ArrayList<>();
-
-        try {
-            al.add(new cMsgPayloadItem(AConstants.CODANAME,name));
-            al.add(new cMsgPayloadItem(AConstants.TIMESTAMP, AfecsTool.getCurrentTimeInH()));
-            al.add(new cMsgPayloadItem(AConstants.TYPE,type));
-            al.add(new cMsgPayloadItem(AConstants.EXPID,expid));
-            al.add(new cMsgPayloadItem(AConstants.SESSION,session));
-            al.add(new cMsgPayloadItem(AConstants.RUNTYPE, runType));
-            al.add(new cMsgPayloadItem(AConstants.STATE,state));
-            al.add(new cMsgPayloadItem(AConstants.EVENTRATE,eventRate));
-            al.add(new cMsgPayloadItem(AConstants.EVENTRATEAVERAGE,eventRateAverage));
-            al.add(new cMsgPayloadItem(AConstants.DATARATE,dataRate));
-            al.add(new cMsgPayloadItem(AConstants.DATARATEAVERAGE,dataRateAverage));
-            al.add(new cMsgPayloadItem(AConstants.NUMBEROFLONGS,numberOfLongs));
-            al.add(new cMsgPayloadItem(AConstants.EVENTNUMBER,eventNumber));
-            al.add(new cMsgPayloadItem(AConstants.RUNNUMBER,runNumber));
         } catch (cMsgException e) {
             if(AConstants.debug.get()) e.printStackTrace();
         }

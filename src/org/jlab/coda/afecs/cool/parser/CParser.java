@@ -502,14 +502,14 @@ public class CParser {
                 cmp.setHost(tmps);
             }
 
-            tmps = getValue(x, "hasCode");
-            if (tmps != null) {
-                if (AfecsTool.containsRTV(tmps)) {
-                    cmp.setCode(AfecsTool.checkRtvs(tmps, setRTVs));
-                } else {
-                    cmp.setCode(tmps);
-                }
-            }
+//            tmps = getValue(x, "hasCode");
+//            if (tmps != null) {
+//                if (AfecsTool.containsRTV(tmps)) {
+//                    cmp.setCode(AfecsTool.checkRtvs(tmps, setRTVs));
+//                } else {
+//                    cmp.setCode(tmps);
+//                }
+//            }
 
             tmps = getValue(x, "hasPriority");
             if (tmps != null) {

@@ -905,6 +905,8 @@ public class CodaRCAgent extends AParent {
 
                         if (msg.getPayloadItem(AConstants.DESTINATIONNAMES) != null) {
                             me.setDestinationNames(msg.getPayloadItem(AConstants.DESTINATIONNAMES).getStringArray());
+                        } else if (msg.getPayloadItem(AConstants.FILENAME) != null) {
+                            me.setFileName(msg.getPayloadItem(AConstants.FILENAME).getString());
                         }
 
                         if (msg.getPayloadItem("minEventSize") != null)
