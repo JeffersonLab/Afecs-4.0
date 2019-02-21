@@ -517,6 +517,9 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
     }
 
     public void setFileName(String fileName) {
+        if(destinationNames == null ) {
+            destinationNames = new String[1];
+        }
         this.destinationNames[0] = fileName;
         this.fileName = fileName;
     }
