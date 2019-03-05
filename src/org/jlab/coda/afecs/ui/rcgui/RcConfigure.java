@@ -23,6 +23,7 @@
 package org.jlab.coda.afecs.ui.rcgui;
 
 import org.jlab.coda.afecs.system.AConstants;
+import org.jlab.coda.afecs.system.AException;
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.cMsgException;
 import org.jlab.coda.cMsg.cMsgMessage;
@@ -42,7 +43,7 @@ import java.util.concurrent.ExecutionException;
  * </p>
  *
  * @author gurjyan
- *         Date: 11/21/14 Time: 1:51 PM
+ * Date: 11/21/14 Time: 1:51 PM
  * @version 4.x
  */
 
@@ -57,7 +58,7 @@ public class RcConfigure extends SwingWorker<Integer, Void> {
                 this.owner._session.equals(AConstants.udf)) {
             this.owner.updateDaLogTable(this.owner.getName(),
                     "Select or set session and runType",
-                    AConstants.WARN,7);
+                    AConstants.WARN, 7);
         } else {
 
             this.owner.resetScheduler();
@@ -106,15 +107,14 @@ public class RcConfigure extends SwingWorker<Integer, Void> {
 
                 // ask control designer to configure the run and send back the list of user
                 // defined RTVs in the cool file (%()) that are not defined
-                cMsgMessage m = owner.base.p2pSend(AConstants.CONTROLDESIGNER,
-                        AConstants.DesignerControlRequestConfigureControl,
-                        "",
-                        owner.getRTVMap(),
-                        al,
-                        AConstants.TIMEOUT);
+                try {
+                    cMsgMessage m = owner.base.p2pSend(AConstants.CONTROLDESIGNER,
+                            AConstants.DesignerControlRequestConfigureControl,
+                            "",
+                            owner.getRTVMap(),
+                            al,
+                            AConstants.TIMEOUT);
 
-
-                if (m != null && m.getByteArray() != null) {
                     if (m.getText().equals("config_failed")) {
                         out = 4;
                         return out;
@@ -138,7 +138,8 @@ public class RcConfigure extends SwingWorker<Integer, Void> {
                         e.printStackTrace();
                     }
 
-                } else {
+                } catch (AException e) {
+                    System.out.println(e.getMessage());
                     out = 5;
                     return out;
                 }
@@ -181,7 +182,7 @@ public class RcConfigure extends SwingWorker<Integer, Void> {
                 case 1:
                     owner.updateDaLogTable(owner.getName(),
                             "  Control supervisor is not registered. Try configuring again",
-                            AConstants.WARN,7);
+                            AConstants.WARN, 7);
                     System.out.println("Control supervisor is not registered. Try configuring again");
                     break;
                 case 2:
@@ -191,9 +192,9 @@ public class RcConfigure extends SwingWorker<Integer, Void> {
                 case 4:
                 case 5:
                     owner.updateDaLogTable(owner.getName(),
-                            "  Problem communicating with the ControlDesigner agent. Try configuring again.",
-                            AConstants.WARN,7);
-                    System.out.println("Problem communicating with the ControlDesigner agent. Try configuring again.");
+                            "  Problem communicating with the ControlDesigner agent.",
+                            AConstants.WARN, 7);
+                    System.out.println("Problem communicating with the ControlDesigner agent.");
             }
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();

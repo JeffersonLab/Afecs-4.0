@@ -579,7 +579,7 @@ public class ABase implements Serializable {
                                List<cMsgPayloadItem> pis,
                                int timeout) throws AException {
 
-        cMsgMessage msgBack = null;
+        cMsgMessage msgBack;
         if (myPlatformConnection != null &&
                 myPlatformConnection.isConnected() &&
                 subject != null &&
@@ -612,8 +612,10 @@ public class ABase implements Serializable {
 
             if (msgBack == null) {
                 System.out.println(msg);
-                throw new AException(myName + "-Error: Receiver does not exists.");
+                throw new AException(myName + "Error: Receiver does not exists.");
             }
+        } else {
+            throw new AException(myName + "Error: Not connected to the platform.");
         }
         return msgBack;
     }
