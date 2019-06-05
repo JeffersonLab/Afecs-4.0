@@ -557,6 +557,7 @@ public class CodaRCAgent extends AParent {
                     me.setEventRateAverage(es / AVERAG_SIZE);
                 }
 
+
                 // average data rate
                 if (dataRateSlide.size() > 0) {
                     dataRateSlide.remove(0);
