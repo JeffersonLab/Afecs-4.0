@@ -128,6 +128,8 @@ public class StateTransitioningMonitor implements Runnable {
                 // reset counter to calculate running averages.
                 if(owner.me.getState().equals(AConstants.active)){
                     owner.averageCount = 0;
+                    owner.eventRateSlide.clear();
+                    owner.dataRateSlide.clear();
                 }
                 // Farm control client state transition.
                 // Uses local reference to the FCS client.

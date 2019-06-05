@@ -76,7 +76,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * </p>
  *
  * @author gurjyan
- *         Date: 11/11/14 Time: 2:51 PM
+ * Date: 11/11/14 Time: 2:51 PM
  * @version 4.x
  */
 public class CodaRCAgent extends AParent {
@@ -102,7 +102,10 @@ public class CodaRCAgent extends AParent {
 
     // Used to calculate cumulative moving average
     // for event rate and data rate
+    private static int AVERAG_SIZE = 10;
     long averageCount;
+    ArrayList<Float> eventRateSlide = new ArrayList<>();
+    ArrayList<Double> dataRateSlide = new ArrayList<>();
 
     // The message received time from the client
     AtomicLong
@@ -388,7 +391,7 @@ public class CodaRCAgent extends AParent {
     public boolean _moveToState(String stateName) {
         boolean b;
 
-        System.out.println("DDD ----| Info: "+ myName +" requested to transition to "+stateName);
+        System.out.println("DDD ----| Info: " + myName + " requested to transition to " + stateName);
         // First stop dangling transition
         // monitor threads if any
         _stopStateTransitioningMonitor();
@@ -528,22 +531,45 @@ public class CodaRCAgent extends AParent {
      * </p>
      */
     private void _calculateAverages() {
-        averageCount++;
 
         if (me.getEventNumber() != 0 &&
                 me.getDataRate() >= 0 &&
                 me.getEventRate() >= 0) {
 
-            float evtAv =
-                    me.getEventRateAverage() +
-                            ((me.getEventRate() - me.getEventRateAverage()) /
-                                    averageCount);
-            me.setEventRateAverage(evtAv);
-            double datAv =
-                    me.getDataRateAverage() +
-                            ((me.getDataRate() - me.getDataRateAverage()) /
-                                    averageCount);
-            me.setDataRateAverage(datAv);
+            if (averageCount < AVERAG_SIZE) {
+                averageCount++;
+                eventRateSlide.add(me.getEventRate());
+                dataRateSlide.add(me.getDataRate());
+                me.setEventRateAverage(me.getEventLimit());
+                me.setDataRateAverage(me.getDataRate());
+            } else {
+
+                // average event rate
+                if (eventRateSlide.size() > 0) {
+                    eventRateSlide.remove(0);
+                    eventRateSlide.add(me.getEventRate());
+
+                    //calculate average
+                    float es = 0F;
+                    for (Float f : eventRateSlide) {
+                        es += f;
+                    }
+                    me.setEventRateAverage(es / AVERAG_SIZE);
+                }
+
+                // average data rate
+                if (dataRateSlide.size() > 0) {
+                    dataRateSlide.remove(0);
+                    dataRateSlide.add(me.getDataRate());
+
+                    //calculate average
+                    double ds = 0D;
+                    for (Double d : dataRateSlide) {
+                        ds += d;
+                    }
+                    me.setDataRateAverage(ds / AVERAG_SIZE);
+                }
+            }
         }
     }
 
@@ -744,7 +770,7 @@ public class CodaRCAgent extends AParent {
                     me.getClient().getHostBroadcastAddresses() != null &&
                     me.getClient().getHostBroadcastAddresses().length > 0 &&
                     me.getClient().getHostIps().length == me.getClient().getHostBroadcastAddresses().length
-                    ) {
+            ) {
 
                 // Disconnect from the client if connected
                 rcClientDisconnect();
