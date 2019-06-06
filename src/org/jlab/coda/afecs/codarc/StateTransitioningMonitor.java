@@ -130,6 +130,8 @@ public class StateTransitioningMonitor implements Runnable {
                     owner.averageCount = 0;
                     owner.eventRateSlide.clear();
                     owner.dataRateSlide.clear();
+
+                    owner.startTime = System.currentTimeMillis();
                 }
                 // Farm control client state transition.
                 // Uses local reference to the FCS client.

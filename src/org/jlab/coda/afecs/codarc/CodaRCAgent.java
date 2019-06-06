@@ -36,6 +36,7 @@ import org.jlab.coda.afecs.system.AException;
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.*;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
@@ -106,6 +107,10 @@ public class CodaRCAgent extends AParent {
     long averageCount;
     ArrayList<Float> eventRateSlide = new ArrayList<>();
     ArrayList<Double> dataRateSlide = new ArrayList<>();
+
+    // Used to calculate integrated average
+    long startTime;
+
 
     // The message received time from the client
     AtomicLong
@@ -530,7 +535,7 @@ public class CodaRCAgent extends AParent {
      * for event rate and data rate
      * </p>
      */
-    private void _calculateAverages() {
+    private void _calculateSlidingAverages() {
 
         if (me.getEventNumber() != 0 &&
                 me.getDataRate() >= 0 &&
@@ -573,6 +578,35 @@ public class CodaRCAgent extends AParent {
             }
         }
     }
+
+    /**
+     * <p>
+     * Calculates integrated average values
+     * for event rate and data rate
+     * </p>
+     */
+    private void _calculateIntegratedAverages() {
+        long currentTime = System.currentTimeMillis();
+
+        long time = startTime - currentTime;
+
+        try {
+            Math.addExact(me.getEventNumber(), 0);
+            me.setEventRateAverage((float)(me.getEventNumber() / time));
+        } catch (ArithmeticException e){
+            BigInteger Bx = BigInteger.valueOf(me.getEventNumber());
+            me.setEventRateAverage(Bx.divide(BigInteger.valueOf(time)).floatValue());
+        }
+
+        try {
+            Math.addExact(me.getNumberOfLongs(), 0);
+            me.setDataRateAverage((double)me.getNumberOfLongs() / time);
+        } catch (ArithmeticException e){
+            BigInteger Bx = BigInteger.valueOf(me.getNumberOfLongs());
+            me.setDataRateAverage(Bx.divide(BigInteger.valueOf(time)).doubleValue());
+        }
+
+     }
 
     /**
      * <p>
@@ -996,7 +1030,7 @@ public class CodaRCAgent extends AParent {
 
                     // If we are in the active state calculate averages
                     if (me.getState().equals(AConstants.active)) {
-                        _calculateAverages();
+                        _calculateIntegratedAverages();
                     }
                 }
             }
