@@ -959,7 +959,7 @@ public class CodaRCAgent extends AParent {
 
                         }
                         if (msg.getPayloadItem(AConstants.NUMBEROFLONGS) != null)
-                            me.setNumberOfLongs(msg.getPayloadItem(AConstants.NUMBEROFLONGS).getLong());
+                            me.setNumberOfLongs(msg.getPayloadItem(AConstants.NUMBEROFLONGS).getInt());
 
                         if (msg.getPayloadItem(AConstants.LIVETIME) != null)
                             me.setLiveTime(msg.getPayloadItem(AConstants.LIVETIME).getFloat());

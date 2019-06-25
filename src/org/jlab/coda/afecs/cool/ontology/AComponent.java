@@ -70,7 +70,7 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
     private float                 eventRateAverage;
     private double                dataRate;
     private double                dataRateAverage;
-    private long                  numberOfLongs;
+    private int                  numberOfLongs;
     private int maxEventSize;
     private int minEventSize;
     private int avgEventSize;
@@ -301,11 +301,11 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
         this.dataRateAverage = dataRateAverage;
     }
 
-    public long getNumberOfLongs() {
+    public int getNumberOfLongs() {
         return numberOfLongs;
     }
 
-    public void setNumberOfLongs(long numberOfLongs) {
+    public void setNumberOfLongs(int numberOfLongs) {
         this.numberOfLongs = numberOfLongs;
     }
 
