@@ -564,11 +564,18 @@ public class ServiceExecutionT implements Runnable {
                 stateAchieved = owner.coolServiceAnalyser.checkStatesDescribed(cond);
 
             }
-            while (!errorThrown && !stateAchieved && !owner.isResetting.get());
+            while (!errorThrown &&
+                    !stateAchieved &&
+                    !owner.isResetting.get() &&
+                    !owner.me.getState().equals(AConstants.booted)
+            );
 
-            if (errorThrown || !stateAchieved) {
+            if(!owner.isResetting.get()) {
                 failed = true;
             }
+//            if (errorThrown || !stateAchieved) {
+//                failed = true;
+//            }
         }
         return failed;
     }
