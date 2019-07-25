@@ -566,16 +566,22 @@ public class ServiceExecutionT implements Runnable {
             }
             while (!errorThrown &&
                     !stateAchieved &&
-                    !owner.isResetting.get() &&
-                    !owner.me.getState().equals(AConstants.booted)
+                    !owner.isResetting.get()
             );
-
-            if(!owner.isResetting.get()) {
+            if (errorThrown || !stateAchieved) {
                 failed = true;
             }
-//            if (errorThrown || !stateAchieved) {
+
+//            while (!errorThrown &&
+//                    !stateAchieved &&
+//                    !owner.isResetting.get() &&
+//                    !owner.me.getState().equals(AConstants.booted)
+//            );
+//
+//            if(!owner.isResetting.get()) {
 //                failed = true;
 //            }
+
         }
         return failed;
     }
