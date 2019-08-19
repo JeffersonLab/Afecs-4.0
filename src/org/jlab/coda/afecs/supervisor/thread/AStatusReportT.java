@@ -87,7 +87,7 @@ public class AStatusReportT extends Thread {
                 float eventRateAverage = 0f;
                 double dataRate = 0d;
                 double dataRateAverage = 0d;
-                int numberOfLongs = 0;
+                long numberOfLongs = 0;
                 int maxEventSize = 0;
                 int minEventSize = 0;
                 int avgEventSize = 0;
@@ -134,7 +134,7 @@ public class AStatusReportT extends Thread {
                 float eventRateAverage = 0f;
                 double dataRate = 0d;
                 double dataRateAverage = 0d;
-                int numberOfLongs = 0;
+                long numberOfLongs = 0;
                 int maxEventSize = 0;
                 int minEventSize = 0;
                 int avgEventSize = 0;
@@ -178,7 +178,7 @@ public class AStatusReportT extends Thread {
                 float eventRateAverage = 0f;
                 double dataRate = 0d;
                 double dataRateAverage = 0d;
-                int numberOfLongs = 0;
+                long numberOfLongs = 0;
                 int maxEventSize = 0;
                 int minEventSize = 0;
                 int avgEventSize = 0;

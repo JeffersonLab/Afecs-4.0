@@ -589,7 +589,10 @@ public class CodaRCAgent extends AParent {
         long currentTime = System.currentTimeMillis();
 
         long time = startTime - currentTime;
+        me.setEventRateAverage((float)(me.getEventNumber() / time));
+        me.setDataRateAverage((double)me.getNumberOfLongs() / time);
 
+/*
         try {
             Math.addExact(me.getEventNumber(), 0);
             me.setEventRateAverage((float)(me.getEventNumber() / time));
@@ -605,7 +608,7 @@ public class CodaRCAgent extends AParent {
             BigInteger Bx = BigInteger.valueOf(me.getNumberOfLongs());
             me.setDataRateAverage(Bx.divide(BigInteger.valueOf(time)).doubleValue());
         }
-
+*/
      }
 
     /**
@@ -959,7 +962,7 @@ public class CodaRCAgent extends AParent {
 
                         }
                         if (msg.getPayloadItem(AConstants.NUMBEROFLONGS) != null)
-                            me.setNumberOfLongs(msg.getPayloadItem(AConstants.NUMBEROFLONGS).getInt());
+                            me.setNumberOfLongs(msg.getPayloadItem(AConstants.NUMBEROFLONGS).getLong());
 
                         if (msg.getPayloadItem(AConstants.LIVETIME) != null)
                             me.setLiveTime(msg.getPayloadItem(AConstants.LIVETIME).getFloat());
