@@ -118,7 +118,6 @@ public class CParser {
         for (AComponent agent : al) {
 
             if (myContainer.getContainerAgents().containsKey(agent.getName())) {
-   System.out.println("DDD ................... 1  "+agent.getName());
                 // update registered agent information on the container
                 CodaRCAgent cAgent = myContainer.getContainerAgents().get(agent.getName());
                 if(cAgent!=null && cAgent.me.getClient()!=null) {
