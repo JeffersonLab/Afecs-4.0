@@ -588,7 +588,7 @@ public class CodaRCAgent extends AParent {
     private void _calculateIntegratedAverages() {
         long currentTime = System.currentTimeMillis();
 
-        long time = startTime - currentTime;
+        long time = currentTime - startTime;
         me.setEventRateAverage((float)(me.getEventNumber() / time));
         me.setDataRateAverage((double)me.getNumberOfLongs() / time);
 
@@ -953,7 +953,13 @@ public class CodaRCAgent extends AParent {
                         if (msg.getPayloadItem(AConstants.EVENTNUMBER64) != null) {
                             me.setEventNumber(msg.getPayloadItem(AConstants.EVENTNUMBER64).getLong());
                         } else if (msg.getPayloadItem(AConstants.EVENTNUMBER) != null) {
-                            me.setEventNumber(msg.getPayloadItem(AConstants.EVENTNUMBER).getInt());
+                            int _evt_numner = msg.getPayloadItem(AConstants.EVENTNUMBER).getInt();
+                            if (_evt_numner < 0){
+                                long _l_evt_number = Integer.MAX_VALUE + (_evt_numner * (-1));
+                                me.setEventNumber(_l_evt_number);
+                            } else {
+                                me.setEventNumber(msg.getPayloadItem(AConstants.EVENTNUMBER).getInt());
+                            }
                         }
 
                         if (msg.getPayloadItem(AConstants.EVENTRATE) != null)
