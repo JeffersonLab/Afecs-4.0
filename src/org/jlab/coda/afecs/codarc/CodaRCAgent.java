@@ -644,6 +644,8 @@ public class CodaRCAgent extends AParent {
                         AConstants.RcReportStatus,
                         new StatusMsgCB(),
                         null);
+                startTime = System.currentTimeMillis();
+
                 responseSH = myCRCClientConnection.subscribe(myName,
                         AConstants.RcResponse,
                         new ResponseMsgCB(),
