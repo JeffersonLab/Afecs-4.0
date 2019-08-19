@@ -589,7 +589,7 @@ public class CodaRCAgent extends AParent {
         long currentTime = System.currentTimeMillis();
 
         long time = currentTime - startTime;
-        me.setEventRateAverage((float)(me.getEventNumber() / time));
+        me.setEventRateAverage((float)(me.getEventNumber() / time) * 1000F);
         me.setDataRateAverage((double)(me.getNumberOfLongs() / time) * 4.0);
 
 /*
