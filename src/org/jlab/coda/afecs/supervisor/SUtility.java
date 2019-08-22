@@ -182,7 +182,7 @@ public class SUtility {
             else if (comp.getType().equals(ACodaType.PEB.name())) return comp;
             else if (comp.getType().equals(ACodaType.SEB.name())) return comp;
             else if (comp.getType().equals(ACodaType.EB.name())) return comp;
-            else if (comp.getType().equals(ACodaType.CDEB.name())) return comp;
+            else if (comp.getType().equals(ACodaType.EBER.name())) return comp;
             else if (comp.getType().equals(ACodaType.DC.name())) return comp;
             else if (comp.getType().equals(ACodaType.USR.name())) return comp;
         }

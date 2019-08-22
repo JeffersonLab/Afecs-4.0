@@ -759,7 +759,7 @@ public class CoolServiceAnalyser {
                 sebList.add(c.me);
             } else if (c.me.getType().equals(ACodaType.EB.name())) {
                 ebList.add(c.me);
-            } else if (c.me.getType().equals(ACodaType.CDEB.name())) {
+            } else if (c.me.getType().equals(ACodaType.EBER.name())) {
                 cdebList.add(c.me);
             } else if (c.me.getType().equals(ACodaType.DC.name())) {
                 dcList.add(c.me);
@@ -894,7 +894,7 @@ public class CoolServiceAnalyser {
         }
 
         for (CodaRCAgent c : owner.myComponents.values()) {
-            if (c.me.getType().equals(ACodaType.CDEB.name())) {
+            if (c.me.getType().equals(ACodaType.EBER.name())) {
                 owner.sortedByOutputList.put(c.me.getName(), c.me);
             }
         }

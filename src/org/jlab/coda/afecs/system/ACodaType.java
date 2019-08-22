@@ -40,7 +40,7 @@ public enum ACodaType {
     PEB  (510),
     SEB  (610),
     EB   (710),
-    CDEB (810),
+    EBER (810),
     DC   (910),
     ROC  (1010),
     GT   (1110),

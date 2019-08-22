@@ -468,7 +468,7 @@ public class CParser {
                     } else if (tmps.equals(ACodaType.EB.name())) {
                         ebId++;
                         cmp.setStreamId(ebId);
-                    } else if (tmps.equals(ACodaType.CDEB.name())) {
+                    } else if (tmps.equals(ACodaType.EBER.name())) {
                         cdebId++;
                         cmp.setStreamId(cdebId);
                     } else if (tmps.equals(ACodaType.DC.name())) {
@@ -534,8 +534,8 @@ public class CParser {
                     cmp.setPriority(ACodaType.SEB.priority());
                 else if (cmp.getType().equalsIgnoreCase(ACodaType.EB.name()))
                     cmp.setPriority(ACodaType.EB.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.CDEB.name()))
-                    cmp.setPriority(ACodaType.CDEB.priority());
+                else if (cmp.getType().equalsIgnoreCase(ACodaType.EBER.name()))
+                    cmp.setPriority(ACodaType.EBER.priority());
                 else if (cmp.getType().equalsIgnoreCase(ACodaType.DC.name()))
                     cmp.setPriority(ACodaType.DC.priority());
                 else if (cmp.getType().equalsIgnoreCase(ACodaType.ROC.name()))

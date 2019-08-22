@@ -320,7 +320,7 @@ class AControlDesigner extends ABase {
             else if (c.getType().equalsIgnoreCase(ACodaType.PEB.name())) c.setPriority(ACodaType.PEB.priority());
             else if (c.getType().equalsIgnoreCase(ACodaType.SEB.name())) c.setPriority(ACodaType.SEB.priority());
             else if (c.getType().equalsIgnoreCase(ACodaType.EB.name())) c.setPriority(ACodaType.EB.priority());
-            else if (c.getType().equalsIgnoreCase(ACodaType.CDEB.name())) c.setPriority(ACodaType.CDEB.priority());
+            else if (c.getType().equalsIgnoreCase(ACodaType.EBER.name())) c.setPriority(ACodaType.EBER.priority());
             else if (c.getType().equalsIgnoreCase(ACodaType.DC.name())) c.setPriority(ACodaType.DC.priority());
             else if (c.getType().equalsIgnoreCase(ACodaType.ROC.name())) c.setPriority(ACodaType.ROC.priority());
             else if (c.getType().equalsIgnoreCase(ACodaType.GT.name())) c.setPriority(ACodaType.GT.priority());
