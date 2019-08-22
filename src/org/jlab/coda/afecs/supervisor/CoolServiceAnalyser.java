@@ -741,6 +741,7 @@ public class CoolServiceAnalyser {
         List< AComponent> gtList = new ArrayList<>();
         List< AComponent> tsList = new ArrayList<>();
 
+
         //fill type lists
         for (CodaRCAgent c : owner.myComponents.values()) {
             if (c.me.getType().equals(ACodaType.USR.name())) {
