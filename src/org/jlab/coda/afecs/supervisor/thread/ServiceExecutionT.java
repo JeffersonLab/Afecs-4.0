@@ -23,6 +23,7 @@
 package org.jlab.coda.afecs.supervisor.thread;
 
 import org.jlab.coda.afecs.codarc.CodaRCAgent;
+import org.jlab.coda.afecs.cool.ontology.AComponent;
 import org.jlab.coda.afecs.cool.ontology.AProcess;
 import org.jlab.coda.afecs.cool.parser.ACondition;
 import org.jlab.coda.afecs.cool.parser.AStatement;
@@ -231,6 +232,15 @@ public class ServiceExecutionT implements Runnable {
                 owner.send(owner.me.getSession() + "/" + owner.me.getRunType(),
                         AConstants.UIControlRequestSetRunNumber,
                         nl);
+            } else if (serviceName.equals("CodaRcEnd")) {
+                // inform all agents about the beginning of the end transition
+                for(CodaRCAgent c:owner.myComponents.values()){
+                    try {
+                        c.sessionControlPreEnd();
+                    } catch (cMsgException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
 
             // See if we have processes scheduled to be executed

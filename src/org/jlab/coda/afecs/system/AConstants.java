@@ -359,7 +359,7 @@ public class AConstants {
     public static final String SessionControlGetSession = "session/control/getSession";
     public static final String SessionControlSetRunNumber = "session/control/setRunNumber";
     public static final String SessionControlSetRunType = "session/control/setRunType";
-    public static final String SessionControlConfigure = "session/control/configure";
+    public static final String SessionControlPreEnd = "session/control/preEnd";
 
 
     /***********************************************************************

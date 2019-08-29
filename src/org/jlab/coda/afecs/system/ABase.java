@@ -1076,6 +1076,15 @@ public class ABase implements Serializable {
         rcSend(myName, AConstants.SessionControlStartReporting, "startReporting");
     }
 
+    // ----------------------------------------------------------------------
+    public void sessionControlPreEnd() throws cMsgException {
+
+        System.out.println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                myName + ": --> preEnd");
+
+        rcSend(myName, AConstants.SessionControlPreEnd, "preEnd");
+    }
+
 
     public void sessionControlStopReporting() throws cMsgException {
         rcSend(myName, AConstants.SessionControlStopReporting, "stopReporting");
