@@ -236,7 +236,10 @@ public class ServiceExecutionT implements Runnable {
                     // inform all agents about the beginning of the end transition
                     for (CodaRCAgent c : owner.myComponents.values()) {
                         try {
-                            c.sessionControlPreGo();
+                            c.sessionControlPreGo(owner.getPlEXPID(),
+                                    owner.mySession,
+                                    owner.myRunType,
+                                    owner.me.getRunNumber());
                         } catch (cMsgException e) {
                             e.printStackTrace();
                         }
@@ -247,7 +250,10 @@ public class ServiceExecutionT implements Runnable {
                 // inform all agents about the beginning of the end transition
                 for(CodaRCAgent c:owner.myComponents.values()){
                     try {
-                        c.sessionControlPreEnd();
+                        c.sessionControlPreEnd(owner.getPlEXPID(),
+                                owner.mySession,
+                                owner.myRunType,
+                                owner.me.getRunNumber());
                     } catch (cMsgException e) {
                         e.printStackTrace();
                     }

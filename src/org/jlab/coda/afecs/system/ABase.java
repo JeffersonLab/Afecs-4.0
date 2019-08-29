@@ -1077,21 +1077,31 @@ public class ABase implements Serializable {
     }
 
     // ----------------------------------------------------------------------
-    public void sessionControlPreGo() throws cMsgException {
+    public void sessionControlPreGo(String expid, String session, String runType, int runNumber) throws cMsgException {
 
         System.out.println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
                 myName + ": --> preGo");
+        ArrayList<cMsgPayloadItem> nl = new ArrayList<>();
+        nl.add(new cMsgPayloadItem(AConstants.EXPID, expid));
+        nl.add(new cMsgPayloadItem(AConstants.SESSION, session));
+        nl.add(new cMsgPayloadItem(AConstants.RUNTYPE, runType));
+        nl.add(new cMsgPayloadItem(AConstants.RUNNUMBER, runNumber));
 
-        rcSend(myName, AConstants.SessionControlPreGo, "preGo");
+        rcSend(myName, AConstants.SessionControlPreGo, "preGo", nl);
     }
 
     // ----------------------------------------------------------------------
-    public void sessionControlPreEnd() throws cMsgException {
+    public void sessionControlPreEnd(String expid, String session, String runType, int runNumber) throws cMsgException {
 
         System.out.println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
                 myName + ": --> preEnd");
+        ArrayList<cMsgPayloadItem> nl = new ArrayList<>();
+        nl.add(new cMsgPayloadItem(AConstants.EXPID, expid));
+        nl.add(new cMsgPayloadItem(AConstants.SESSION, session));
+        nl.add(new cMsgPayloadItem(AConstants.RUNTYPE, runType));
+        nl.add(new cMsgPayloadItem(AConstants.RUNNUMBER, runNumber));
 
-        rcSend(myName, AConstants.SessionControlPreEnd, "preEnd");
+        rcSend(myName, AConstants.SessionControlPreEnd, "preEnd", nl);
     }
 
 
