@@ -1077,6 +1077,15 @@ public class ABase implements Serializable {
     }
 
     // ----------------------------------------------------------------------
+    public void sessionControlPreGo() throws cMsgException {
+
+        System.out.println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                myName + ": --> preGo");
+
+        rcSend(myName, AConstants.SessionControlPreGo, "preGo");
+    }
+
+    // ----------------------------------------------------------------------
     public void sessionControlPreEnd() throws cMsgException {
 
         System.out.println("DDD -----| Info: " + AfecsTool.getCurrentTime("HH:mm:ss") + " " +

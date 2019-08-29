@@ -232,6 +232,17 @@ public class ServiceExecutionT implements Runnable {
                 owner.send(owner.me.getSession() + "/" + owner.me.getRunType(),
                         AConstants.UIControlRequestSetRunNumber,
                         nl);
+                if (serviceName.equals("CodaRcGo")) {
+                    // inform all agents about the beginning of the end transition
+                    for (CodaRCAgent c : owner.myComponents.values()) {
+                        try {
+                            c.sessionControlPreGo();
+                        } catch (cMsgException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
             } else if (serviceName.equals("CodaRcEnd")) {
                 // inform all agents about the beginning of the end transition
                 for(CodaRCAgent c:owner.myComponents.values()){
