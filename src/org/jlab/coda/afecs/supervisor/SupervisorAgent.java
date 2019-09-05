@@ -422,6 +422,24 @@ public class SupervisorAgent extends AParent implements Serializable {
             // stop periodic processes
             stopPeriodicProcesses();
 
+            for (AProcess bp : me.getProcesses()) {
+                if (bp != null) {
+                    if (bp.getBefore() != null && !bp.getBefore().equals(AConstants.udf)) {
+
+                        if (bp.getBefore().equals(AConstants.reseted)) {
+                            reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
+                                    myName,
+                                    1,
+                                    AConstants.INFO,
+                                    " Starting process = " + bp.getName());
+
+                            // execute scripts before the state transition
+                            pm.executeProcess(bp, myPlugin, me);
+                        }
+                    }
+                }
+            }
+
             isResetting.set(true);
             isClientProblemAtActive.set(false);
         }
