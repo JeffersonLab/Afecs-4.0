@@ -142,14 +142,14 @@ public class SupervisorAgent extends AParent implements Serializable {
     public Map<String, AComponent>
             sortedComponentList =
             Collections.synchronizedMap(
-                    new LinkedHashMap<String, AComponent>());
+                    new LinkedHashMap<>());
 
     // Sorting components in the order of
     // being allowed to write an output file
     transient Map<String, AComponent>
             sortedByOutputList =
             Collections.synchronizedMap(
-                    new LinkedHashMap<String, AComponent>());
+                    new LinkedHashMap<>());
 
     // Cool described Services
     transient public Map<String, AService>
