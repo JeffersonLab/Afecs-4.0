@@ -67,7 +67,7 @@ public class ATableCellRenderer extends DefaultTableCellRenderer {
                 if (v >0 && v <= 4){
                     c=Color.WHITE;
                 }
-                else if (v >= 5 && v <= 8){
+                else if ((v >= 5 && v <= 8) || v == 16){
                     c=Color.YELLOW;
                 }
                 else if (v >= 9 && v <= 12){
@@ -77,7 +77,8 @@ public class ATableCellRenderer extends DefaultTableCellRenderer {
                     c=Color.MAGENTA;
                 }
                 else if (v == 15){
-                    c=Color.getHSBColor(195,25,90);
+//                    c=Color.getHSBColor(195,25,90);
+                    c=Color.GREEN;
                 }
             }
 
