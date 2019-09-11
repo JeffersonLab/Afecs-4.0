@@ -67,10 +67,13 @@ public class ATableCellRenderer extends DefaultTableCellRenderer {
                 if (v >0 && v <= 4){
                     c=Color.WHITE;
                 }
-                else if ((v >= 5 && v <= 8) || v == 16){
+                else if (v >= 5 && v <= 8){
                     c=Color.YELLOW;
                 }
-                else if (v >= 9 && v <= 12){
+                else if (v == 9 || v == 10){
+                    c=Color.ORANGE;
+                }
+                else if (v > 10 && v <= 12){
                     c=Color.RED;
                 }
                 else if (v >= 13 && v <= 14){
