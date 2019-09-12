@@ -640,7 +640,7 @@ class StatusCB extends cMsgCallbackAdapter {
                         //reset
                         count = 0;
                     } else {
-                        owner.updateDaLogTable(owner.getName(), "Lost connection to the Supervisor", AConstants.ERROR, 9);
+                        owner.updateDaLogTable(owner.getName(), "Lost connection to the Supervisor", AConstants.ERROR, 11);
                         new RcDisconnect(owner).execute();
                         atx.stop();
                     }

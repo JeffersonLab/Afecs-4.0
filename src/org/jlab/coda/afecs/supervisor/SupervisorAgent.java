@@ -884,11 +884,11 @@ public class SupervisorAgent extends AParent implements Serializable {
                 me.getRunTimeDataAsPayload());
         reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
                 myName,
-                9,
+                11,
                 AConstants.ERROR,
                 " transition failed.");
         dalogMsg(myName,
-                9,
+                11,
                 AConstants.ERROR,
                 " transition failed.");
 

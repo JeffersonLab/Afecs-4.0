@@ -122,11 +122,11 @@ public class ClientHeartBeatMonitor extends Thread{
             owner.reportAlarmMsg(owner.me.getSession() +
                             "/" + owner.me.getRunType(),
                     owner.myName,
-                    9,
+                    11,
                     AConstants.ERROR,
                     " Client is unresponsive.");
             owner.dalogMsg(owner.myName,
-                    9,
+                    11,
                     AConstants.ERROR,
                     " Client is unresponsive.");
             System.out.printf(AfecsTool.getCurrentTime("HH:mm:ss") + " " + owner.myName + ":Info - Client is unresponsive.");

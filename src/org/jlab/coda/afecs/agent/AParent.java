@@ -327,7 +327,7 @@ public class AParent extends ABase implements Serializable {
                     AException e) {
                 reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
                         me.getName(),
-                        9,
+                        11,
                         AConstants.ERROR,
                         myPlugin.getDescription() + ". Plugin error.");
                 System.out.println(myPlugin.getDescription() +

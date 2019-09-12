@@ -85,7 +85,7 @@ public class RcSetRunNumber extends SwingWorker <int[], Void> {
                 switch (o[0]){
                     case -1:
                         owner.updateDaLogTable(owner.getName(),"Communicating with the platform admin agent",
-                                AConstants.ERROR,9);
+                                AConstants.ERROR,11);
                         break;
                     case -2:
                         owner.updateDaLogTable(owner.getName(),

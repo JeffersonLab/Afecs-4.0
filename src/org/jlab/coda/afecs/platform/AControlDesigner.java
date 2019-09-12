@@ -175,7 +175,7 @@ class AControlDesigner extends ABase {
         } else {
             reportAlarmMsg(session + "/" + runType,
                     myName,
-                    9,
+                    11,
                     AConstants.ERROR,
                     "Problem parsing control configuration file.");
             System.out.println(myName +
@@ -282,7 +282,7 @@ class AControlDesigner extends ABase {
             } else {
                 reportAlarmMsg(session + "/" + runType,
                         myName,
-                        9,
+                        11,
                         AConstants.ERROR,
                         "null control.");
                 System.out.println(myName +
@@ -292,7 +292,7 @@ class AControlDesigner extends ABase {
         } else {
             reportAlarmMsg(session + "/" + runType,
                     myName,
-                    9,
+                    11,
                     AConstants.ERROR,
                     "Problem parsing control configuration file.");
             System.out.println(myName +
@@ -971,7 +971,7 @@ class AControlDesigner extends ABase {
                         msg_b.getText().equals(AConstants.no)) {
                     reportAlarmMsg(session + "/" + runType,
                             myName,
-                            9,
+                            11,
                             AConstants.ERROR,
                             "Agent " + com.getName() + " is not registered.");
                     System.out.println(myName +
@@ -982,7 +982,7 @@ class AControlDesigner extends ABase {
             } else {
                 reportAlarmMsg(session + "/" + runType,
                         myName,
-                        9,
+                        11,
                         AConstants.ERROR,
                         "Can not find container_admin on the node " +
                                 com.getHost());
@@ -1102,7 +1102,7 @@ class AControlDesigner extends ABase {
                     if (tout > AConstants.TIMEOUT) {
                         reportAlarmMsg(session + "/" + runType,
                                 myName,
-                                9,
+                                11,
                                 AConstants.ERROR,
                                 "Agent " + com.getName() + " is not registered.");
                         System.out.println(myName +
@@ -1161,7 +1161,7 @@ class AControlDesigner extends ABase {
                         } else {
                             reportAlarmMsg(session + "/" + runType,
                                     myName,
-                                    9,
+                                    11,
                                     AConstants.ERROR,
                                     "Supervisor Agent " +
                                             c.getSupervisor().getName() + " is not active.");
@@ -1174,7 +1174,7 @@ class AControlDesigner extends ABase {
                     } else if (tout > AConstants.TIMEOUT) {
                         reportAlarmMsg(session + "/" + runType,
                                 myName,
-                                9,
+                                11,
                                 AConstants.ERROR,
                                 "Supervisor Agent " +
                                         c.getSupervisor().getName() + " is not registered.");
@@ -1193,14 +1193,14 @@ class AControlDesigner extends ABase {
                 System.out.println("DDD ----| ERROR: control system supervisor is NULL");
                 reportAlarmMsg(session + "/" + runType,
                         myName,
-                        9,
+                        11,
                         AConstants.ERROR,
                         "Described control does not have a supervisor agent.");
             }
         } else {
             reportAlarmMsg(session + "/" + runType,
                     myName,
-                    9,
+                    11,
                     AConstants.ERROR,
                     "Described control does not have components.");
             System.out.println(myName +

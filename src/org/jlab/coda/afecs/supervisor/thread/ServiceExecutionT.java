@@ -116,11 +116,11 @@ public class ServiceExecutionT implements Runnable {
                         owner.me.getRunTimeDataAsPayload());
                 owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
                         owner.myName,
-                        9,
+                        11,
                         AConstants.ERROR,
                         " " + serviceName + " service failed.");
                 owner.dalogMsg(owner.myName,
-                        9,
+                        11,
                         AConstants.ERROR,
                         " " + serviceName + " service failed.");
                 return;
@@ -201,11 +201,11 @@ public class ServiceExecutionT implements Runnable {
                             owner.me.getRunTimeDataAsPayload());
                     owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
                             owner.myName,
-                            9,
+                            11,
                             AConstants.ERROR,
                             " " + serviceName + " service failed. Platform run-number increment failed.");
                     owner.dalogMsg(owner.myName,
-                            9,
+                            11,
                             AConstants.ERROR,
                             " " + serviceName + " service failed. Platform run-number increment failed.");
                     return;
@@ -393,11 +393,11 @@ public class ServiceExecutionT implements Runnable {
                             owner.me.getRunTimeDataAsPayload());
                     owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
                             owner.myName,
-                            9,
+                            11,
                             AConstants.ERROR,
                             " " + serviceName + " service failed.");
                     owner.dalogMsg(owner.myName,
-                            9,
+                            11,
                             AConstants.ERROR,
                             " " + serviceName + " service failed.");
                 } else {

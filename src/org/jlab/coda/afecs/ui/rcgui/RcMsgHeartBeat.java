@@ -118,7 +118,7 @@ public class RcMsgHeartBeat {
                 wasConnected = false;
                 owner.updateDaLogTable(owner.base.myName,
                         " Lost connection to the platform",
-                        AConstants.ERROR, 9);
+                        AConstants.ERROR, 11);
                 owner.gDriver._updateControlBtNs(RcStates.UNDEFINED);
                 owner.getConnectMenuItem().setEnabled(false);
             } else if (owner.base.isPlatformConnected() && !wasConnected) {

@@ -317,13 +317,13 @@ public class AStatusReportT extends Thread {
                                 if (!owner.isClientProblemAtActive.get()) {
                                     owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
                                             owner.me.getName(),
-                                            9,
+                                            11,
                                             AConstants.ERROR,
                                             " transition failed. "
                                                     + c.getName()
                                                     + " is in state failed. Possible restart/power-cycle of the client might be required.");
                                     owner.dalogMsg(owner.me,
-                                            9,
+                                            11,
                                             "ERROR",
                                             " transition failed. "
                                                     + c.getName()
@@ -363,13 +363,13 @@ public class AStatusReportT extends Thread {
                             if (!owner.isClientProblemAtActive.get()) {
                                 owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
                                         owner.me.getName(),
-                                        9,
+                                        11,
                                         AConstants.ERROR,
                                         " transition failed. "
                                                 + c.getName()
                                                 + " is removed. Possible restart/power-cycle of the client might be required.");
                                 owner.dalogMsg(owner.me,
-                                        9,
+                                        11,
                                         "ERROR",
                                         " transition failed. "
                                                 + c.getName()

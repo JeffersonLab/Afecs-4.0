@@ -352,11 +352,11 @@ public class CodaRCAgent extends AParent {
             e.printStackTrace();
             reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
                     me.getName(),
-                    9,
+                    11,
                     AConstants.ERROR,
                     e.getMessage());
             dalogMsg(me.getName(),
-                    9,
+                    11,
                     AConstants.ERROR,
                     e.getMessage());
 
@@ -841,7 +841,7 @@ public class CodaRCAgent extends AParent {
                                 udl);
                         reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
                                 me.getName(),
-                                7,
+                                11,
                                 AConstants.ERROR,
                                 "Cannot connect to the physical component using udl = " +
                                         udl);
@@ -867,7 +867,7 @@ public class CodaRCAgent extends AParent {
                             " Undefined client udl = " + udl);
                     reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
                             me.getName(),
-                            7,
+                            11,
                             AConstants.ERROR,
                             "Undefined client udl = " +
                                     udl);
@@ -880,7 +880,7 @@ public class CodaRCAgent extends AParent {
                 System.out.println("Undefined host and port for the client.");
                 reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
                         me.getName(),
-                        9,
+                        11,
                         AConstants.ERROR,
                         "Undefined host and port for the client.");
             }
@@ -1180,7 +1180,7 @@ public class CodaRCAgent extends AParent {
                         if (!me.getSession().equals(txt)) {
                             reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
                                     myName,
-                                    9,
+                                    11,
                                     AConstants.ERROR,
                                     "Conflict with the clients session. client-session = " +
                                             txt +
@@ -1188,7 +1188,7 @@ public class CodaRCAgent extends AParent {
                                             myName +
                                             "-session = " +
                                             me.getSession());
-                            dalogMsg(myName, 9, AConstants.ERROR,
+                            dalogMsg(myName, 11, AConstants.ERROR,
                                     "Conflict with the clients session. client-session = " +
                                             txt +
                                             " vs. " +
@@ -1201,7 +1201,7 @@ public class CodaRCAgent extends AParent {
                         if (me.getRunNumber() != Integer.parseInt(txt)) {
                             reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
                                     myName,
-                                    9,
+                                    11,
                                     AConstants.ERROR,
                                     "Conflict with the clients runnumber. client-runnumber = " +
                                             txt +
@@ -1210,7 +1210,7 @@ public class CodaRCAgent extends AParent {
                                             "-runnumber = " +
                                             me.getRunNumber());
                             dalogMsg(myName,
-                                    9,
+                                    11,
                                     AConstants.ERROR,
                                     "Conflict with the clients runnumber. client-runnumber = " +
                                             txt +
@@ -1224,7 +1224,7 @@ public class CodaRCAgent extends AParent {
                         if (!me.getRunType().equals(txt)) {
                             reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
                                     myName,
-                                    9,
+                                    11,
                                     AConstants.ERROR,
                                     "Conflict with the clients runType. client-runType = " +
                                             txt +
@@ -1233,7 +1233,7 @@ public class CodaRCAgent extends AParent {
                                             "-runType = " +
                                             me.getRunType());
                             dalogMsg(myName,
-                                    9,
+                                    11,
                                     AConstants.ERROR,
                                     "Conflict with the clients runType. client-runType = " +
                                             txt +
@@ -1248,7 +1248,7 @@ public class CodaRCAgent extends AParent {
                             if (me.getConfigID() == Integer.parseInt(txt)) {
                                 reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
                                         myName,
-                                        9,
+                                        11,
                                         AConstants.ERROR,
                                         "Conflict with the clients configID. client-configID = " +
                                                 txt +
@@ -1257,7 +1257,7 @@ public class CodaRCAgent extends AParent {
                                                 "-configID = " +
                                                 me.getConfigID());
                                 dalogMsg(myName,
-                                        9,
+                                        11,
                                         AConstants.ERROR,
                                         "Conflict with the clients configID. client-configID = " +
                                                 txt +

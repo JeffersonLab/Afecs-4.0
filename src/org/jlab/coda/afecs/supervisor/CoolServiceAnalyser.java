@@ -102,12 +102,12 @@ public class CoolServiceAnalyser {
                 owner.reportAlarmMsg(owner.me.getSession() +
                                 "/" + owner.me.getRunType(),
                         owner.me.getName(),
-                        9,
+                        11,
                         AConstants.ERROR,
                         " Syntax error in the cool state machine " +
                                 "description. Wrong keyword.");
                 owner.dalogMsg(owner.me,
-                        9,
+                        11,
                         "ERROR",
                         " Syntax error in the cool state machine " +
                                 "description. Wrong keyword.");
@@ -166,12 +166,12 @@ public class CoolServiceAnalyser {
                     owner.reportAlarmMsg(owner.me.getSession() +
                                     "/" + owner.me.getRunType(),
                             owner.me.getName(),
-                            9,
+                            11,
                             AConstants.ERROR,
                             " Syntax error in the cool service " +
                                     "description 1. Unknown component.");
                     owner.dalogMsg(owner.me,
-                            9,
+                            11,
                             "ERROR",
                             " Syntax error in the cool service " +
                                     "description 1. Unknown component.");
@@ -191,12 +191,12 @@ public class CoolServiceAnalyser {
                                 owner.reportAlarmMsg(owner.me.getSession() +
                                                 "/" + owner.me.getRunType(),
                                         owner.me.getName(),
-                                        9,
+                                        11,
                                         AConstants.ERROR,
                                         " Syntax error in the cool state machine " +
                                                 "description. Wrong actionOperator.");
                                 owner.dalogMsg(owner.me,
-                                        9,
+                                        11,
                                         "ERROR",
                                         " Syntax error in the cool state machine " +
                                                 "description. Wrong actionOperator.");
@@ -238,12 +238,12 @@ public class CoolServiceAnalyser {
                     owner.reportAlarmMsg(owner.me.getSession() +
                                     "/" + owner.me.getRunType(),
                             owner.me.getName(),
-                            9,
+                            11,
                             AConstants.ERROR,
                             " Syntax error in the cool state machine " +
                                     "description. Wrong actionOperator.");
                     owner.dalogMsg(owner.me,
-                            9,
+                            11,
                             "ERROR",
                             " Syntax error in the cool state machine " +
                                     "description. Wrong actionOperator.");
@@ -300,13 +300,13 @@ public class CoolServiceAnalyser {
                 owner.reportAlarmMsg(owner.me.getSession() +
                                 "/" + owner.me.getRunType(),
                         owner.me.getName(),
-                        9,
+                        11,
                         AConstants.ERROR,
                         " Syntax error in the cool state machine " +
                                 "description 1. Unknown component = " +
                                 stmt.getLeft());
                 owner.dalogMsg(owner.me,
-                        9,
+                        11,
                         "ERROR",
                         " Syntax error in the cool state machine " +
                                 "description 1. Unknown component = " +
@@ -347,11 +347,11 @@ public class CoolServiceAnalyser {
                 owner.reportAlarmMsg(owner.me.getSession() +
                                 "/" + owner.me.getRunType(),
                         owner.me.getName(),
-                        9,
+                        11,
                         AConstants.ERROR, " Syntax error in the cool state machine " +
                                 "description 2. Unknown component.");
                 owner.dalogMsg(owner.me,
-                        9,
+                        11,
                         "ERROR",
                         " Syntax error in the cool state machine " +
                                 "description 2. Unknown component.");
@@ -400,12 +400,12 @@ public class CoolServiceAnalyser {
                         owner.reportAlarmMsg(owner.me.getSession() +
                                         "/" + owner.me.getRunType(),
                                 owner.me.getName(),
-                                9,
+                                11,
                                 AConstants.ERROR,
                                 " Syntax error in the cool state machine description. " +
                                         "Wrong conditionalOperator.");
                         owner.dalogMsg(owner.me,
-                                9,
+                                11,
                                 "ERROR",
                                 " Syntax error in the cool state machine description. " +
                                         "Wrong conditionalOperator.");
@@ -427,12 +427,12 @@ public class CoolServiceAnalyser {
                         owner.reportAlarmMsg(owner.me.getSession() +
                                         "/" + owner.me.getRunType(),
                                 owner.me.getName(),
-                                9,
+                                11,
                                 AConstants.ERROR,
                                 " Syntax error in the cool state machine description. " +
                                         "Wrong conditionalOperator.");
                         owner.dalogMsg(owner.me,
-                                9,
+                                11,
                                 "ERROR",
                                 " Syntax error in the cool state machine description. " +
                                         "Wrong conditionalOperator.");
@@ -491,12 +491,12 @@ public class CoolServiceAnalyser {
                 owner.reportAlarmMsg(owner.me.getSession() +
                                 "/" + owner.me.getRunType(),
                         owner.me.getName(),
-                        9,
+                        11,
                         AConstants.ERROR,
                         " Syntax error in the cool state machine description 3 . " +
                                 "No type/priority.");
                 owner.dalogMsg(owner.me,
-                        9,
+                        11,
                         "ERROR",
                         " Syntax error in the cool state machine description 3 . " +
                                 "No type/priority.");
@@ -576,12 +576,12 @@ public class CoolServiceAnalyser {
                 owner.reportAlarmMsg(owner.me.getSession() +
                                 "/" + owner.me.getRunType(),
                         owner.me.getName(),
-                        9,
+                        11,
                         AConstants.ERROR,
                         " Syntax error in the cool state machine description 4 . " +
                                 "No type/priority.");
                 owner.dalogMsg(owner.me,
-                        9,
+                        11,
                         "ERROR",
                         " Syntax error in the cool state machine description 4 . " +
                                 "No type/priority.");

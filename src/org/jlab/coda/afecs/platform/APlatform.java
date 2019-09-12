@@ -392,7 +392,7 @@ public class APlatform extends ABase {
             reportAlarmMsg(session +
                             "/" + runType,
                     myName,
-                    9,
+                    11,
                     AConstants.ERROR,
                     " Error updating run number in the Cool DB.");
             if (container.getContainerSupervisors().containsKey("sms_" + runType)) {
@@ -409,7 +409,7 @@ public class APlatform extends ABase {
             reportAlarmMsg(session + "/" +
                             runType,
                     myName,
-                    9,
+                    11,
                     AConstants.ERROR,
                     " Error incrementing run number in the Cool DB.");
             if (container.getContainerSupervisors().containsKey("sms_" + runType)) {

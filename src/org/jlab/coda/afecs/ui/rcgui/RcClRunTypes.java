@@ -63,11 +63,11 @@ public class RcClRunTypes extends SwingWorker<Void , Void> {
         if(owner._sessionConfigsColored==null){
             owner.updateDaLogTable(owner.getName(),
                     "COOL RunType descriptions were not found.",
-                    AConstants.ERROR, 9);
+                    AConstants.ERROR, 11);
         } else if(owner._sessionConfigsColored.size()==0){
             owner.updateDaLogTable(owner.getName(),
                     "COOL RunType descriptions were not found.",
-                    AConstants.ERROR, 9);
+                    AConstants.ERROR, 11);
         } else if(owner._sessionConfigsColored.size()>0){
 
             String[] confNames = owner._sessionConfigsColored.keySet().toArray(new String[owner._sessionConfigsColored.size()]);

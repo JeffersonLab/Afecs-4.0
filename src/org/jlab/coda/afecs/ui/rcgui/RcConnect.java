@@ -193,7 +193,7 @@ public class RcConnect extends SwingWorker<String, Void> {
                         // supervisor is no responding
                         owner.updateDaLogTable(owner.getName(),
                                 "Problem communicating with the supervisor agent",
-                                AConstants.ERROR,9);
+                                AConstants.ERROR,11);
                         break;
 
                     case "undefined":

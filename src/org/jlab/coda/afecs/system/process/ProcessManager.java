@@ -692,11 +692,11 @@ public class ProcessManager {
                 } catch (AException e) {
                     owner.reportAlarmMsg(comp.getSession() + "/" + comp.getRunType(),
                             comp.getName(),
-                            9,
+                            11,
                             AConstants.ERROR,
                             plugin.getDescription() + " communication error.");
                     owner.dalogMsg(comp,
-                            9,
+                            11,
                             "ERROR",
                             plugin.getDescription() + " communication error.");
                     e.printStackTrace();
@@ -726,11 +726,11 @@ public class ProcessManager {
                     } catch (AException e) {
                         owner.reportAlarmMsg(comp.getSession() + "/" + comp.getRunType(),
                                 comp.getName(),
-                                9,
+                                11,
                                 AConstants.ERROR,
                                 plugin.getDescription() + " communication error.");
                         owner.dalogMsg(comp,
-                                9,
+                                11,
                                 "ERROR",
                                 plugin.getDescription() + " communication error.");
                         e.printStackTrace();
@@ -775,11 +775,11 @@ public class ProcessManager {
                 } catch (AException e) {
                     owner.reportAlarmMsg(comp.getSession() + "/" + comp.getRunType(),
                             comp.getName(),
-                            9,
+                            11,
                             AConstants.ERROR,
                             plugin.getDescription() + " communication error.");
                     owner.dalogMsg(comp,
-                            9,
+                            11,
                             "ERROR",
                             plugin.getDescription() + " communication error.");
                     e.printStackTrace();
@@ -839,7 +839,7 @@ public class ProcessManager {
                                 udl);
                         owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
                                 owner.me.getName(),
-                                7,
+                                11,
                                 AConstants.ERROR,
                                 "Cannot connect to the physical component using udl = " +
                                         udl);
@@ -863,7 +863,7 @@ public class ProcessManager {
                             " Undefined client udl = " + udl);
                     owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
                             owner.me.getName(),
-                            7,
+                            11,
                             AConstants.ERROR,
                             "Undefined client udl = " +
                                     udl);
@@ -874,7 +874,7 @@ public class ProcessManager {
                 System.out.println("Undefined host and port for the client.");
                 owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
                         owner.me.getName(),
-                        9,
+                        11,
                         AConstants.ERROR,
                         "Undefined host and port for the client.");
             }

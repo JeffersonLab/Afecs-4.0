@@ -63,13 +63,13 @@ public class StateTransitioningMonitor implements Runnable {
         if(stateExpectedResponses.isEmpty() && !sn.equals(AConstants.configured)){
             owner.reportAlarmMsg(owner.me.getSession() +
                             "/"+owner.me.getRunType(),owner.myName,
-                    9,
+                    11,
                     AConstants.ERROR,
                     " State name for the state = " +
                             sn +
                             " is not described in the COOL");
             owner.dalogMsg(owner.myName,
-                    9,
+                    11,
                     AConstants.ERROR,
                     " State name for the state = " +
                             sn +
@@ -98,12 +98,12 @@ public class StateTransitioningMonitor implements Runnable {
                 owner.reportAlarmMsg(owner.me.getSession()+
                                 "/"+owner.me.getRunType(),
                         owner.myName,
-                        9,
+                        11,
                         AConstants.ERROR,
                         state2transition +
                                 " transition failed. One or more components are in \"error\" state");
                 owner.dalogMsg(owner.myName,
-                        9,
+                        11,
                         AConstants.ERROR,
                         state2transition +
                                 " transition failed. One or more components are in \"error\" state");
@@ -112,11 +112,11 @@ public class StateTransitioningMonitor implements Runnable {
             } else if(owner.me.getState().equals(AConstants.disconnected)){
                 owner.reportAlarmMsg(owner.me.getSession()+
                                 "/"+owner.me.getRunType(),owner.myName,
-                        9,
+                        11,
                         AConstants.ERROR,
                         " Lost connection to the client.");
                 owner.dalogMsg(owner.myName,
-                        9,
+                        11,
                         AConstants.ERROR,
                         " Lost connection to the client.");
 
