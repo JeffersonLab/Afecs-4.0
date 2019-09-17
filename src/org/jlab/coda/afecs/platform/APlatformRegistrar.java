@@ -539,6 +539,12 @@ public class APlatformRegistrar {
     public boolean readSessionDatabase(){
         boolean stat = true;
         SessionDir.clear();
+        File f = new File(sysConfig.getCoolHome() +
+                File.separator + sysConfig.getPlatformExpid() +
+                File.separator + "ddb" +
+                File.separator + "controlSessions.xml");
+        if (!f.exists()) return true;
+
         if(sysConfig.getCoolHome().equals(AConstants.udf)){
             System.out.println("System constant codaHome is not defined.");
             return false;
@@ -549,11 +555,7 @@ public class APlatformRegistrar {
             factory.setValidating(false);
 
             // Create the builder and parse the file
-            Document doc = factory.newDocumentBuilder().parse(
-                    new File(sysConfig.getCoolHome() +
-                            File.separator + sysConfig.getPlatformExpid() +
-                            File.separator + "ddb" +
-                            File.separator + "controlSessions.xml"));
+            Document doc = factory.newDocumentBuilder().parse(f);
             doc.getDocumentElement().normalize();
 
             NodeList nSession = doc.getElementsByTagName("session");

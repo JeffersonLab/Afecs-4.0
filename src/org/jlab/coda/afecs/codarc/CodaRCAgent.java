@@ -36,7 +36,6 @@ import org.jlab.coda.afecs.system.AException;
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.*;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
@@ -103,7 +102,7 @@ public class CodaRCAgent extends AParent {
 
     // Used to calculate cumulative moving average
     // for event rate and data rate
-    private static int AVERAG_SIZE = 10;
+    private static int AVERAGE_SIZE = 10;
     long averageCount;
     ArrayList<Float> eventRateSlide = new ArrayList<>();
     ArrayList<Double> dataRateSlide = new ArrayList<>();
@@ -541,7 +540,7 @@ public class CodaRCAgent extends AParent {
                 me.getDataRate() >= 0 &&
                 me.getEventRate() >= 0) {
 
-            if (averageCount < AVERAG_SIZE) {
+            if (averageCount < AVERAGE_SIZE) {
                 averageCount++;
                 eventRateSlide.add(me.getEventRate());
                 dataRateSlide.add(me.getDataRate());
@@ -559,7 +558,7 @@ public class CodaRCAgent extends AParent {
                     for (Float f : eventRateSlide) {
                         es += f;
                     }
-                    me.setEventRateAverage(es / AVERAG_SIZE);
+                    me.setEventRateAverage(es / AVERAGE_SIZE);
                 }
 
 
@@ -573,7 +572,7 @@ public class CodaRCAgent extends AParent {
                     for (Double d : dataRateSlide) {
                         ds += d;
                     }
-                    me.setDataRateAverage(ds / AVERAG_SIZE);
+                    me.setDataRateAverage(ds / AVERAGE_SIZE);
                 }
             }
         }
