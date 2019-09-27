@@ -153,6 +153,7 @@ public class AConstants {
 
     public static final String DESCRIPTION = "description";
     public static final String TYPE = "type";
+    public static final String ROLE = "role";
     public static final String SUPERVISOR = "supervisor";
     public static final String HOST = "host";
     public static final String CLIENTHOST = "hostName";

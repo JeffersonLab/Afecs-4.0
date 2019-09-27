@@ -23,6 +23,7 @@
 package org.jlab.coda.afecs.cool.ontology;
 
 import org.jlab.coda.afecs.client.AClientInfo;
+import org.jlab.coda.afecs.system.ACodaType;
 import org.jlab.coda.afecs.system.AConstants;
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.cMsgException;
@@ -36,41 +37,42 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AComponent extends AOntologyConcept implements Serializable, Comparable<AComponent> {
     // rdf/cool defined fields
-    private String                name                 = AConstants.udf;
-    private String                classPath            = AConstants.udf;
-    private String                className            = AConstants.udf;
-    private int                   id;
-    private String                description          = AConstants.udf;
-    private String                type                 = AConstants.udf;
-    private int                   priority             = 0;
-    private String                session              = AConstants.udf;
-    private String                runType              = AConstants.udf;
-    private AOption               option;
-    private String                coda2Component       = AConstants.udf;
-    private String                codaComponent        = AConstants.seton;
-    private ArrayList<ALink>      link                 = new ArrayList<>();
-    private int                   reportingInterval    = 1000;
-    private ArrayList<AState>     states               = new ArrayList<>();
-    private ArrayList<AProcess>   processes            = new ArrayList<>();
-    private ArrayList<AService>   services             = new ArrayList<>();
-    private APlugin               plugin;
-    private String                userConfig           = AConstants.udf;
+    private String name = AConstants.udf;
+    private String classPath = AConstants.udf;
+    private String className = AConstants.udf;
+    private int id;
+    private String description = AConstants.udf;
+    private String type = AConstants.udf;
+    private String role = AConstants.udf;
+    private int priority = 0;
+    private String session = AConstants.udf;
+    private String runType = AConstants.udf;
+    private AOption option;
+    private String coda2Component = AConstants.udf;
+    private String codaComponent = AConstants.seton;
+    private ArrayList<ALink> link = new ArrayList<>();
+    private int reportingInterval = 1000;
+    private ArrayList<AState> states = new ArrayList<>();
+    private ArrayList<AProcess> processes = new ArrayList<>();
+    private ArrayList<AService> services = new ArrayList<>();
+    private APlugin plugin;
+    private String userConfig = AConstants.udf;
 
-    private String[]              destinationNames;
+    private String[] destinationNames;
     // runtime field parameters
-    private String                expid                = AConstants.udf;
-    private String                host                 = AConstants.udf;
-    private String                startTime            = AConstants.udf;
+    private String expid = AConstants.udf;
+    private String host = AConstants.udf;
+    private String startTime = AConstants.udf;
 
-    private String                state                = AConstants.checking;
-    private String                fileName             = AConstants.udf;
-    private String                objectType           = AConstants.udf;
-    private float                 liveTime;
-    private float                 eventRate;
-    private float                 eventRateAverage;
-    private double                dataRate;
-    private double                dataRateAverage;
-    private long                  numberOfLongs;
+    private String state = AConstants.checking;
+    private String fileName = AConstants.udf;
+    private String objectType = AConstants.udf;
+    private float liveTime;
+    private float eventRate;
+    private float eventRateAverage;
+    private double dataRate;
+    private double dataRateAverage;
+    private long numberOfLongs;
     private int maxEventSize;
     private int minEventSize;
     private int avgEventSize;
@@ -78,22 +80,22 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
     private int maxTimeToBuild;
     private int meanTimeToBuild;
     private int chunkXEtBuffer;
-    private int fileWriting                            = 1;
+    private int fileWriting = 1;
 
-    private String                runStartTime         = "0";
-    private String                runEndTime           = "0";
-    private boolean               autoStart            = false;
-    private int                   eventLimit           = 0;
-    private long                  dataLimit            = 0;
-    private long                  timeLimit            = 0;
-    private long                  eventNumber;
-    private int                   runNumber            = -1371;
-    private AClientInfo           client;
-    private int                   nScheduledRuns       = 0;
-    private String                supervisor           = AConstants.udf;
+    private String runStartTime = "0";
+    private String runEndTime = "0";
+    private boolean autoStart = false;
+    private int eventLimit = 0;
+    private long dataLimit = 0;
+    private long timeLimit = 0;
+    private long eventNumber;
+    private int runNumber = -1371;
+    private AClientInfo client;
+    private int nScheduledRuns = 0;
+    private String supervisor = AConstants.udf;
 
-    private Map<String,String[]> linkedIp = new HashMap<>();
-    private Map<String,String[]> linkedBa = new HashMap<>();
+    private Map<String, String[]> linkedIp = new HashMap<>();
+    private Map<String, String[]> linkedBa = new HashMap<>();
 
     // hashMap containing names and cMsgPayloadItem objects for all described monitored, periodic data
     private ConcurrentHashMap<String, cMsgPayloadItem> MonitoredData = new ConcurrentHashMap<>();
@@ -101,9 +103,10 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
     // arrayList of default option file directory locations set by include concept of the cool
     private ArrayList<String> dod = new ArrayList<>();
 
-    private int     configID;
+    private int configID;
 
-    private ArrayList<String>     linkedComponentNames = new ArrayList<>();
+    private ArrayList<String> linkedComponentNames = new ArrayList<>();
+    private ArrayList<String> linkedComponentTypes = new ArrayList<>();
 
     // input and output buffers
     private Map<String, Integer> inBuffers = new ConcurrentHashMap<>();
@@ -113,17 +116,17 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
     private int streamId;
 
 
-    public AComponent(){
-        setOntology(     "afecs");
+    public AComponent() {
+        setOntology("afecs");
         setConceptName("Component");
         addPrimitiveSlot("hasName", 1, false, "String");
         addPrimitiveSlot("hasClassPath", 1, false, "String");
         addPrimitiveSlot("hasClassName", 1, false, "String");
         addConceptSlot("hasID", 1, false, "Integer");
         addPrimitiveSlot("hasDescription", 1, true, "String");
-        addPrimitiveSlot("hasType",                 1, true, "String");
-        addPrimitiveSlot("hasCode",                 1, true, "String");
-        addPrimitiveSlot("hasPriority",             1, true, "Integer");
+        addPrimitiveSlot("hasType", 1, true, "String");
+        addPrimitiveSlot("hasCode", 1, true, "String");
+        addPrimitiveSlot("hasPriority", 1, true, "Integer");
         addPrimitiveSlot("hasSession", 1, true, "String");
         addPrimitiveSlot("hasRunType", 1, true, "String");
         addConceptSlot("hasOption", 1, true, "Option");
@@ -131,17 +134,18 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
         addPrimitiveSlot("isCodaComponent", 1, true, "String");
         addPrimitiveSlot("hasReportingInterval", 1, true, "Integer");
         addConceptSlot("hasState", 2, true, "AState");
-        addConceptSlot(  "hasProcess",              2, true, "AProcess");
-        addConceptSlot(  "providesService",         2, true, "AService");
-        addConceptSlot(  "hasHmi",                  1, true, "HMI");
-        addConceptSlot(  "hasCommunicationPlugin",  1, true, "APlugin");
-        addConceptSlot(  "XCo",                     1, true, "Double");
-        addConceptSlot(  "YCo",                     1, true, "Double");
-        addConceptSlot(  "WCo",                     1, true, "Double");
-        addConceptSlot(  "HCo",                     1, true, "Double");
-        addConceptSlot(  "linkedTo", 2, true, "String");
-        addConceptSlot(  "hasUserConfig", 2, true, "String");
-        addConceptSlot(  "usesLink", 2, true, "ALink");
+        addConceptSlot("hasProcess", 2, true, "AProcess");
+        addConceptSlot("providesService", 2, true, "AService");
+        addConceptSlot("hasHmi", 1, true, "HMI");
+        addConceptSlot("hasCommunicationPlugin", 1, true, "APlugin");
+        addConceptSlot("XCo", 1, true, "Double");
+        addConceptSlot("YCo", 1, true, "Double");
+        addConceptSlot("WCo", 1, true, "Double");
+        addConceptSlot("HCo", 1, true, "Double");
+        addConceptSlot("linkedTo", 2, true, "String");
+        addConceptSlot("linkedToType", 2, true, "String");
+        addConceptSlot("hasUserConfig", 2, true, "String");
+        addConceptSlot("usesLink", 2, true, "ALink");
     }
 
     public String getName() {
@@ -413,28 +417,28 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
         this.states = states;
     }
 
-    public void addState(AState s){
+    public void addState(AState s) {
         this.states.add(s);
     }
 
-    public String[] getStateNames(){
+    public String[] getStateNames() {
         String st[] = new String[states.size()];
-        int i=0;
-        for(AState s:states){
+        int i = 0;
+        for (AState s : states) {
             st[i] = s.getName();
             i++;
         }
-        return  st;
+        return st;
     }
 
-    public String[] getLinkNames(){
+    public String[] getLinkNames() {
         String st[] = new String[linkedComponentNames.size()];
-        int i=0;
-        for(String s:linkedComponentNames){
+        int i = 0;
+        for (String s : linkedComponentNames) {
             st[i] = s;
             i++;
         }
-        return  st;
+        return st;
     }
 
     public ArrayList<String> getLinkedComponentNames() {
@@ -449,14 +453,14 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
         this.processes = processes;
     }
 
-    public String[] getProcessNames(){
+    public String[] getProcessNames() {
         String st[] = new String[processes.size()];
-        int i=0;
-        for(AProcess p:processes){
+        int i = 0;
+        for (AProcess p : processes) {
             st[i] = p.getName();
             i++;
         }
-        return  st;
+        return st;
     }
 
     public String getSupervisor() {
@@ -517,7 +521,7 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
     }
 
     public void setFileName(String fileName) {
-        if(destinationNames == null ) {
+        if (destinationNames == null) {
             destinationNames = new String[1];
         }
         this.destinationNames[0] = fileName;
@@ -572,7 +576,7 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
         return dod;
     }
 
-    public void addDod(String d){
+    public void addDod(String d) {
         dod.add(d);
     }
 
@@ -594,6 +598,10 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
 
     public void setLinkedComponentNames(ArrayList<String> linkedComponentNames) {
         this.linkedComponentNames = linkedComponentNames;
+    }
+
+    public void setLinkedComponentTypes(ArrayList<String> linkedComponentTypes) {
+        this.linkedComponentTypes = linkedComponentTypes;
     }
 
     public int getId() {
@@ -646,111 +654,115 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
 
     /**
      * Returns the configuration data of this class as an ArrayList of payloadItems
-     * @return  array list of payload items.
+     *
+     * @return array list of payload items.
      */
-    public ArrayList<cMsgPayloadItem> getConfigurationDataAsPayload(){
+    public ArrayList<cMsgPayloadItem> getConfigurationDataAsPayload() {
+        defineRole(linkedComponentTypes);
         ArrayList<cMsgPayloadItem> al = new ArrayList<>();
         try {
-            al.add(new cMsgPayloadItem(AConstants.CODANAME,name));
+            al.add(new cMsgPayloadItem(AConstants.CODANAME, name));
             al.add(new cMsgPayloadItem(AConstants.TIMESTAMP, AfecsTool.getCurrentTimeInH()));
-            al.add(new cMsgPayloadItem(AConstants.DESCRIPTION,description));
-            al.add(new cMsgPayloadItem(AConstants.TYPE,type));
-            al.add(new cMsgPayloadItem(AConstants.HOST,host));
-            al.add(new cMsgPayloadItem(AConstants.EXPID,expid));
-            al.add(new cMsgPayloadItem(AConstants.SESSION,session));
+            al.add(new cMsgPayloadItem(AConstants.DESCRIPTION, description));
+            al.add(new cMsgPayloadItem(AConstants.TYPE, type));
+            al.add(new cMsgPayloadItem(AConstants.ROLE, role));
+            al.add(new cMsgPayloadItem(AConstants.HOST, host));
+            al.add(new cMsgPayloadItem(AConstants.EXPID, expid));
+            al.add(new cMsgPayloadItem(AConstants.SESSION, session));
             al.add(new cMsgPayloadItem(AConstants.RUNTYPE, runType));
-            al.add(new cMsgPayloadItem(AConstants.SUPERVISOR,supervisor));
-            al.add(new cMsgPayloadItem(AConstants.STARTTIME,startTime));
-            al.add(new cMsgPayloadItem(AConstants.REPORTINGINTERVAL,reportingInterval));
-            al.add(new cMsgPayloadItem(AConstants.STATE,state));
-            al.add(new cMsgPayloadItem(AConstants.PRIORITY,priority));
-            al.add(new cMsgPayloadItem(AConstants.USERCONFIG,userConfig));
-            al.add(new cMsgPayloadItem(AConstants.STREAMCOUNT,streamCount));
-            al.add(new cMsgPayloadItem(AConstants.STREAMID,streamId));
-            if(linkedComponentNames!=null && !linkedComponentNames.isEmpty())
-                al.add(new cMsgPayloadItem(AConstants.INPUTLINKS,getLinkNames()));
+            al.add(new cMsgPayloadItem(AConstants.SUPERVISOR, supervisor));
+            al.add(new cMsgPayloadItem(AConstants.STARTTIME, startTime));
+            al.add(new cMsgPayloadItem(AConstants.REPORTINGINTERVAL, reportingInterval));
+            al.add(new cMsgPayloadItem(AConstants.STATE, state));
+            al.add(new cMsgPayloadItem(AConstants.PRIORITY, priority));
+            al.add(new cMsgPayloadItem(AConstants.USERCONFIG, userConfig));
+            al.add(new cMsgPayloadItem(AConstants.STREAMCOUNT, streamCount));
+            al.add(new cMsgPayloadItem(AConstants.STREAMID, streamId));
+            if (linkedComponentNames != null && !linkedComponentNames.isEmpty())
+                al.add(new cMsgPayloadItem(AConstants.INPUTLINKS, getLinkNames()));
 
 //            al.add(new cMsgPayloadItem(AConstants.CLIENTIPLIST,getClient().getHostIps()));
 //            al.add(new cMsgPayloadItem(AConstants.CLIENTBALIST,getClient().getHostBroadcastAddresses()));
 
-            if(client!=null)al.add(new cMsgPayloadItem(AConstants.CLIENTHOST, client.getHostName()));
-            if(client!=null)al.add(new cMsgPayloadItem(AConstants.CLIENTPORT, client.getPortNumber()));
-            if(getStateNames()!=null)al.add(new cMsgPayloadItem(AConstants.STATES,getStateNames()));
-            if(getProcessNames()!=null)al.add(new cMsgPayloadItem(AConstants.PROCESSES,getProcessNames()));
+            if (client != null) al.add(new cMsgPayloadItem(AConstants.CLIENTHOST, client.getHostName()));
+            if (client != null) al.add(new cMsgPayloadItem(AConstants.CLIENTPORT, client.getPortNumber()));
+            if (getStateNames() != null) al.add(new cMsgPayloadItem(AConstants.STATES, getStateNames()));
+            if (getProcessNames() != null) al.add(new cMsgPayloadItem(AConstants.PROCESSES, getProcessNames()));
         } catch (cMsgException e) {
-            if(AConstants.debug.get()) e.printStackTrace();
+            if (AConstants.debug.get()) e.printStackTrace();
         }
         return al;
     }
 
     /**
      * Returns the dynamic data of this class as an ArrayList of payloadItems
-     * @return  array list of payload items.
+     *
+     * @return array list of payload items.
      */
-    public ArrayList<cMsgPayloadItem> getRunTimeDataAsPayload(){
+    public ArrayList<cMsgPayloadItem> getRunTimeDataAsPayload() {
         ArrayList<cMsgPayloadItem> al = new ArrayList<>();
         try {
-            al.add(new cMsgPayloadItem(AConstants.CODANAME,name));
+            al.add(new cMsgPayloadItem(AConstants.CODANAME, name));
             al.add(new cMsgPayloadItem(AConstants.TIMESTAMP, AfecsTool.getCurrentTimeInH()));
-            al.add(new cMsgPayloadItem(AConstants.TYPE,type));
-            al.add(new cMsgPayloadItem(AConstants.EXPID,expid));
-            al.add(new cMsgPayloadItem(AConstants.SESSION,session));
+            al.add(new cMsgPayloadItem(AConstants.TYPE, type));
+            al.add(new cMsgPayloadItem(AConstants.EXPID, expid));
+            al.add(new cMsgPayloadItem(AConstants.SESSION, session));
             al.add(new cMsgPayloadItem(AConstants.RUNTYPE, runType));
-            al.add(new cMsgPayloadItem(AConstants.STATE,state));
-            al.add(new cMsgPayloadItem(AConstants.EVENTRATE,eventRate));
-            al.add(new cMsgPayloadItem(AConstants.EVENTRATEAVERAGE,eventRateAverage));
-            al.add(new cMsgPayloadItem(AConstants.DATARATE,dataRate));
-            al.add(new cMsgPayloadItem(AConstants.DATARATEAVERAGE,dataRateAverage));
-            al.add(new cMsgPayloadItem(AConstants.NUMBEROFLONGS,numberOfLongs));
-            al.add(new cMsgPayloadItem(AConstants.EVENTNUMBER,eventNumber));
-            al.add(new cMsgPayloadItem(AConstants.RUNNUMBER,runNumber));
-            al.add(new cMsgPayloadItem(AConstants.FILENAME,fileName));
-            al.add(new cMsgPayloadItem(AConstants.OBJECTTYPE,objectType));
-            al.add(new cMsgPayloadItem(AConstants.LIVETIME,liveTime));
-            al.add(new cMsgPayloadItem(AConstants.RUNSTARTTIME,runStartTime));
-            al.add(new cMsgPayloadItem(AConstants.RUNENDTIME,runEndTime));
-            if(autoStart){
-                al.add(new cMsgPayloadItem(AConstants.AUTOSTART,AConstants.seton));
+            al.add(new cMsgPayloadItem(AConstants.STATE, state));
+            al.add(new cMsgPayloadItem(AConstants.EVENTRATE, eventRate));
+            al.add(new cMsgPayloadItem(AConstants.EVENTRATEAVERAGE, eventRateAverage));
+            al.add(new cMsgPayloadItem(AConstants.DATARATE, dataRate));
+            al.add(new cMsgPayloadItem(AConstants.DATARATEAVERAGE, dataRateAverage));
+            al.add(new cMsgPayloadItem(AConstants.NUMBEROFLONGS, numberOfLongs));
+            al.add(new cMsgPayloadItem(AConstants.EVENTNUMBER, eventNumber));
+            al.add(new cMsgPayloadItem(AConstants.RUNNUMBER, runNumber));
+            al.add(new cMsgPayloadItem(AConstants.FILENAME, fileName));
+            al.add(new cMsgPayloadItem(AConstants.OBJECTTYPE, objectType));
+            al.add(new cMsgPayloadItem(AConstants.LIVETIME, liveTime));
+            al.add(new cMsgPayloadItem(AConstants.RUNSTARTTIME, runStartTime));
+            al.add(new cMsgPayloadItem(AConstants.RUNENDTIME, runEndTime));
+            if (autoStart) {
+                al.add(new cMsgPayloadItem(AConstants.AUTOSTART, AConstants.seton));
             } else {
-                al.add(new cMsgPayloadItem(AConstants.AUTOSTART,AConstants.setoff));
+                al.add(new cMsgPayloadItem(AConstants.AUTOSTART, AConstants.setoff));
             }
-            al.add(new cMsgPayloadItem(AConstants.EVENTLIMIT,eventLimit));
-            al.add(new cMsgPayloadItem(AConstants.DATALIMIT,dataLimit));
-            al.add(new cMsgPayloadItem(AConstants.TIMELIMIT,timeLimit));
-            al.add(new cMsgPayloadItem(AConstants.SCHEDULEDRUNS,nScheduledRuns));
+            al.add(new cMsgPayloadItem(AConstants.EVENTLIMIT, eventLimit));
+            al.add(new cMsgPayloadItem(AConstants.DATALIMIT, dataLimit));
+            al.add(new cMsgPayloadItem(AConstants.TIMELIMIT, timeLimit));
+            al.add(new cMsgPayloadItem(AConstants.SCHEDULEDRUNS, nScheduledRuns));
 
-            al.add(new cMsgPayloadItem(AConstants.SUPERVISOR,supervisor));
+            al.add(new cMsgPayloadItem(AConstants.SUPERVISOR, supervisor));
 
-            for(cMsgPayloadItem s:MonitoredData.values()){
+            for (cMsgPayloadItem s : MonitoredData.values()) {
                 al.add(s);
             }
         } catch (cMsgException e) {
-            if(AConstants.debug.get()) e.printStackTrace();
+            if (AConstants.debug.get()) e.printStackTrace();
         }
         return al;
     }
 
-    public Map<String,String[]> getLinkedIp() {
+    public Map<String, String[]> getLinkedIp() {
         return linkedIp;
     }
 
     public void addLinkedIp(String name, String[] linkedIpa) {
-        if(linkedIpa.length > 0 && !linkedIpa[0].equals("")) {
+        if (linkedIpa.length > 0 && !linkedIpa[0].equals("")) {
             this.linkedIp.put(name, linkedIpa);
         }
     }
 
-    public Map<String,String[]> getLinkedBa() {
+    public Map<String, String[]> getLinkedBa() {
         return linkedBa;
     }
 
     public void addLinkedBa(String name, String[] linkedBaa) {
-        this.linkedBa.put(name,linkedBaa);
+        this.linkedBa.put(name, linkedBaa);
     }
 
     @Override
     public String toString() {
-        String s =  "\n Agent_Data " +
+        String s = "\n Agent_Data " +
                 "  \n-------------" +
                 "  \nname              = " + name +
                 ", \ntype              = " + type +
@@ -758,33 +770,33 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
                 ", \nrunType           = " + runType +
                 ", \nexpid             = " + expid +
                 ", \nstate             = " + state +
-                ", \neventRate         = "  + eventRate +
-                ", \neventRateAverage  = "  + eventRateAverage +
-                ", \ndataRate          = "  + dataRate +
-                ", \ndataRateAverage   = "  + dataRateAverage +
-                ", \nnumberOfLongs     = "  + numberOfLongs +
-                ", \neventNumber       = "  + eventNumber +
-                ", \nrunNumber         = "  + runNumber +
-                ", \nreportingInterval = "  + reportingInterval +
-                ", \npriority          = "  + priority +
-                ", \nuserConfig        = "  + userConfig +
+                ", \neventRate         = " + eventRate +
+                ", \neventRateAverage  = " + eventRateAverage +
+                ", \ndataRate          = " + dataRate +
+                ", \ndataRateAverage   = " + dataRateAverage +
+                ", \nnumberOfLongs     = " + numberOfLongs +
+                ", \neventNumber       = " + eventNumber +
+                ", \nrunNumber         = " + runNumber +
+                ", \nreportingInterval = " + reportingInterval +
+                ", \npriority          = " + priority +
+                ", \nuserConfig        = " + userConfig +
                 "\n";
         StringBuilder sb = new StringBuilder(s);
-        for(String ip:client.getHostIps()) {
-            sb.append("IP = "+ip).append("\n");
+        for (String ip : client.getHostIps()) {
+            sb.append("IP = " + ip).append("\n");
         }
-        for(String ba:client.getHostBroadcastAddresses()) {
-            sb.append("BA = "+ba).append("\n");
+        for (String ba : client.getHostBroadcastAddresses()) {
+            sb.append("BA = " + ba).append("\n");
         }
-        for(ALink link: link){
-            sb.append("source comp = "+link.getSourceComponentName()).
-                    append(" destination comp = "+link.getDestinationComponentName()).
+        for (ALink link : link) {
+            sb.append("source comp = " + link.getSourceComponentName()).
+                    append(" destination comp = " + link.getDestinationComponentName()).
                     append("\n");
         }
-        for(String l:linkedComponentNames){
-            sb.append("linked comp = "+l).append("\n");
+        for (String l : linkedComponentNames) {
+            sb.append("linked comp = " + l).append("\n");
         }
-        if(!linkedIp.isEmpty()) {
+        if (!linkedIp.isEmpty()) {
             for (String c : linkedIp.keySet()) {
                 sb.append("LinkedComponent IP from comp = " + c).append("\n");
 
@@ -796,7 +808,7 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
                 }
             }
         }
-        if(!linkedBa.isEmpty()) {
+        if (!linkedBa.isEmpty()) {
             for (String c : linkedBa.keySet()) {
                 sb.append("LinkedComponent BA from comp = " + c).append("\n");
 
@@ -838,5 +850,17 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
 
     public void setLinkedBa(Map<String, String[]> linkedBa) {
         this.linkedBa = linkedBa;
+    }
+
+    private void defineRole(ArrayList<String> ar) {
+        if (type.equals("EBER")) {
+            if (ar.contains("ROC")) {
+                role = "PEBER";
+            } else {
+                role = "SEBER";
+            }
+        } else {
+            role = type;
+        }
     }
 }

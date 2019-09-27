@@ -674,6 +674,11 @@ public class CParser {
                 cmp.setLinkedComponentNames(tmL);
             }
 
+            ArrayList<String> tmLt = getValueList(x, "linkedToType");
+            if (tmLt != null && !tmLt.isEmpty()) {
+                cmp.setLinkedComponentTypes(tmLt);
+            }
+
             cl.add(cmp);
         }
         results.close();
