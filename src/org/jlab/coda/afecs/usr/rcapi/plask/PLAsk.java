@@ -20,18 +20,19 @@
  *   Department of Experimental Nuclear Physics, Jefferson Lab.
  */
 
-package org.jlab.coda.afecs.usr.rcapi;
+package org.jlab.coda.afecs.usr.rcapi.plask;
 
 import com.martiansoftware.jsap.*;
 import org.jlab.coda.afecs.cool.ontology.AComponent;
 import org.jlab.coda.afecs.system.AConstants;
 import org.jlab.coda.afecs.system.util.AfecsTool;
+import org.jlab.coda.afecs.usr.rcapi.RcApi;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import static org.jlab.coda.afecs.usr.rcapi.PLAskCmd.valueOf;
+import static org.jlab.coda.afecs.usr.rcapi.plask.PLAskCmd.valueOf;
 
 /**
  * Command line Afecs
@@ -54,13 +55,13 @@ public class PLAsk {
                 .setRequired(true)
                 .setShortFlag('h')
                 .setLongFlag("host");
-        host.setHelp("Afecs platfrom host");
+        host.setHelp("Afecs platform host");
         FlaggedOption name = new FlaggedOption(ARG_EXPID)
                 .setStringParser(JSAP.STRING_PARSER)
                 .setRequired(true)
                 .setShortFlag('n')
                 .setLongFlag("name");
-        name.setHelp("Afecs platfrom name");
+        name.setHelp("Afecs platform name");
         QualifiedSwitch inter = new QualifiedSwitch( ARG_INTER,
                 JSAP.STRING_PARSER,
                 JSAP.NO_DEFAULT,

@@ -27,10 +27,7 @@ import org.jlab.coda.afecs.system.ABase;
 import org.jlab.coda.afecs.system.AConstants;
 import org.jlab.coda.afecs.system.AException;
 import org.jlab.coda.afecs.system.util.AfecsTool;
-import org.jlab.coda.cMsg.cMsgException;
-import org.jlab.coda.cMsg.cMsgMessage;
-import org.jlab.coda.cMsg.cMsgNetworkConstants;
-import org.jlab.coda.cMsg.cMsgPayloadItem;
+import org.jlab.coda.cMsg.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -38,84 +35,107 @@ import java.util.*;
 public class RcApi extends ABase {
 
 
-    public RcApi(){
+    public RcApi() {
         super();
     }
 
-    public boolean  pl_connect(String eXPid){
+    public String getPlatformHost(String expid) {
+        String pl_host = AConstants.udf;
+        // define multi-cast URL to be used to find the host of the platform
+        String m_cast_udl = "cMsg:rc://multicast/" + expid + "&multicastTO=5&connectTO=5";
+
+        // finding the host name of the platform, by multi-casting available platform multi-cast servers
+        cMsg m_cast_connection;
+        try {
+            m_cast_connection = new cMsg(m_cast_udl, "x", "y");
+
+        // send a monitor packet and wait the response for 3 sec.
+        cMsgMessage m = m_cast_connection.monitor(Integer.toString(3000));
+
+        if (m != null) {
+            pl_host = m.getSenderHost();
+        }
+
+        } catch (cMsgException e) {
+            e.printStackTrace();
+        }
+        return pl_host;
+    }
+
+    public boolean pl_connect(String eXPid) {
         // disconnect from the platform
-        if(!platformDisconnect()){
-            System.out.println("Error connecting to the platform = "+myPlatformConnection.getUDL());
+        if (!platformDisconnect()) {
+            System.out.println("Error connecting to the platform = " + myPlatformConnection.getUDL());
             return false;
         }
         //sleep for a sec
         AfecsTool.sleep(1000);
         // define a new name
-        myName = "Rcg-"+new Random().nextInt(100);
+        myName = "Rcg-" + new Random().nextInt(100);
         // define the udl
-        String udl = "cMsg://multicast:"+ cMsgNetworkConstants.nameServerUdpPort+"/cMsg/"+eXPid+"?cmsgpassword="+getPlEXPID();
+        String udl = "cMsg://multicast:" + cMsgNetworkConstants.nameServerUdpPort + "/cMsg/" + eXPid + "?cmsgpassword=" + getPlEXPID();
         // connect to the platform
         try {
             myPlatformConnection = platformConnect(udl);
         } catch (cMsgException e) {
             e.printStackTrace();
         }
-        if(!isPlatformConnected()){
-            System.out.println("Error connecting to the platform = "+udl);
+        if (!isPlatformConnected()) {
+            System.out.println("Error connecting to the platform = " + udl);
             return false;
         }
         return true;
     }
 
-    public boolean  pl_connect(String pLHost, String eXPid){
+    public boolean pl_connect(String pLHost, String eXPid) {
         // disconnect from the platform
-        if(!platformDisconnect()){
-            System.out.println("Error while connecting to the platform = "+myPlatformConnection.getUDL());
+        if (!platformDisconnect()) {
+            System.out.println("Error while connecting to the platform = " + myPlatformConnection.getUDL());
             return false;
         }
         //sleep for a sec
         AfecsTool.sleep(1000);
         // define a new name
-        myName = "Rcg-"+new Random().nextInt(100);
+        myName = "Rcg-" + new Random().nextInt(100);
         // define the udl
-        String udl = "cMsg://"+pLHost+":"+cMsgNetworkConstants.nameServerTcpPort+"/cMsg/"+eXPid+"?cmsgpassword="+getPlEXPID();
+        String udl = "cMsg://" + pLHost + ":" + cMsgNetworkConstants.nameServerTcpPort + "/cMsg/" + eXPid + "?cmsgpassword=" + getPlEXPID();
         // connect to the platform
         try {
             myPlatformConnection = platformConnect(udl);
         } catch (cMsgException e) {
             e.printStackTrace();
         }
-        if(!isPlatformConnected()){
-            System.out.println("Error connecting to the platform = "+udl);
+        if (!isPlatformConnected()) {
+            System.out.println("Error connecting to the platform = " + udl);
             return false;
         }
         return true;
     }
 
-    public boolean  pl_disconnect(){
-        if(!platformDisconnect()){
-            System.out.println("Error connecting to the platform "+myPlatformConnection.getUDL());
+    public boolean pl_disconnect() {
+        if (!platformDisconnect()) {
+            System.out.println("Error disconnecting: platform UDL = " + myPlatformConnection.getUDL());
             return false;
         } else {
             return true;
         }
     }
 
-    public String[]  getPlatformRegisteredRunTypes(){
-        String [] sa;
-        ArrayList<String> l = new ArrayList<String>();
+    public String[] getPlatformRegisteredRunTypes() {
+        String[] sa;
+        ArrayList<String> l = new ArrayList<>();
         cMsgMessage msg = null;
         try {
-            msg = p2pSend(AConstants.CONTROLDESIGNER,AConstants.DesignerInfoRequestGetConfigs,"",AConstants.TIMEOUT);
+            msg = p2pSend(AConstants.CONTROLDESIGNER, AConstants.DesignerInfoRequestGetConfigs, "", AConstants.TIMEOUT);
         } catch (AException e) {
             System.out.println("Error: " + e.getMessage());
 
         }
         try {
-            if(msg!=null){
-                if(msg.getPayloadItem("configFileNames")!=null){
+            if (msg != null) {
+                if (msg.getPayloadItem("configFileNames") != null) {
                     sa = msg.getPayloadItem("configFileNames").getStringArray();
-                    if(sa.length>0){
+                    if (sa.length > 0) {
                         Collections.addAll(l, sa);
                         return l.toArray(new String[l.size()]);
                     }
@@ -126,25 +146,25 @@ public class RcApi extends ABase {
                 System.out.println("communication error");
             }
         } catch (cMsgException e) {
-            if(AConstants.debug.get()) System.out.println(e.getMessage());
+            if (AConstants.debug.get()) System.out.println(e.getMessage());
         }
         return null;
     }
 
-    public String[] getPlatformRegisteredSessions(){
-        String [] sa;
+    public String[] getPlatformRegisteredSessions() {
+        String[] sa;
         cMsgMessage msg = null;
         try {
-            msg = p2pSend(getPlEXPID(), AConstants.PlatformInfoRequestSessions_p,"",AConstants.TIMEOUT);
+            msg = p2pSend(getPlEXPID(), AConstants.PlatformInfoRequestSessions_p, "", AConstants.TIMEOUT);
         } catch (AException e) {
             System.out.println("Error: " + e.getMessage());
 
         }
         try {
-            if(msg!=null){
-                if(msg.getPayloadItem("sessions_p")!=null){
+            if (msg != null) {
+                if (msg.getPayloadItem("sessions_p") != null) {
                     sa = msg.getPayloadItem("sessions_p").getStringArray();
-                    if(sa.length>0){
+                    if (sa.length > 0) {
                         return sa;
                     }
                 } else {
@@ -154,25 +174,25 @@ public class RcApi extends ABase {
                 System.out.println("communication error");
             }
         } catch (cMsgException e) {
-            if(AConstants.debug.get()) System.out.println(e.getMessage());
+            if (AConstants.debug.get()) System.out.println(e.getMessage());
         }
         return null;
     }
 
-    public String[] getPlatformRegisteredAgents(){
-        String [] sa;
+    public String[] getPlatformRegisteredAgents() {
+        String[] sa;
         cMsgMessage msg = null;
         try {
-            msg = p2pSend(getPlEXPID(), AConstants.PlatformInfoRequestAgents_p,"",AConstants.TIMEOUT);
+            msg = p2pSend(getPlEXPID(), AConstants.PlatformInfoRequestAgents_p, "", AConstants.TIMEOUT);
         } catch (AException e) {
             System.out.println("Error: " + e.getMessage());
 
         }
         try {
-            if(msg!=null){
-                if(msg.getPayloadItem("agents_p")!=null){
+            if (msg != null) {
+                if (msg.getPayloadItem("agents_p") != null) {
                     sa = msg.getPayloadItem("agents_p").getStringArray();
-                    if(sa.length>0){
+                    if (sa.length > 0) {
                         return sa;
                     }
                 } else {
@@ -182,25 +202,25 @@ public class RcApi extends ABase {
                 System.out.println(" communication error");
             }
         } catch (cMsgException e) {
-            if(AConstants.debug.get()) System.out.println(e.getMessage());
+            if (AConstants.debug.get()) System.out.println(e.getMessage());
         }
         return null;
     }
 
-    public String[] getPlatformRegisteredDocs(){
-        String [] sa;
+    public String[] getPlatformRegisteredDocs() {
+        String[] sa;
         cMsgMessage msg = null;
         try {
-            msg = p2pSend(getPlEXPID(), AConstants.PlatformInfoRequestDocs_p,"",AConstants.TIMEOUT);
+            msg = p2pSend(getPlEXPID(), AConstants.PlatformInfoRequestDocs_p, "", AConstants.TIMEOUT);
         } catch (AException e) {
             System.out.println("Error: " + e.getMessage());
 
         }
         try {
-            if(msg!=null){
-                if(msg.getPayloadItem("docs_p")!=null){
+            if (msg != null) {
+                if (msg.getPayloadItem("docs_p") != null) {
                     sa = msg.getPayloadItem("docs_p").getStringArray();
-                    if(sa.length>0){
+                    if (sa.length > 0) {
                         return sa;
                     }
                 } else {
@@ -210,23 +230,23 @@ public class RcApi extends ABase {
                 System.out.println(" communication error");
             }
         } catch (cMsgException e) {
-            if(AConstants.debug.get()) System.out.println(e.getMessage());
+            if (AConstants.debug.get()) System.out.println(e.getMessage());
         }
         return null;
     }
 
-    public int      getSupervisorRunNumber(String runType){
+    public int getSupervisorRunNumber(String runType) {
         int rn = -1;
         cMsgMessage msg = null;
         try {
-            msg = p2pSend("sms_"+runType, AConstants.SupervisorReportRunNumber_p,"",AConstants.TIMEOUT);
+            msg = p2pSend("sms_" + runType, AConstants.SupervisorReportRunNumber_p, "", AConstants.TIMEOUT);
         } catch (AException e) {
             System.out.println("Error: " + e.getMessage());
 
         }
         try {
-            if(msg!=null){
-                if(msg.getPayloadItem("runnumber_p")!=null){
+            if (msg != null) {
+                if (msg.getPayloadItem("runnumber_p") != null) {
                     rn = msg.getPayloadItem("runnumber_p").getInt();
                 } else {
                     System.out.println("missing payload");
@@ -235,23 +255,23 @@ public class RcApi extends ABase {
                 System.out.println("communication error");
             }
         } catch (cMsgException e) {
-            if(AConstants.debug.get()) System.out.println(e.getMessage());
+            if (AConstants.debug.get()) System.out.println(e.getMessage());
         }
         return rn;
     }
 
-    public String   getSupervisorState(String runType){
+    public String getSupervisorState(String runType) {
         String s;
         cMsgMessage msg = null;
         try {
-            msg = p2pSend("sms_"+runType, AConstants.SupervisorReportRunState_p,"",AConstants.TIMEOUT);
+            msg = p2pSend("sms_" + runType, AConstants.SupervisorReportRunState_p, "", AConstants.TIMEOUT);
         } catch (AException e) {
             System.out.println("Error: " + e.getMessage());
 
         }
         try {
-            if(msg!=null){
-                if(msg.getPayloadItem("runstate_p")!=null){
+            if (msg != null) {
+                if (msg.getPayloadItem("runstate_p") != null) {
                     s = msg.getPayloadItem("runstate_p").getString();
                     return s;
                 } else {
@@ -261,25 +281,25 @@ public class RcApi extends ABase {
                 System.out.println("communication error");
             }
         } catch (cMsgException e) {
-            if(AConstants.debug.get()) System.out.println(e.getMessage());
+            if (AConstants.debug.get()) System.out.println(e.getMessage());
         }
         return null;
     }
 
-    public String[] getSupervisorComponentsStates(String runType){
-        String [] sa;
+    public String[] getSupervisorComponentsStates(String runType) {
+        String[] sa;
         cMsgMessage msg = null;
         try {
-            msg = p2pSend("sms_"+runType, AConstants.SupervisorReportComponentStates_p,"",AConstants.TIMEOUT);
+            msg = p2pSend("sms_" + runType, AConstants.SupervisorReportComponentStates_p, "", AConstants.TIMEOUT);
         } catch (AException e) {
             System.out.println("Error: " + e.getMessage());
 
         }
         try {
-            if(msg!=null){
-                if(msg.getPayloadItem("states_p")!=null){
+            if (msg != null) {
+                if (msg.getPayloadItem("states_p") != null) {
                     sa = msg.getPayloadItem("states_p").getStringArray();
-                    if(sa.length>0){
+                    if (sa.length > 0) {
                         return sa;
                     }
                 } else {
@@ -289,23 +309,23 @@ public class RcApi extends ABase {
                 System.out.println("communication error");
             }
         } catch (cMsgException e) {
-            if(AConstants.debug.get()) System.out.println(e.getMessage());
+            if (AConstants.debug.get()) System.out.println(e.getMessage());
         }
         return null;
     }
 
-    public String   getControlStatus(String runType){
+    public String getControlStatus(String runType) {
         String s;
         cMsgMessage msg = null;
         try {
-            msg = p2pSend("sms_"+runType, AConstants.SupervisorReportSchedulerStatus_p,"",AConstants.TIMEOUT);
+            msg = p2pSend("sms_" + runType, AConstants.SupervisorReportSchedulerStatus_p, "", AConstants.TIMEOUT);
         } catch (AException e) {
             System.out.println("Error: " + e.getMessage());
 
         }
         try {
-            if(msg!=null){
-                if(msg.getPayloadItem("scedulerstatus_p")!=null){
+            if (msg != null) {
+                if (msg.getPayloadItem("scedulerstatus_p") != null) {
                     s = msg.getPayloadItem("scedulerstatus_p").getString();
                     return s;
                 } else {
@@ -315,23 +335,23 @@ public class RcApi extends ABase {
                 System.out.println("communication error");
             }
         } catch (cMsgException e) {
-            if(AConstants.debug.get()) System.out.println(e.getMessage());
+            if (AConstants.debug.get()) System.out.println(e.getMessage());
         }
         return null;
     }
 
-    public String   getSupervisorSession(String runType){
+    public String getSupervisorSession(String runType) {
         String s;
         cMsgMessage msg = null;
         try {
-            msg = p2pSend("sms_"+runType, AConstants.SupervisorReportSession_p,"",AConstants.TIMEOUT);
+            msg = p2pSend("sms_" + runType, AConstants.SupervisorReportSession_p, "", AConstants.TIMEOUT);
         } catch (AException e) {
             System.out.println("Error: " + e.getMessage());
 
         }
         try {
-            if(msg!=null){
-                if(msg.getPayloadItem("supsession_p")!=null){
+            if (msg != null) {
+                if (msg.getPayloadItem("supsession_p") != null) {
                     s = msg.getPayloadItem("supsession_p").getString();
                     return s;
                 } else {
@@ -341,23 +361,23 @@ public class RcApi extends ABase {
                 System.out.println("communication error");
             }
         } catch (cMsgException e) {
-            if(AConstants.debug.get()) System.out.println(e.getMessage());
+            if (AConstants.debug.get()) System.out.println(e.getMessage());
         }
         return null;
     }
 
-    public String   getSupervisorRunStartTime(String runType){
+    public String getSupervisorRunStartTime(String runType) {
         String s;
         cMsgMessage msg = null;
         try {
-            msg = p2pSend("sms_"+runType, AConstants.SupervisorReportRunStartTime_p,"",AConstants.TIMEOUT);
+            msg = p2pSend("sms_" + runType, AConstants.SupervisorReportRunStartTime_p, "", AConstants.TIMEOUT);
         } catch (AException e) {
             System.out.println("Error: " + e.getMessage());
 
         }
         try {
-            if(msg!=null){
-                if(msg.getPayloadItem("supstarttime_p")!=null){
+            if (msg != null) {
+                if (msg.getPayloadItem("supstarttime_p") != null) {
                     s = msg.getPayloadItem("supstarttime_p").getString();
                     return s;
                 } else {
@@ -367,23 +387,23 @@ public class RcApi extends ABase {
                 System.out.println("communication error");
             }
         } catch (cMsgException e) {
-            if(AConstants.debug.get()) System.out.println(e.getMessage());
+            if (AConstants.debug.get()) System.out.println(e.getMessage());
         }
         return null;
     }
 
-    public String   getSupervisorRunEndTime(String runType){
+    public String getSupervisorRunEndTime(String runType) {
         String s;
         cMsgMessage msg = null;
         try {
-            msg = p2pSend("sms_"+runType, AConstants.SupervisorReportRunEndTime_p,"",AConstants.TIMEOUT);
+            msg = p2pSend("sms_" + runType, AConstants.SupervisorReportRunEndTime_p, "", AConstants.TIMEOUT);
         } catch (AException e) {
             System.out.println("Error: " + e.getMessage());
 
         }
         try {
-            if(msg!=null){
-                if(msg.getPayloadItem("supendtime_p")!=null){
+            if (msg != null) {
+                if (msg.getPayloadItem("supendtime_p") != null) {
                     s = msg.getPayloadItem("supendtime_p").getString();
                     return s;
                 } else {
@@ -393,23 +413,36 @@ public class RcApi extends ABase {
                 System.out.println("communication error");
             }
         } catch (cMsgException e) {
-            if(AConstants.debug.get()) System.out.println(e.getMessage());
+            if (AConstants.debug.get()) System.out.println(e.getMessage());
         }
         return null;
     }
 
-    public String   getActiveRunType(String session){
+    /**
+     * Sends a message to the rcGUI message board
+     *
+     * @param session
+     * @param runType
+     * @param author
+     * @param message
+     * @param severity
+     */
+    public void rcGuiMessage(String session, String runType, String author, String message, int severity) {
+        reportAlarmMsg(session + "/" + runType, author, severity, AConstants.udf, message);
+    }
+
+    public String getActiveRunType(String session) {
         String s;
         cMsgMessage msg = null;
         try {
-            msg = p2pSend(getPlEXPID(), AConstants.PlatformInfoRequestActiveRunType,session,AConstants.TIMEOUT);
+            msg = p2pSend(getPlEXPID(), AConstants.PlatformInfoRequestActiveRunType, session, AConstants.TIMEOUT);
         } catch (AException e) {
             System.out.println("Error: " + e.getMessage());
 
         }
         try {
-            if(msg!=null){
-                if(msg.getPayloadItem("activeruntype_p")!=null){
+            if (msg != null) {
+                if (msg.getPayloadItem("activeruntype_p") != null) {
                     s = msg.getPayloadItem("activeruntype_p").getString();
                     return s;
                 } else {
@@ -419,44 +452,44 @@ public class RcApi extends ABase {
                 System.out.println("communication error");
             }
         } catch (cMsgException e) {
-            if(AConstants.debug.get()) System.out.println(e.getMessage());
+            if (AConstants.debug.get()) System.out.println(e.getMessage());
         }
         return null;
     }
 
-    public List<AComponent> getActiveRunTypes(){
+    public List<AComponent> getActiveRunTypes() {
         List<AComponent> l = null;
         cMsgMessage msg = null;
         try {
-            msg = p2pSend(getPlEXPID(), AConstants.PlatformInfoRequestActiveRunTypes,"",AConstants.TIMEOUT);
+            msg = p2pSend(getPlEXPID(), AConstants.PlatformInfoRequestActiveRunTypes, "", AConstants.TIMEOUT);
         } catch (AException e) {
             System.out.println("Error: " + e.getMessage());
 
         }
-        if(msg!=null && msg.getByteArray()!=null){
-                try {
-                    l = (ArrayList<AComponent>)AfecsTool.B2O(msg.getByteArray());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
+        if (msg != null && msg.getByteArray() != null) {
+            try {
+                l = (ArrayList<AComponent>) AfecsTool.B2O(msg.getByteArray());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
+        }
         return l;
     }
 
-    public int      getComponentEventNumber(String runType, String compName){
+    public int getComponentEventNumber(String runType, String compName) {
         int rn = -1;
         cMsgMessage msg = null;
         try {
-            msg = p2pSend("sms_"+runType, AConstants.SupervisorReportComponentEventNumber_p,compName,AConstants.TIMEOUT);
+            msg = p2pSend("sms_" + runType, AConstants.SupervisorReportComponentEventNumber_p, compName, AConstants.TIMEOUT);
         } catch (AException e) {
             System.out.println("Error: " + e.getMessage());
 
         }
         try {
-            if(msg!=null){
-                if(msg.getPayloadItem("evtnumber_p")!=null){
+            if (msg != null) {
+                if (msg.getPayloadItem("evtnumber_p") != null) {
                     rn = msg.getPayloadItem("evtnumber_p").getInt();
                 } else {
                     System.out.println("missing payload");
@@ -465,23 +498,23 @@ public class RcApi extends ABase {
                 System.out.println("communication error");
             }
         } catch (cMsgException e) {
-            if(AConstants.debug.get()) System.out.println(e.getMessage());
+            if (AConstants.debug.get()) System.out.println(e.getMessage());
         }
         return rn;
     }
 
-    public String   getComponentOutputFile(String runType, String compName){
+    public String getComponentOutputFile(String runType, String compName) {
         String s;
         cMsgMessage msg = null;
         try {
-            msg = p2pSend("sms_"+runType, AConstants.SupervisorReportComponentOutputFile_p,compName,AConstants.TIMEOUT);
+            msg = p2pSend("sms_" + runType, AConstants.SupervisorReportComponentOutputFile_p, compName, AConstants.TIMEOUT);
         } catch (AException e) {
             System.out.println("Error: " + e.getMessage());
 
         }
         try {
-            if(msg!=null){
-                if(msg.getPayloadItem("outputfile_p")!=null){
+            if (msg != null) {
+                if (msg.getPayloadItem("outputfile_p") != null) {
                     s = msg.getPayloadItem("outputfile_p").getString();
                     return s;
                 } else {
@@ -491,23 +524,23 @@ public class RcApi extends ABase {
                 System.out.println("communication error");
             }
         } catch (cMsgException e) {
-            if(AConstants.debug.get()) System.out.println(e.getMessage());
+            if (AConstants.debug.get()) System.out.println(e.getMessage());
         }
         return null;
     }
 
-    public float    getComponentEventRate(String runType, String compName){
+    public float getComponentEventRate(String runType, String compName) {
         float r = -1;
         cMsgMessage msg = null;
         try {
-            msg = p2pSend("sms_"+runType, AConstants.SupervisorReportComponentEventRate_p,compName,AConstants.TIMEOUT);
+            msg = p2pSend("sms_" + runType, AConstants.SupervisorReportComponentEventRate_p, compName, AConstants.TIMEOUT);
         } catch (AException e) {
             System.out.println("Error: " + e.getMessage());
 
         }
         try {
-            if(msg!=null){
-                if(msg.getPayloadItem("compevtrate_p")!=null){
+            if (msg != null) {
+                if (msg.getPayloadItem("compevtrate_p") != null) {
                     r = msg.getPayloadItem("compevtrate_p").getFloat();
                 } else {
                     System.out.println("missing payload");
@@ -516,23 +549,23 @@ public class RcApi extends ABase {
                 System.out.println("communication error");
             }
         } catch (cMsgException e) {
-            if(AConstants.debug.get()) System.out.println(e.getMessage());
+            if (AConstants.debug.get()) System.out.println(e.getMessage());
         }
         return r;
     }
 
-    public double   getComponentDataRate(String runType, String compName){
+    public double getComponentDataRate(String runType, String compName) {
         double r = -1;
         cMsgMessage msg = null;
         try {
-            msg = p2pSend("sms_"+runType, AConstants.SupervisorReportComponentDataRate_p,compName,AConstants.TIMEOUT);
+            msg = p2pSend("sms_" + runType, AConstants.SupervisorReportComponentDataRate_p, compName, AConstants.TIMEOUT);
         } catch (AException e) {
             System.out.println("Error: " + e.getMessage());
 
         }
         try {
-            if(msg!=null){
-                if(msg.getPayloadItem("compdatarate_p")!=null){
+            if (msg != null) {
+                if (msg.getPayloadItem("compdatarate_p") != null) {
                     r = msg.getPayloadItem("compdatarate_p").getFloat();
                 } else {
                     System.out.println("missing payload");
@@ -541,23 +574,23 @@ public class RcApi extends ABase {
                 System.out.println("communication error");
             }
         } catch (cMsgException e) {
-            if(AConstants.debug.get()) System.out.println(e.getMessage());
+            if (AConstants.debug.get()) System.out.println(e.getMessage());
         }
         return r;
     }
 
-    public String   getComponentState(String runType, String compName){
+    public String getComponentState(String runType, String compName) {
         String s;
         cMsgMessage msg = null;
         try {
-            msg = p2pSend("sms_"+runType, AConstants.SupervisorReportComponentState_p,compName,AConstants.TIMEOUT);
+            msg = p2pSend("sms_" + runType, AConstants.SupervisorReportComponentState_p, compName, AConstants.TIMEOUT);
         } catch (AException e) {
             System.out.println("Error: " + e.getMessage());
 
         }
         try {
-            if(msg!=null){
-                if(msg.getPayloadItem("compstate_p")!=null){
+            if (msg != null) {
+                if (msg.getPayloadItem("compstate_p") != null) {
                     s = msg.getPayloadItem("compstate_p").getString();
                     return s;
                 } else {
@@ -567,72 +600,72 @@ public class RcApi extends ABase {
                 System.out.println("communication error");
             }
         } catch (cMsgException e) {
-            if(AConstants.debug.get()) System.out.println(e.getMessage());
+            if (AConstants.debug.get()) System.out.println(e.getMessage());
         }
         return null;
     }
 
-    public Map<String,String> getRtvs(String runType){
-        Map<String,String> rtvs = null;
+    public Map<String, String> getRtvs(String runType) {
+        Map<String, String> rtvs = null;
         cMsgMessage msg = null;
         try {
-            msg = p2pSend("sms_"+runType, AConstants.SupervisorReportRtvs_p,"",AConstants.TIMEOUT);
+            msg = p2pSend("sms_" + runType, AConstants.SupervisorReportRtvs_p, "", AConstants.TIMEOUT);
         } catch (AException e) {
             System.out.println("Error: " + e.getMessage());
 
         }
-        if(msg!=null && msg.getByteArray()!=null){
-                try {
-                    rtvs = (Map<String,String>)AfecsTool.B2O(msg.getByteArray());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
+        if (msg != null && msg.getByteArray() != null) {
+            try {
+                rtvs = (Map<String, String>) AfecsTool.B2O(msg.getByteArray());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
+        }
         return rtvs;
     }
 
     /**
      * added 12.9.16
+     *
      * @param session controls session
      * @param runType controls name
      */
-    public void  rcgConfigure(String  session, String  runType){
-       if(isPlatformConnected()){
+    public void rcgConfigure(String session, String runType) {
+        if (isPlatformConnected()) {
 
-           // Ask ControlDesigner to configure.
-           ArrayList<cMsgPayloadItem> al = new ArrayList<>();
-           try {
-               al.add(new cMsgPayloadItem(AConstants.SESSION,session));
-               al.add(new cMsgPayloadItem(AConstants.RUNTYPE,runType));
-           } catch (cMsgException e1) {
-               e1.printStackTrace();
-           }
+            // Ask ControlDesigner to configure.
+            ArrayList<cMsgPayloadItem> al = new ArrayList<>();
+            try {
+                al.add(new cMsgPayloadItem(AConstants.SESSION, session));
+                al.add(new cMsgPayloadItem(AConstants.RUNTYPE, runType));
+            } catch (cMsgException e1) {
+                e1.printStackTrace();
+            }
 
-           try {
-               p2pSend(AConstants.CONTROLDESIGNER,
-                       AConstants.DesignerControlRequestConfigureControl_RCAPI,
-                       "",
-                       al,
-                       AConstants.TIMEOUT);
+            try {
+                p2pSend(AConstants.CONTROLDESIGNER,
+                        AConstants.DesignerControlRequestConfigureControl_RCAPI,
+                        "",
+                        al,
+                        AConstants.TIMEOUT);
 
-           } catch (AException e) {
-               e.printStackTrace();  //Exception handling
-           }
-       }
+            } catch (AException e) {
+                e.printStackTrace();  //Exception handling
+            }
+        }
     }
 
-    public void     rcgDownload(String  runType){
+    public void rcgDownload(String runType) {
         String st = getSupervisorState(runType);
-        if(st.equals(AConstants.downloaded) || st.equals(AConstants.configured)){
+        if (st.equals(AConstants.downloaded) || st.equals(AConstants.configured)) {
             // Ask ControlDesigner to configure.
-            ArrayList<cMsgPayloadItem> al = new ArrayList<cMsgPayloadItem>();
-            if(!send("sms_"+runType, AConstants.SupervisorControlRequestStartService,"CodaRcDownload")){
+            if (!send("sms_" + runType, AConstants.SupervisorControlRequestStartService, "CodaRcDownload")) {
                 System.out.println("Error: Command failed.");
                 return;
             }
-            if(!waitUntilItsDone(runType,AConstants.downloaded,AConstants.TIMEOUT)){
+            if (!waitUntilItsDone(runType, AConstants.downloaded, AConstants.TIMEOUT)) {
                 System.out.println("Error: Transition failed.");
             }
         } else {
@@ -640,16 +673,15 @@ public class RcApi extends ABase {
         }
     }
 
-    public void     rcgPrestart(String  runType){
+    public void rcgPrestart(String runType) {
         String st = getSupervisorState(runType);
-        if(st.equals(AConstants.downloaded) || st.equals(AConstants.ended)){
+        if (st.equals(AConstants.downloaded) || st.equals(AConstants.ended)) {
             // Ask ControlDesigner to configure.
-            ArrayList<cMsgPayloadItem> al = new ArrayList<cMsgPayloadItem>();
-            if(!send("sms_"+runType, AConstants.SupervisorControlRequestStartService,"CodaRcPrestart")){
+            if (!send("sms_" + runType, AConstants.SupervisorControlRequestStartService, "CodaRcPrestart")) {
                 System.out.println("Error: Command failed.");
                 return;
             }
-            if(!waitUntilItsDone(runType,AConstants.prestarted,AConstants.TIMEOUT)){
+            if (!waitUntilItsDone(runType, AConstants.prestarted, AConstants.TIMEOUT)) {
                 System.out.println("Error: Transition failed.");
             }
         } else {
@@ -657,16 +689,15 @@ public class RcApi extends ABase {
         }
     }
 
-    public void     rcgGo(String  runType){
+    public void rcgGo(String runType) {
         String st = getSupervisorState(runType);
-        if(st.equals(AConstants.prestarted)){
+        if (st.equals(AConstants.prestarted)) {
             // Ask ControlDesigner to configure.
-            ArrayList<cMsgPayloadItem> al = new ArrayList<cMsgPayloadItem>();
-            if(!send("sms_"+runType, AConstants.SupervisorControlRequestStartService,"CodaRcGo")){
+            if (!send("sms_" + runType, AConstants.SupervisorControlRequestStartService, "CodaRcGo")) {
                 System.out.println("Error: Command failed.");
                 return;
             }
-            if(!waitUntilItsDone(runType,AConstants.active,AConstants.TIMEOUT)){
+            if (!waitUntilItsDone(runType, AConstants.active, AConstants.TIMEOUT)) {
                 System.out.println("Error: Transition failed.");
             }
         } else {
@@ -674,16 +705,15 @@ public class RcApi extends ABase {
         }
     }
 
-    public void     rcgEnd(String  runType){
+    public void rcgEnd(String runType) {
         String st = getSupervisorState(runType);
-        if(st.equals(AConstants.downloaded) || st.equals(AConstants.prestarted) || st.equals(AConstants.active)){
+        if (st.equals(AConstants.downloaded) || st.equals(AConstants.prestarted) || st.equals(AConstants.active)) {
             // Ask ControlDesigner to configure.
-            ArrayList<cMsgPayloadItem> al = new ArrayList<cMsgPayloadItem>();
-            if(!send("sms_"+runType, AConstants.SupervisorControlRequestStartService,"CodaRcEnd")){
+            if (!send("sms_" + runType, AConstants.SupervisorControlRequestStartService, "CodaRcEnd")) {
                 System.out.println("Error: Command failed.");
                 return;
             }
-            if(!waitUntilItsDone(runType,AConstants.ended,AConstants.TIMEOUT)){
+            if (!waitUntilItsDone(runType, AConstants.ended, AConstants.TIMEOUT)) {
                 System.out.println("Error: Transition failed.");
             }
         } else {
@@ -691,12 +721,12 @@ public class RcApi extends ABase {
         }
     }
 
-    public void     rcgStartRun(String  runType){
-        boolean a,b;
-        a = send("sms_" + runType.trim(), AConstants.SupervisorControlRequestEnableAutoMode,0);
-        b = send("sms_"+runType, AConstants.SupervisorControlRequestStartService,"CodaRcStartRun");
-        if(a && b){
-            if(!waitUntilItsDone(runType,AConstants.active,AConstants.TIMEOUT)){
+    public void rcgStartRun(String runType) {
+        boolean a, b;
+        a = send("sms_" + runType.trim(), AConstants.SupervisorControlRequestEnableAutoMode, 0);
+        b = send("sms_" + runType, AConstants.SupervisorControlRequestStartService, "CodaRcStartRun");
+        if (a && b) {
+            if (!waitUntilItsDone(runType, AConstants.active, AConstants.TIMEOUT)) {
                 System.out.println("Error: Transition failed.");
             }
         } else {
@@ -704,67 +734,66 @@ public class RcApi extends ABase {
         }
     }
 
-    public void     rcgReset(String  runType){
-        if(!send("sms_"+runType, AConstants.AgentControlRequestMoveToState, AConstants.reseted)){
+    public void rcgReset(String runType) {
+        if (!send("sms_" + runType, AConstants.AgentControlRequestMoveToState, AConstants.reseted)) {
             System.out.println("Error: Command failed.");
         }
     }
 
-    public void     rcgProgramScheduler(String  runType, int numberOfRuns, int eventLimit, int timeLimit){
-        boolean a,b,c;
-        a = send("sms_"+runType.trim(), AConstants.SupervisorControlRequestSetNumberOfRuns,Integer.toString(numberOfRuns));
-        b = send("sms_"+runType.trim(), AConstants.SupervisorControlRequestSetEventLimit, Integer.toString(eventLimit));
-        c = send("sms_"+runType.trim(), AConstants.SupervisorControlRequestSetTimeLimit, Integer.toString(timeLimit));
-        if(a && b && c) {
+    public void rcgProgramScheduler(String runType, int numberOfRuns, int eventLimit, int timeLimit) {
+        boolean a, b, c;
+        a = send("sms_" + runType.trim(), AConstants.SupervisorControlRequestSetNumberOfRuns, Integer.toString(numberOfRuns));
+        b = send("sms_" + runType.trim(), AConstants.SupervisorControlRequestSetEventLimit, Integer.toString(eventLimit));
+        c = send("sms_" + runType.trim(), AConstants.SupervisorControlRequestSetTimeLimit, Integer.toString(timeLimit));
+        if (a && b && c) {
         } else {
             System.out.println("Error: Command failed.");
         }
     }
 
-    public void     rcgResetScheduler(String  runType){
-        boolean a,b,c;
-        a = send("sms_"+runType.trim(), AConstants.SupervisorControlRequestSetNumberOfRuns,"0");
-        b = send("sms_"+runType.trim(), AConstants.SupervisorControlRequestSetEventLimit, "0");
-        c = send("sms_"+runType.trim(), AConstants.SupervisorControlRequestSetTimeLimit, "0");
-        if(a && b && c) {
+    public void rcgResetScheduler(String runType) {
+        boolean a, b, c;
+        a = send("sms_" + runType.trim(), AConstants.SupervisorControlRequestSetNumberOfRuns, "0");
+        b = send("sms_" + runType.trim(), AConstants.SupervisorControlRequestSetEventLimit, "0");
+        c = send("sms_" + runType.trim(), AConstants.SupervisorControlRequestSetTimeLimit, "0");
+        if (a && b && c) {
         } else {
             System.out.println("Error: Command failed.");
         }
     }
 
-    public void     rcgDisableScheduler(String  runType){
-        if(!send("sms_" + runType.trim(), AConstants.SupervisorControlRequestDisableAutoMode, 0)){
+    public void rcgDisableScheduler(String runType) {
+        if (!send("sms_" + runType.trim(), AConstants.SupervisorControlRequestDisableAutoMode, 0)) {
             System.out.println("Error: Command failed.");
         }
     }
 
-    public void rcgReleaseAgents(String  runType){
-        if(!send("sms_"+runType, AConstants.SupervisorControlRequestReleaseAgents,"")){
+    public void rcgReleaseAgents(String runType) {
+        if (!send("sms_" + runType, AConstants.SupervisorControlRequestReleaseAgents, "")) {
             System.out.println("Error: Command failed.");
         }
     }
 
     /**
-     *
      * @param runType
      * @param response
-     * @param tout  in milli seconds
+     * @param tout     in milli seconds
      * @return
      */
-    private boolean waitUntilItsDone(String  runType, String  response, int tout){
+    private boolean waitUntilItsDone(String runType, String response, int tout) {
 
-       tout = tout/1000;
+        tout = tout / 1000;
 
-        for(int i=0;i<tout;i++){
+        for (int i = 0; i < tout; i++) {
             // ask supervisor it's state in sync
             cMsgMessage msgb = null;
             try {
                 msgb = p2pSend("sms_" + runType.trim(), AConstants.SupervisorReportRunState, "", 1000);
             } catch (AException e) {
-                System.out.println("Error: "+e.getMessage());
+                System.out.println("Error: " + e.getMessage());
 
             }
-            if(msgb!=null && msgb.getText().equals(response)){
+            if (msgb != null && msgb.getText().equals(response)) {
                 return true;
             }
             AfecsTool.sleep(1000);

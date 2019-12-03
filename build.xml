@@ -384,6 +384,7 @@
         <chmod file="${common_bin_dir}/db2cool" perm="a+x"/>
         <chmod file="${common_bin_dir}/container" perm="a+x"/>
         <chmod file="${common_bin_dir}/plask" perm="a+x"/>
+        <chmod file="${common_bin_dir}/rcgMsg" perm="a+x"/>
         <chmod file="${common_bin_dir}/rcspy" perm="a+x"/>
         <chmod file="${common_bin_dir}/influx-d" perm="a+x"/>
         <chmod file="${bin_dir}/platform" perm="a+x"/>
@@ -391,6 +392,7 @@
         <chmod file="${bin_dir}/db2cool" perm="a+x"/>
         <chmod file="${bin_dir}/container" perm="a+x"/>
         <chmod file="${bin_dir}/plask" perm="a+x"/>
+        <chmod file="${bin_dir}/rcgMsg" perm="a+x"/>
         <chmod file="${bin_dir}/rcspy" perm="a+x"/>
         <chmod file="${bin_dir}/influx-d" perm="a+x"/>
         <chmod file="${bin64_dir}/platform" perm="a+x"/>
@@ -398,6 +400,7 @@
         <chmod file="${bin64_dir}/db2cool" perm="a+x"/>
         <chmod file="${bin64_dir}/container" perm="a+x"/>
         <chmod file="${bin64_dir}/plask" perm="a+x"/>
+        <chmod file="${bin64_dir}/rcgMsg" perm="a+x"/>
         <chmod file="${bin64_dir}/rcspy" perm="a+x"/>
         <chmod file="${bin64_dir}/influx-d" perm="a+x"/>
     </target>
@@ -415,6 +418,7 @@
         <copy file = "${bin_source_dir}/container" todir="${common_bin_dir}"/>
         <copy file = "${bin_source_dir}/db2cool" todir="${common_bin_dir}"/>
         <copy file = "${bin_source_dir}/plask" todir="${common_bin_dir}"/>
+        <copy file = "${bin_source_dir}/rcgMsg" todir="${common_bin_dir}"/>
         <copy file = "${bin_source_dir}/rcspy" todir="${common_bin_dir}"/>
         <copy file = "${bin_source_dir}/platform" todir="${common_bin_dir}"/>
         <copy file = "${bin_source_dir}/rcgui" todir="${common_bin_dir}"/>
@@ -423,6 +427,7 @@
         <copy file = "${bin_source_dir}/container" todir="${bin_dir}"/>
         <copy file = "${bin_source_dir}/db2cool" todir="${bin_dir}"/>
         <copy file = "${bin_source_dir}/plask" todir="${bin_dir}"/>
+        <copy file = "${bin_source_dir}/rcgMsg" todir="${bin_dir}"/>
         <copy file = "${bin_source_dir}/rcspy" todir="${bin_dir}"/>
         <copy file = "${bin_source_dir}/platform" todir="${bin_dir}"/>
         <copy file = "${bin_source_dir}/rcgui" todir="${bin_dir}"/>
@@ -431,6 +436,7 @@
         <copy file = "${bin_source_dir}/container" todir="${bin64_dir}"/>
         <copy file = "${bin_source_dir}/db2cool" todir="${bin64_dir}"/>
         <copy file = "${bin_source_dir}/plask" todir="${bin64_dir}"/>
+        <copy file = "${bin_source_dir}/rcgMsg" todir="${bin64_dir}"/>
         <copy file = "${bin_source_dir}/rcspy" todir="${bin64_dir}"/>
         <copy file = "${bin_source_dir}/platform" todir="${bin64_dir}"/>
         <copy file = "${bin_source_dir}/rcgui" todir="${bin64_dir}"/>

@@ -20,7 +20,7 @@
  *   Department of Experimental Nuclear Physics, Jefferson Lab.
  */
 
-package org.jlab.coda.afecs.usr.rcapi;
+package org.jlab.coda.afecs.usr.rcapi.plask;
 
 /**
  * Describe...

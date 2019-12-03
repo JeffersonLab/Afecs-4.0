@@ -1,0 +1,8 @@
+#!/bin/csh -f
+
+
+# start plask
+$JAVA_HOME/bin/java -cp "$CODA/common/jar/*" org.jlab.coda.afecs.usr.rcapi.rcuim.rcGuiMsg $1 $2 $3 $4 $5 $6 $7 $8 $9 $10 $11 $12
+
+
+#memory settings  and jConsole -Xms200m -Xmx500m -Dcom.sun.management.jmxremote
