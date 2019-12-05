@@ -30,8 +30,7 @@ static int sendAndGetCmsg(const char *func,
 static int sendCmsg(const char *func, const char *subject, const char *type,
 		    const char *text);
 
-static int sendCmsgPl(const char *func,
-            	 const char *subject, const char *type, const char *text,
+static int sendCmsgPl(const char *func, const char *subject, const char *type, const char *text,
                  void *stringPayloadName, void *stringPayload, int payloadSize);
 
 static int waitUntilItsDone(const char *runType, const char *response,
@@ -1058,12 +1057,12 @@ rcGuiMessage(const char *session, const char *runType, const char *author, const
 {
   int err, rval = 0;
 
-  const char[1] x = "/";
-char subject[128];
+  const char *x = "/";
+  char subject[128];
 
-strcat(subject,session);
-strcat(subject,x);
-strcat(subject,runType);
+  strcat(subject,session);
+  strcat(subject,x);
+  strcat(subject,runType);
 
       const char stringName[4][512] = { "codaName", "EXPID", "severity", "dalogText" };
       char payload[4][512];
@@ -1082,13 +1081,11 @@ strcat(subject,runType);
 
       if (err != CMSG_OK)
 	{
-      printf("Error sending rcGuiMessage.\n", stat);
+      printf("Error sending rcGuiMessage.\n");
       rval = -1;
 
 	}
 
-  if (replyMsg)
-    cMsgFreeMessage(&replyMsg);
 
   return rval;
 }
