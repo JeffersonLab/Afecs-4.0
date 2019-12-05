@@ -37,7 +37,7 @@ float getComponentEventRate(const char *runType, const char *compName);
 double getComponentDataRate(const char *runType, const char *compName);
 const char *getComponentState(const char *runType, const char *compName);
 float getComponentLiveTime(const char *runType, const char *compName);
-int rcGuiMessage(const char *session, const char *runType, const char *author, const char *message, int severity);
+int rcGuiMessage(const char *session, const char *runType, const char *author, const char *message, const char *severity);
 
 int rcgConfigure(const char *session, const char *runType);
 int rcgReleaseAgents(const char *runType);
