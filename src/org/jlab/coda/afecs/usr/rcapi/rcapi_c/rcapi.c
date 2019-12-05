@@ -1072,7 +1072,7 @@ rcGuiMessage(const char *session, const char *runType, const char *author, const
       strncpy(payload[2], severity, 512);
       strncpy(payload[3], message, 512);
 
-	sendCmsgPl(__funct__,
+	sendCmsgPl(__func__,
 		       subject,
 		       "agent/report/alarm",
 		       NULL,
