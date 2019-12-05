@@ -30,7 +30,7 @@ static int sendAndGetCmsg(const char *func,
 static int sendCmsg(const char *func, const char *subject, const char *type,
 		    const char *text);
 
-static int sendCmsgPl(const char *funct, const char *subject, const char *type, const char *text,
+static int sendCmsgPl(const char *func, const char *subject, const char *type, const char *text,
                  void *stringPayloadName, void *stringPayload, int payloadSize);
 
 static int waitUntilItsDone(const char *runType, const char *response,
@@ -1478,7 +1478,7 @@ sendCmsg(const char *func,
 /*--------------------------------------------------------*/
 
 static int
-sendCmsg(const char *func,
+sendCmsgPl(const char *func,
 	 const char *subject, const char *type, const char *text,
      void *stringPayloadName, void *stringPayload, int payloadSize)
 {
