@@ -30,7 +30,7 @@ static int sendAndGetCmsg(const char *func,
 static int sendCmsg(const char *func, const char *subject, const char *type,
 		    const char *text);
 
-static int sendCmsg(const char *func,
+static int sendCmsgPl(const char *func,
             	 const char *subject, const char *type, const char *text,
                  void *stringPayloadName, void *stringPayload, int payloadSize);
 
@@ -1073,7 +1073,7 @@ strcat(subject,runType);
       strncpy(payload[2], severity, 512);
       strncpy(payload[3], message, 512);
 
-	sendCmsg(__func__,
+	sendCmsgPl(__func__,
 		       subject,
 		       "agent/report/alarm",
 		       NULL,
