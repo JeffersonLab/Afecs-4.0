@@ -30,7 +30,7 @@ static int sendAndGetCmsg(const char *func,
 static int sendCmsg(const char *func, const char *subject, const char *type,
 		    const char *text);
 
-static int sendCmsgPl(const char *func, const char *subject, const char *type, const char *text,
+static int sendCmsgPl(const char *funct, const char *subject, const char *type, const char *text,
                  void *stringPayloadName, void *stringPayload, int payloadSize);
 
 static int waitUntilItsDone(const char *runType, const char *response,
@@ -1072,7 +1072,7 @@ rcGuiMessage(const char *session, const char *runType, const char *author, const
       strncpy(payload[2], severity, 512);
       strncpy(payload[3], message, 512);
 
-	sendCmsgPl(__func__,
+	sendCmsgPl(__funct__,
 		       subject,
 		       "agent/report/alarm",
 		       NULL,
