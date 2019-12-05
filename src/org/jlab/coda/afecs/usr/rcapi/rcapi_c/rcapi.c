@@ -1086,7 +1086,6 @@ rcGuiMessage(const char *session, const char *runType, const char *author, const
 
 	}
 
-
   return rval;
 }
 

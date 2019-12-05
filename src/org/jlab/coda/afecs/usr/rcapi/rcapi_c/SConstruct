@@ -10,3 +10,5 @@ env.Append(CCFLAGS = ['-g','-O3'])
 env.Append(LIBPATH = ['$CODA/Linux-x86_64/lib'])
 env.Append(LIBS = ['libcmsg', 'libcmsgRegex', 'libcmsgxx', 'librt', 'libpthread', 'libdl'])
 env.Object(source = 'rcapi.c' )
+env.SharedLibrary(target = 'rcapi', source = 'rcapi.c')
+
