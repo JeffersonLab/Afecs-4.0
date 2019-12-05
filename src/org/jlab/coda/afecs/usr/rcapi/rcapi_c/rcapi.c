@@ -26,16 +26,25 @@ static int sendAndGetCmsg(const char *func,
 			  const char *text, void *stringPayloadName,
 			  void *stringPayload, int payloadSize,
 			  void *replyMsg, struct timespec to);
+
 static int sendCmsg(const char *func, const char *subject, const char *type,
 		    const char *text);
+
+static int sendCmsg(const char *func,
+            	 const char *subject, const char *type, const char *text,
+                 void *stringPayloadName, void *stringPayload, int payloadSize);
+
 static int waitUntilItsDone(const char *runType, const char *response,
 			    int tout);
+
 static int waitUntilItsDone2(const char *runType, const char *response,
 			     const char *response2, int tout);
+
 static void debugCmsg(const char *type, void *msg);
 
 int TIMEOUT = 20;
 
+/*--------------------------------------------------------*/
 int
 pl_connect(const char *pLHost, const char *eXPid)
 {
@@ -1045,6 +1054,48 @@ getComponentState(const char *runType, const char *compName)
 /*--------------------------------------------------------*/
 
 int
+rcGuiMessage(const char *session, const char *runType, const char *author, const char *message, const char *severity)
+{
+  int err, rval = 0;
+
+  const char[1] x = "/";
+char subject[128];
+
+strcat(subject,session);
+strcat(subject,x);
+strcat(subject,runType);
+
+      const char stringName[4][512] = { "codaName", "EXPID", "severity", "dalogText" };
+      char payload[4][512];
+
+      strncpy(payload[0], author, 512);
+      strncpy(payload[1], myExPid, 512);
+      strncpy(payload[2], severity, 512);
+      strncpy(payload[3], message, 512);
+
+	sendCmsg(__func__,
+		       subject,
+		       "agent/report/alarm",
+		       NULL,
+		       (void *) stringName,
+		       (void *) payload, 4);
+
+      if (err != CMSG_OK)
+	{
+      printf("Error sending rcGuiMessage.\n", stat);
+      rval = -1;
+
+	}
+
+  if (replyMsg)
+    cMsgFreeMessage(&replyMsg);
+
+  return rval;
+}
+
+/*--------------------------------------------------------*/
+
+int
 rcgConfigure(const char *session, const char *runType)
 {
   void *replyMsg = NULL;
@@ -1427,6 +1478,53 @@ sendCmsg(const char *func,
   return rval;
 }
 
+/*--------------------------------------------------------*/
+
+static int
+sendCmsg(const char *func,
+	 const char *subject, const char *type, const char *text,
+     void *stringPayloadName, void *stringPayload, int payloadSize)
+{
+  void *msg;
+  int err, rval = 0, istr = 0;
+  char (*tmpStringName)[32] = stringPayloadName;
+  char (*tmpString)[32] = stringPayload;
+
+  /* create message to be sent */
+  msg = cMsgCreateMessage();
+
+  cMsgSetSubject(msg, subject);
+
+  cMsgSetType(msg, type);
+
+  if (text != NULL)
+    cMsgSetText(msg, text);
+
+  if (stringPayload != NULL)
+    {
+      for (istr = 0; istr < payloadSize; istr++)
+	{
+	  cMsgAddString(msg, tmpStringName[istr], tmpString[istr]);
+	}
+    }
+
+  debugCmsg("send", msg);
+
+  /* send msg */
+  err = cMsgSend(domainId, msg);
+  if (err != CMSG_OK)
+    {
+      fprintf(stderr, "%s: Error: %s\n", func, cMsgPerror(err));
+      rval = -1;
+    }
+
+  if (msg)
+    cMsgFreeMessage(&msg);
+
+  return rval;
+}
+
+/*--------------------------------------------------------*/
 static int
 sendAndGetCmsg(const char *func,
 	       const char *subject, const char *type, const char *text,
@@ -1473,6 +1571,7 @@ sendAndGetCmsg(const char *func,
   return rval;
 }
 
+/*--------------------------------------------------------*/
 static int
 waitUntilItsDone(const char *runType, const char *response, int tout)
 {
@@ -1500,6 +1599,7 @@ waitUntilItsDone(const char *runType, const char *response, int tout)
   return 1;
 }
 
+/*--------------------------------------------------------*/
 static int
 waitUntilItsDone2(const char *runType, const char *response,
 		  const char *response2, int tout)
@@ -1535,6 +1635,7 @@ rcgSetDebugMask(uint8_t inmask)
   debugMask = inmask;
 }
 
+/*--------------------------------------------------------*/
 static void
 debugCmsg(const char *type, void *msg)
 {
@@ -1555,3 +1656,5 @@ debugCmsg(const char *type, void *msg)
 	}
     }
 }
+
+
