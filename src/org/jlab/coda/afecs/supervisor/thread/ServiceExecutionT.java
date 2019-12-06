@@ -23,7 +23,6 @@
 package org.jlab.coda.afecs.supervisor.thread;
 
 import org.jlab.coda.afecs.codarc.CodaRCAgent;
-import org.jlab.coda.afecs.cool.ontology.AComponent;
 import org.jlab.coda.afecs.cool.ontology.AProcess;
 import org.jlab.coda.afecs.cool.parser.ACondition;
 import org.jlab.coda.afecs.cool.parser.AStatement;
@@ -80,7 +79,7 @@ import java.util.*;
  * </p>
  *
  * @author gurjyan
- *         Date: 11/13/14 Time: 2:51 PM
+ * Date: 11/13/14 Time: 2:51 PM
  * @version 4.x
  */
 public class ServiceExecutionT implements Runnable {
@@ -248,7 +247,7 @@ public class ServiceExecutionT implements Runnable {
 
             } else if (serviceName.equals("CodaRcEnd")) {
                 // inform all agents about the beginning of the end transition
-                for(CodaRCAgent c:owner.myComponents.values()){
+                for (CodaRCAgent c : owner.myComponents.values()) {
                     try {
                         c.sessionControlPreEnd(owner.getPlEXPID(),
                                 owner.mySession,
@@ -639,12 +638,12 @@ public class ServiceExecutionT implements Runnable {
                                 " Starting process = " + bp.getName());
                         // execute scripts before the state transition
                         owner.pm.executeProcess(bp, owner.myPlugin, owner.me);
+                        owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
+                                owner.myName,
+                                1,
+                                AConstants.INFO,
+                                " Done process = " + bp.getName());
                     }
-                    owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
-                            owner.myName,
-                            1,
-                            AConstants.INFO,
-                            " Done process = " + bp.getName());
                 }
             }
         }
@@ -676,13 +675,12 @@ public class ServiceExecutionT implements Runnable {
 
                         // execute scripts before the state transition
                         owner.pm.executeProcess(bp, owner.myPlugin, owner.me);
-
+                        owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
+                                owner.myName,
+                                1,
+                                AConstants.INFO,
+                                " Done process = " + bp.getName());
                     }
-                    owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
-                            owner.myName,
-                            1,
-                            AConstants.INFO,
-                            " Done process = " + bp.getName());
                 }
             }
         }
