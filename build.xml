@@ -234,6 +234,18 @@
         </condition>
     </target>
 
+    <target name="xml-apis.check">
+        <condition property="xml-apis.exists">
+            <available file="${jar_dir}/xml-apis.jar" type="file"/>
+        </condition>
+    </target>
+
+    <target name="xercesImpl.check">
+        <condition property="xercesImpl.exists">
+            <available file="${jar_dir}/xml-xercesImpl.jar" type="file"/>
+        </condition>
+    </target>
+
 
     <!-- creating directories -->
     <target name="jar_dir.create" depends="jar_dir.check" unless="jar_dir.exists">
@@ -309,8 +321,18 @@
         <copy file="${module.afecs.basedir}/lib/JinFlux.jar" todir="${build_dir}/common/jar"/>
     </target>
 
+    <target name="xml-apis.install" depends="xml-apis.check" unless="xml-apis.exists">
+        <echo>... installing ${module.afecs.basedir}/lib/xml-apis.jar"</echo>
+        <copy file="${module.afecs.basedir}/lib/xml-apis.jar" todir="${build_dir}/common/jar"/>
+    </target>
+
+    <target name="xercesImpl.install" depends="xercesImpl.check" unless="xercesImpl.exists">
+        <echo>... installing ${module.afecs.basedir}/lib/xercesImpl.jar"</echo>
+        <copy file="${module.afecs.basedir}/lib/xercesImpl.jar" todir="${build_dir}/common/jar"/>
+    </target>
+
     <target name="check_config"
-            depends="setup, jar_dir.create, jena_jar_dir.create, common_bin_dir.create, bin_dir.create, bin64_dir.create, img_dir.create, CChart_jar.install, fx_jar.install, jena_jar.install, spikechart_jar.install, jas_jar.install, jsap_jar.install, jsch_jar.install, msql_jar.install, JinFlux.install, image.install "
+            depends="setup, jar_dir.create, jena_jar_dir.create, common_bin_dir.create, bin_dir.create, bin64_dir.create, img_dir.create, CChart_jar.install, fx_jar.install, jena_jar.install, spikechart_jar.install, jas_jar.install, jsap_jar.install, jsch_jar.install, msql_jar.install, JinFlux.install, xercesImpl.install, xml-apis.install, image.install "
             description="Check configuration"/>
 
 
@@ -414,6 +436,8 @@
     <target name="cp" description="Copies jars and executable into ${build_dir} area.">
         <copy file = "${module.afecs.basedir}/afecs-4.0.jar" todir="${build_dir}/common/jar" overwrite="true"/>
        <copy file = "${module.afecs.basedir}/lib/JinFlux.jar" todir="${build_dir}/common/jar" overwrite="true"/>
+       <copy file = "${module.afecs.basedir}/lib/xml-apis.jar" todir="${build_dir}/common/jar" overwrite="true"/>
+       <copy file = "${module.afecs.basedir}/lib/xercesImpl.jar" todir="${build_dir}/common/jar" overwrite="true"/>
 
         <copy file = "${bin_source_dir}/container" todir="${common_bin_dir}"/>
         <copy file = "${bin_source_dir}/db2cool" todir="${common_bin_dir}"/>
