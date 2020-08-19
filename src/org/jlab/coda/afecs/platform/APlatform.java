@@ -22,6 +22,7 @@
 
 package org.jlab.coda.afecs.platform;
 
+import jdk.nashorn.internal.runtime.Version;
 import org.jlab.coda.afecs.client.AClientInfo;
 import org.jlab.coda.afecs.container.AContainer;
 import org.jlab.coda.afecs.cool.ontology.AComponent;
@@ -46,7 +47,7 @@ import java.util.*;
  * </p>
  *
  * @author gurjyan
- *         Date: 11/7/14 Time: 2:51 PM
+ * Date: 11/7/14 Time: 2:51 PM
  * @version 4.x
  */
 public class APlatform extends ABase {
@@ -107,6 +108,21 @@ public class APlatform extends ABase {
             System.exit(1);
         }
 
+        // JDK 8 specific. Check for the JDK minor version and print a warning.
+        String jdkVersion = System.getProperty("java.version");
+        int i = jdkVersion.indexOf("_");
+        if (i > 0) {
+            try {
+                if (Integer.parseInt(jdkVersion.substring(i, 3)) > 255) {
+                    System.out.println("Warning: JDK minor-version is greater than 255. " +
+                            "Platform might through IllegalArgumentException.\n" +
+                            "If this happens, we suggest updating JDK.");
+                }
+            } catch (NumberFormatException e) {
+            }
+        }
+
+
         String coolHome = System.getenv("COOL_HOME");
         String platformExpid = System.getenv("EXPID");
         if (platformExpid == null) {
@@ -138,8 +154,8 @@ public class APlatform extends ABase {
             }
 
             File fcf = new File(coolHome + File.separator + platformExpid + File.separator + "config" + File.separator + "Control");
-            if (fcf.isDirectory() && fcf.exists()){
-                if ( fcf.list().length <0 ) {
+            if (fcf.isDirectory() && fcf.exists()) {
+                if (fcf.list().length < 0) {
                     System.out.println("Afecs database for the EXPID = " + platformExpid +
                             " is empty. Create a CODA configuration using JCedit. Exiting...");
                     System.exit(1);
