@@ -1809,7 +1809,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-        // Generated using JFormDesigner non-commercial license
         menuBar1 = new JMenuBar();
         ControlMenu = new JMenu();
         ConnectMenuItem = new JMenuItem();
@@ -2314,7 +2313,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
 
                 //---- RunNumberTextField ----
                 RunNumberTextField.setEditable(false);
-                RunNumberTextField.setFont(new Font("Dialog", Font.BOLD, 12));
+                RunNumberTextField.setFont(new Font(Font.DIALOG, Font.BOLD, 12));
                 RunNumberTextField.setForeground(new Color(153, 0, 51));
 
                 GroupLayout panel8Layout = new GroupLayout(panel8);
@@ -2341,7 +2340,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
                 //---- RunStateTextField ----
                 RunStateTextField.setEditable(false);
                 RunStateTextField.setBackground(Color.white);
-                RunStateTextField.setFont(new Font("Dialog", Font.BOLD, 12));
+                RunStateTextField.setFont(new Font(Font.DIALOG, Font.BOLD, 12));
 
                 GroupLayout RunStatePanelLayout = new GroupLayout(RunStatePanel);
                 RunStatePanel.setLayout(RunStatePanelLayout);
@@ -2416,7 +2415,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
 
                 //---- EventNumberTextField ----
                 EventNumberTextField.setEditable(false);
-                EventNumberTextField.setFont(new Font("Dialog", Font.BOLD, 18));
+                EventNumberTextField.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
                 EventNumberTextField.setForeground(new Color(153, 0, 51));
 
                 GroupLayout panel2Layout = new GroupLayout(panel2);
@@ -2768,7 +2767,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
 
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-    // Generated using JFormDesigner non-commercial license
     private JMenuBar menuBar1;
     private JMenu ControlMenu;
     private JMenuItem ConnectMenuItem;
@@ -2897,7 +2895,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class ExitAction extends AbstractAction {
         private ExitAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Exit");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -2916,7 +2913,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class DownloadAction extends AbstractAction {
         private DownloadAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(SHORT_DESCRIPTION, "Download");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -2934,7 +2930,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class PrestartAction extends AbstractAction {
         private PrestartAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(SHORT_DESCRIPTION, "Prestart");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -2957,7 +2952,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class GoAction extends AbstractAction {
         private GoAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(SHORT_DESCRIPTION, "Go");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -2976,7 +2970,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class EndAction extends AbstractAction {
         private EndAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(SHORT_DESCRIPTION, "End");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3015,7 +3008,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class PauseAction extends AbstractAction {
         private PauseAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(SHORT_DESCRIPTION, "Pause");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3040,7 +3032,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class StartRunAction extends AbstractAction {
         private StartRunAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(SHORT_DESCRIPTION, "Start");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3067,7 +3058,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class ResetAction extends AbstractAction {
         private ResetAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(SHORT_DESCRIPTION, "Reset");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3094,7 +3084,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class ConnectSupervisorAction extends AbstractAction {
         private ConnectSupervisorAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Connect");
             putValue(SHORT_DESCRIPTION, "Connect to a control supervisor");
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.SHIFT_MASK));
@@ -3115,7 +3104,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class DisconnectSupervisorAction extends AbstractAction {
         private DisconnectSupervisorAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Disconnect");
             putValue(SHORT_DESCRIPTION, "Disconnect from the control supervisor");
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.SHIFT_MASK));
@@ -3136,7 +3124,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class ChartsClearAction extends AbstractAction {
         private ChartsClearAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Clear");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3158,7 +3145,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class AddChartAction extends AbstractAction {
         private AddChartAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Add");
             putValue(SHORT_DESCRIPTION, "Add selected component data to the chart");
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.ALT_MASK));
@@ -3183,7 +3169,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class RemoveChartAction extends AbstractAction {
         private RemoveChartAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Remove");
             putValue(SHORT_DESCRIPTION, "Remove selected item from the chart");
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.ALT_MASK));
@@ -3208,7 +3193,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class SmoothingAction extends AbstractAction {
         private SmoothingAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Smoothing");
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.ALT_MASK));
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
@@ -3233,7 +3217,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class ReleaseComponentsAction extends AbstractAction {
         private ReleaseComponentsAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Release Components");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3254,7 +3237,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class RunTypeMenuAction extends AbstractAction {
         private RunTypeMenuAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Coda Config");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3272,7 +3254,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class SetWatchAction extends AbstractAction {
         private SetWatchAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Set Watch");
             putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.ALT_MASK));
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
@@ -3295,7 +3276,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class NewSessionAction extends AbstractAction {
         private NewSessionAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "New...");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3354,7 +3334,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class SetRunNumber extends AbstractAction {
         private SetRunNumber() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Set Run Number");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3372,7 +3351,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class StartDalogArchiverAction extends AbstractAction {
         private StartDalogArchiverAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Start dalogMsg Archiver");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3411,7 +3389,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class StopDalogArchiverAction extends AbstractAction {
         private StopDalogArchiverAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Stop dalogMsg Archiver");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3451,7 +3428,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class ResetAutoModeAction extends AbstractAction {
         private ResetAutoModeAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Disable");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3486,7 +3462,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class DisableComponentAction extends AbstractAction {
         private DisableComponentAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Disable Component");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3513,7 +3488,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class DisableAllAction extends AbstractAction {
         private DisableAllAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Disable Disconnected");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3540,7 +3514,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class ClearDalogTableAction extends AbstractAction {
         private ClearDalogTableAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Clear daLog Table");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3560,7 +3533,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class MsgBoardSubscribeAction extends AbstractAction {
         private MsgBoardSubscribeAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Subscribe");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3621,7 +3593,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class ConfigAction extends AbstractAction {
         private ConfigAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(SHORT_DESCRIPTION, "Configure");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3655,7 +3626,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class SchedulerClearAction extends AbstractAction {
         private SchedulerClearAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Clear Limits");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3674,7 +3644,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class UAppNewAction extends AbstractAction {
         private UAppNewAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "New...");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3693,7 +3662,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class ConfigViewAction extends AbstractAction {
         private ConfigViewAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Configuration View");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3729,7 +3697,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class RunConfigAction extends AbstractAction {
         private RunConfigAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Config File: %(config)");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3764,7 +3731,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class ScriptDirSetAction extends AbstractAction {
         private ScriptDirSetAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Directory: %(dir)");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3793,7 +3759,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class RtvListAction extends AbstractAction {
         private RtvListAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "List...");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3816,7 +3781,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class DisableOutputAction extends AbstractAction {
         private DisableOutputAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Disable Data File Output");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3829,7 +3793,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class EnableOutputAction extends AbstractAction {
         private EnableOutputAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Enable Data File Output");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
@@ -3843,7 +3806,6 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
     private class PlatformConsoleAction extends AbstractAction {
         private PlatformConsoleAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-            // Generated using JFormDesigner non-commercial license
             putValue(NAME, "Platform Console");
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
