@@ -212,7 +212,7 @@ public class SupervisorAgent extends AParent implements Serializable {
 
     // Persistent and trigger component agent objects
     private AComponent persistencyComponent;
-    private AComponent triggerComponent;
+    private CodaRCAgent triggerComponent;
 
     // Flag that is set by the request of the gui to
     // enable/disable data file output
@@ -1118,13 +1118,13 @@ public class SupervisorAgent extends AParent implements Serializable {
                     break;
 
                 case AConstants.SupervisorControlRequestPause:
-                    send(triggerComponent.getName(),
+                    send(triggerComponent.me.getName(),
                             "run/transition/pause",
                             "pause");
                     break;
 
                 case AConstants.SupervisorControlRequestResume:
-                    send(triggerComponent.getName(),
+                    send(triggerComponent.me.getName(),
                             "run/transition/resume",
                             "resume");
                     break;
@@ -1379,7 +1379,7 @@ public class SupervisorAgent extends AParent implements Serializable {
                                 break;
 
                             case AConstants.SupervisorReportTriggerSourceComponent:
-                                if (triggerComponent != null) mr.setText(triggerComponent.getName());
+                                if (triggerComponent != null) mr.setText(triggerComponent.me.getName());
                                 else mr.setText(AConstants.udf);
                                 break;
 

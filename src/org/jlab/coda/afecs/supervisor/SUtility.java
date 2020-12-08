@@ -37,7 +37,7 @@ import java.util.List;
  * </p>
  *
  * @author gurjyan
- *         Date: 11/11/14 Time: 2:51 PM
+ * Date: 11/11/14 Time: 2:51 PM
  * @version 4.x
  */
 public class SUtility {
@@ -130,27 +130,22 @@ public class SUtility {
      *
      * @return AComponent object reference
      */
-    AComponent getTriggerSourceComponent() {
+    CodaRCAgent getTriggerSourceComponent() {
 
-        AComponent gtComponent = null;
         List<AComponent> rocComponents = new ArrayList<>();
 
         for (CodaRCAgent com : owner.myComponents.values()) {
             if (com.me.getType().equals(ACodaType.TS.name())) {
-                return com.me;
-            } else if (com.me.getType().equals(ACodaType.GT.name())) {
-                gtComponent = com.me;
-            } else if (com.me.getType().equals(ACodaType.ROC.name())) {
+                return com;
+            } else if (com.me.getType().equals(ACodaType.GT.name()) ||
+                    com.me.getType().equals(ACodaType.ROC.name())) {
                 rocComponents.add(com.me);
             }
-        }
-        if (gtComponent != null) {
-            return gtComponent;
         }
 
         if (!rocComponents.isEmpty()) {
             Collections.sort(rocComponents);
-            return rocComponents.get(rocComponents.size() - 1);
+            return owner.myComponents.get(rocComponents.get(rocComponents.size() - 1).getName());
         }
 
         // No trigger source component was found
