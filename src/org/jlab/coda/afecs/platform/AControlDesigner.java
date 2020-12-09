@@ -343,7 +343,7 @@ class AControlDesigner extends ABase {
      */
     private AState createPausedState() {
         AState s = new AState();
-        s.setName("Paused");
+        s.setName("paused");
         s.setDescription("Coda state transition Paused state");
 
         // Process

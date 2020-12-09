@@ -1121,12 +1121,14 @@ public class SupervisorAgent extends AParent implements Serializable {
                     send(triggerComponent.me.getName(),
                             "run/transition/pause",
                             "pause");
+                    triggerComponent._moveToState(AConstants.paused);
                     break;
 
                 case AConstants.SupervisorControlRequestResume:
                     send(triggerComponent.me.getName(),
                             "run/transition/resume",
                             "resume");
+                    triggerComponent._moveToState(AConstants.active);
                     break;
 
 
