@@ -381,7 +381,7 @@ public class SupervisorAgent extends AParent implements Serializable {
      */
     private void _moveToState(String stateName) {
 
-// ======== added 10.11.16 ============== Execute after active script at the reset ====================
+// ======== added 10.11.16 ============== Execute a reset attached script after active state ====================
         for (AProcess bp : me.getProcesses()) {
             if (bp != null) {
                 if (bp.getAfter() != null && !bp.getAfter().equals(AConstants.udf)) {
@@ -396,7 +396,6 @@ public class SupervisorAgent extends AParent implements Serializable {
 
                         // execute scripts before the state transition
                         pm.executeProcess(bp, myPlugin, me);
-
                     }
                 }
             }
@@ -909,6 +908,26 @@ public class SupervisorAgent extends AParent implements Serializable {
         }
     }
 
+    private void runPauseScript(){
+        for (AProcess bp : me.getProcesses()) {
+            if (bp != null) {
+                if (bp.getBefore() != null && !bp.getBefore().equals(AConstants.udf)) {
+
+                    if (bp.getBefore().equals("paused")) {
+                        reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
+                                myName,
+                                1,
+                                AConstants.INFO,
+                                " Starting process = " + bp.getName());
+
+                        // execute scripts before the state transition
+                        pm.executeProcess(bp, myPlugin, me);
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Private inner class for responding to control
      * request messages to this supervisor agent.
@@ -1121,14 +1140,14 @@ public class SupervisorAgent extends AParent implements Serializable {
                     send(triggerComponent.me.getName(),
                             "run/transition/pause",
                             "pause");
-                    triggerComponent._moveToState(AConstants.paused);
+                    // execute a process attached to the pause
+                    runPauseScript();
                     break;
 
                 case AConstants.SupervisorControlRequestResume:
                     send(triggerComponent.me.getName(),
                             "run/transition/resume",
                             "resume");
-                    triggerComponent._moveToState(AConstants.active);
                     break;
 
 
