@@ -111,6 +111,8 @@ public class APlatform extends ABase {
         // JDK 8 specific. Check for the JDK minor version and print a warning.
         String jdkVersion = System.getProperty("java.version");
         int i = jdkVersion.indexOf("_");
+        System.out.println("DDD = "+jdkVersion +" "+i);
+        System.out.println("DDD = "+jdkVersion +" "+jdkVersion.substring(i, 3));
         System.out.println("DDD = "+jdkVersion +" "+Integer.parseInt(jdkVersion.substring(i, 3)));
         if (i > 0) {
             try {
