@@ -928,6 +928,26 @@ public class SupervisorAgent extends AParent implements Serializable {
         }
     }
 
+    private void runResumeScript(){
+        for (AProcess bp : me.getProcesses()) {
+            if (bp != null) {
+                if (bp.getBefore() != null && !bp.getBefore().equals(AConstants.udf)) {
+
+                    if (bp.getBefore().equals("resumed")) {
+                        reportAlarmMsg(me.getSession() + "/" + me.getRunType(),
+                                myName,
+                                1,
+                                AConstants.INFO,
+                                " Starting process = " + bp.getName());
+
+                        // execute scripts before the state transition
+                        pm.executeProcess(bp, myPlugin, me);
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Private inner class for responding to control
      * request messages to this supervisor agent.
@@ -1137,17 +1157,27 @@ public class SupervisorAgent extends AParent implements Serializable {
                     break;
 
                 case AConstants.SupervisorControlRequestPause:
-                    send(triggerComponent.me.getName(),
-                            "run/transition/pause",
-                            "pause");
+                    try {
+                        rcSend(triggerComponent.me.getName(),
+                                "run/transition/pause",
+                                "pause",null);
+                    } catch (cMsgException e) {
+                        e.printStackTrace();
+                    }
                     // execute a process attached to the pause
                     runPauseScript();
                     break;
 
                 case AConstants.SupervisorControlRequestResume:
-                    send(triggerComponent.me.getName(),
-                            "run/transition/resume",
-                            "resume");
+                    try {
+                        rcSend(triggerComponent.me.getName(),
+                                "run/transition/resume",
+                                "resume", null);
+                    } catch (cMsgException e) {
+                        e.printStackTrace();
+                    }
+                    // execute a process attached to the pause
+                    runResumeScript();
                     break;
 
 
