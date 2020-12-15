@@ -1161,6 +1161,11 @@ public class SupervisorAgent extends AParent implements Serializable {
                         rcSend(triggerComponent.me.getName(),
                                 "run/transition/pause",
                                 "pause",null);
+                        System.out.println("DDD ^*^*^*^*^*^*^*^*^*^*^ "+
+                                " subject = "+ triggerComponent.me.getName() +
+                                " type = "+ triggerComponent.me.getName()+
+                                " text = "+ triggerComponent.me.getName()
+                        );
                     } catch (cMsgException e) {
                         e.printStackTrace();
                     }
@@ -1173,6 +1178,11 @@ public class SupervisorAgent extends AParent implements Serializable {
                         rcSend(triggerComponent.me.getName(),
                                 "run/transition/resume",
                                 "resume", null);
+                        System.out.println("DDD ^*^*^*^*^*^*^*^*^*^*^ "+
+                                " subject = "+ triggerComponent.me.getName() +
+                                " type = "+ triggerComponent.me.getName()+
+                                " text = "+ triggerComponent.me.getName()
+                        );
                     } catch (cMsgException e) {
                         e.printStackTrace();
                     }
