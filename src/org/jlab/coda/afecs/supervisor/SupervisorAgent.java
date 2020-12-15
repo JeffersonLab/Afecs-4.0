@@ -1157,35 +1157,13 @@ public class SupervisorAgent extends AParent implements Serializable {
                     break;
 
                 case AConstants.SupervisorControlRequestPause:
-                    try {
-                        rcSend(triggerComponent.me.getName(),
-                                "run/transition/pause",
-                                "pause",null);
-                        System.out.println("DDD ^*^*^*^*^*^*^*^*^*^*^ "+
-                                " subject = "+ triggerComponent.me.getName() +
-                                " type = "+ triggerComponent.me.getName()+
-                                " text = "+ triggerComponent.me.getName()
-                        );
-                    } catch (cMsgException e) {
-                        e.printStackTrace();
-                    }
+                    triggerComponent.pause();
                     // execute a process attached to the pause
                     runPauseScript();
                     break;
 
                 case AConstants.SupervisorControlRequestResume:
-                    try {
-                        rcSend(triggerComponent.me.getName(),
-                                "run/transition/resume",
-                                "resume", null);
-                        System.out.println("DDD ^*^*^*^*^*^*^*^*^*^*^ "+
-                                " subject = "+ triggerComponent.me.getName() +
-                                " type = "+ triggerComponent.me.getName()+
-                                " text = "+ triggerComponent.me.getName()
-                        );
-                    } catch (cMsgException e) {
-                        e.printStackTrace();
-                    }
+                    triggerComponent.resume();
                     // execute a process attached to the pause
                     runResumeScript();
                     break;

@@ -425,6 +425,24 @@ public class CodaRCAgent extends AParent {
         return b;
     }
 
+    public void pause(){
+        try {
+            rcSend(me.getName(),
+                    "run/transition/pause",
+                    "pause",null);
+        } catch (cMsgException e) {
+            e.printStackTrace();
+        }
+    }
+    public void resume(){
+        try {
+            rcSend(me.getName(),
+                    "run/transition/resume",
+                    "resume", null);
+        } catch (cMsgException e) {
+            e.printStackTrace();
+        }
+    }
     /**
      * <p>
      * Client reset method. Stops client health
