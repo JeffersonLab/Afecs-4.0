@@ -2242,6 +2242,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
             //---- PauseButton ----
             PauseButton.setAction(action7);
             PauseButton.setEnabled(false);
+            PauseButton.setToolTipText("Pause/Resume");
             PauseButton.setIcon(new ImageIcon(codaHome+"/common/images/afecs/pause.png"));
             toolBar1.add(PauseButton);
             toolBar1.addSeparator();
@@ -2259,7 +2260,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
                     panel11Layout.createParallelGroup()
                         .addGroup(panel11Layout.createSequentialGroup()
                             .addContainerGap()
-                            .addComponent(StartTimeTextField, GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+                            .addComponent(StartTimeTextField, GroupLayout.DEFAULT_SIZE, 68, Short.MAX_VALUE)
                             .addContainerGap())
                 );
                 panel11Layout.setVerticalGroup(
@@ -2284,7 +2285,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
                     panel12Layout.createParallelGroup()
                         .addGroup(panel12Layout.createSequentialGroup()
                             .addContainerGap()
-                            .addComponent(EndTimeTextField, GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
+                            .addComponent(EndTimeTextField, GroupLayout.DEFAULT_SIZE, 68, Short.MAX_VALUE)
                             .addContainerGap())
                 );
                 panel12Layout.setVerticalGroup(
@@ -2380,7 +2381,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
                     panel10Layout.createParallelGroup()
                         .addGroup(panel10Layout.createSequentialGroup()
                             .addComponent(EventLimitTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                            .addGap(0, 13, Short.MAX_VALUE))
+                            .addGap(0, 14, Short.MAX_VALUE))
                 );
             }
 
@@ -2755,10 +2756,10 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
                             .addComponent(RunParametersPanel, GroupLayout.PREFERRED_SIZE, 254, GroupLayout.PREFERRED_SIZE)))
                     .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                     .addGroup(contentPaneLayout.createParallelGroup()
-                        .addComponent(Graph1, GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
-                        .addComponent(DataTablePane, GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE))
+                        .addComponent(Graph1, GroupLayout.DEFAULT_SIZE, 251, Short.MAX_VALUE)
+                        .addComponent(DataTablePane, GroupLayout.DEFAULT_SIZE, 251, Short.MAX_VALUE))
                     .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(DalogPane, GroupLayout.DEFAULT_SIZE, 253, Short.MAX_VALUE))
+                    .addComponent(DalogPane, GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE))
         );
         pack();
         setLocationRelativeTo(getOwner());
