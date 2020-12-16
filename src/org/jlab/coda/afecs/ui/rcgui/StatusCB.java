@@ -457,7 +457,11 @@ class StatusCB extends cMsgCallbackAdapter {
 
             // data rate bar graph data update only at
             // active state and only for ROC data
-            if (owner.isEnable_fx() && owner._runState.equals(AConstants.active)) {
+            // 12.16.2020 added also paused state
+            if (owner.isEnable_fx() &&
+                    (owner._runState.equals(AConstants.active) ||
+                            owner._runState.equals(AConstants.paused))
+            ) {
                 if (_ad.getDataRate(owner.AIV) >= 0) {
 
                     if (owner.DrBg != null) {
