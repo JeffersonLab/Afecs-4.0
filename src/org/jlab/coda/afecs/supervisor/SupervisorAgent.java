@@ -1157,15 +1157,33 @@ public class SupervisorAgent extends AParent implements Serializable {
                     break;
 
                 case AConstants.SupervisorControlRequestPause:
-                    triggerComponent.pause();
+                    // send to all agents pause command
+                    myComponents.values().parallelStream().forEach(CodaRCAgent::pause);
+                    // triggerComponent.pause();
+
                     // execute a process attached to the pause
                     runPauseScript();
+
+                    // change my state to paused
+                    me.setState(AConstants.paused);
+                    send(AConstants.GUI,
+                            me.getSession() + "_" + me.getRunType() + "/supervisor",
+                            me.getRunTimeDataAsPayload());
                     break;
 
                 case AConstants.SupervisorControlRequestResume:
-                    triggerComponent.resume();
-                    // execute a process attached to the pause
+                    // send to all agents resume command
+                    myComponents.values().parallelStream().forEach(CodaRCAgent::resume);
+                    // triggerComponent.resume();
+
+                    // execute a process attached to the resume
                     runResumeScript();
+
+                    // change my state to active
+                    me.setState(AConstants.active);
+                    send(AConstants.GUI,
+                            me.getSession() + "_" + me.getRunType() + "/supervisor",
+                            me.getRunTimeDataAsPayload());
                     break;
 
 

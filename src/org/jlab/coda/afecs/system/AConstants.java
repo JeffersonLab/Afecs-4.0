@@ -67,6 +67,7 @@ public class AConstants {
     public static final String prestarted = "prestarted";
     public static final String active = "active";
     public static final String paused = "paused";
+    public static final String active_paused = "active_paused";
 
     // supervisor specific states/actions
     public static final String ended = "ended";
