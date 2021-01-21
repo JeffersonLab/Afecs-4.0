@@ -22,7 +22,6 @@
 
 package org.jlab.coda.afecs.platform;
 
-import jdk.nashorn.internal.runtime.Version;
 import org.jlab.coda.afecs.client.AClientInfo;
 import org.jlab.coda.afecs.container.AContainer;
 import org.jlab.coda.afecs.cool.ontology.AComponent;
