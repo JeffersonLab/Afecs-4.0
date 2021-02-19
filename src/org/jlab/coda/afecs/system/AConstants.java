@@ -190,6 +190,7 @@ public class AConstants {
     public static final String PLATFORMPORT = "platformPort";
     public static final String CP_PREVIOUS_LOG = "cp_previous";
     public static final String FILEWRITING = "fileWriting";
+    public static final String MASTERSHIP = "mastership";
 
     // user account specific
     public static final String NODE = "node";

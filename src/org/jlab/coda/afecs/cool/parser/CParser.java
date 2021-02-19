@@ -25,6 +25,7 @@ package org.jlab.coda.afecs.cool.parser;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.rdql.*;
 
+import com.sun.xml.internal.rngom.digested.DOptionalPattern;
 import org.jlab.coda.afecs.client.AClientInfo;
 import org.jlab.coda.afecs.codarc.CodaRCAgent;
 import org.jlab.coda.afecs.container.AContainer;
@@ -35,10 +36,9 @@ import org.jlab.coda.afecs.system.AConstants;
 
 import org.jlab.coda.afecs.system.util.AfecsTool;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class CParser {
     // Jena model
@@ -120,7 +120,7 @@ public class CParser {
             if (myContainer.getContainerAgents().containsKey(agent.getName())) {
                 // update registered agent information on the container
                 CodaRCAgent cAgent = myContainer.getContainerAgents().get(agent.getName());
-                if(cAgent!=null && cAgent.me.getClient()!=null) {
+                if (cAgent != null && cAgent.me.getClient() != null) {
 
                     // saving IP information
                     Map<String, String[]> lip = cAgent.me.getLinkedIp();
@@ -452,7 +452,7 @@ public class CParser {
             if (tmps != null) {
                 if (tmps.equals(ACodaType.FILE.name())) {
                     continue;
-                }  else {
+                } else {
                     cmp.setType(tmps);
                     if (tmps.equals(ACodaType.ER.name())) {
                         erId++;
@@ -679,12 +679,42 @@ public class CParser {
                 cmp.setLinkedComponentTypes(tmLt);
             }
 
+            // If type is ROC or TS read component specific .dat configuration
+            // file created by JcEdit to get the mastership of the ROC
+            if (cmp.getType().equals(ACodaType.ROC.name()) ||
+                    cmp.getType().equals(ACodaType.TS.name()) ||
+                    cmp.getType().equals(ACodaType.GT.name())) {
+                String configFileName = _coolHome +
+                        "Control" + File.separator +
+                        cmp.getRunType() + File.separator +
+                        "Options" + File.separator +
+                        cmp.getName() + ".dat";
+                try {
+                    BufferedReader br = new BufferedReader(new FileReader(configFileName));
+                    Stream<String> l = br.lines();
+                    try {
+                        String s = l.filter(line -> line.contains("isMaster")).findFirst().get();
+                        if (s.split("=")[1].equals("true")) {
+                            cmp.setMaster(true);
+                        }
+                    } catch (NoSuchElementException e) {
+                        e.printStackTrace();
+                    }
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
             cl.add(cmp);
         }
         results.close();
         return cl;
     }
 
+    private void isMaster(String s) {
+       ;
+    }
 
     /**
      * Method parses the cool Plugin concept

@@ -57,6 +57,7 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
     private ArrayList<AService> services = new ArrayList<>();
     private APlugin plugin;
     private String userConfig = AConstants.udf;
+    private boolean isMaster = false;
 
     private String[] destinationNames;
     // runtime field parameters
@@ -146,6 +147,14 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
         addConceptSlot("linkedToType", 2, true, "String");
         addConceptSlot("hasUserConfig", 2, true, "String");
         addConceptSlot("usesLink", 2, true, "ALink");
+    }
+
+    public boolean isMaster() {
+        return isMaster;
+    }
+
+    public void setMaster(boolean master) {
+        isMaster = master;
     }
 
     public String getName() {
@@ -678,6 +687,7 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
             al.add(new cMsgPayloadItem(AConstants.USERCONFIG, userConfig));
             al.add(new cMsgPayloadItem(AConstants.STREAMCOUNT, streamCount));
             al.add(new cMsgPayloadItem(AConstants.STREAMID, streamId));
+            al.add(new cMsgPayloadItem(AConstants.MASTERSHIP, String.valueOf(isMaster)));
             if (linkedComponentNames != null && !linkedComponentNames.isEmpty())
                 al.add(new cMsgPayloadItem(AConstants.INPUTLINKS, getLinkNames()));
 
@@ -721,6 +731,7 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
             al.add(new cMsgPayloadItem(AConstants.LIVETIME, liveTime));
             al.add(new cMsgPayloadItem(AConstants.RUNSTARTTIME, runStartTime));
             al.add(new cMsgPayloadItem(AConstants.RUNENDTIME, runEndTime));
+            al.add(new cMsgPayloadItem(AConstants.MASTERSHIP, String.valueOf(isMaster)));
             if (autoStart) {
                 al.add(new cMsgPayloadItem(AConstants.AUTOSTART, AConstants.seton));
             } else {

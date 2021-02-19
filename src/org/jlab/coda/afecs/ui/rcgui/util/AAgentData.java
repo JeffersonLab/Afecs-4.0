@@ -32,6 +32,7 @@ public class AAgentData {
     private String   name       = AConstants.udf;
     private String   type       = AConstants.udf;
     private String   state      = AConstants.udf;
+    private boolean  isMaster   = false;
     private List<Float>      evtRate    = Collections.synchronizedList(new ArrayList<Float>());
     private List<Double>     dataRate   = Collections.synchronizedList(new ArrayList<Double>());
     private float    liveTime   = -1;
@@ -42,6 +43,14 @@ public class AAgentData {
 
 
     public AAgentData(){
+    }
+
+    public boolean isMaster() {
+        return isMaster;
+    }
+
+    public void setMaster(boolean master) {
+        isMaster = master;
     }
 
     public String getName() {

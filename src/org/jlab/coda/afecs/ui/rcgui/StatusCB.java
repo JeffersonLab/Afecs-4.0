@@ -419,6 +419,7 @@ class StatusCB extends cMsgCallbackAdapter {
                 _ad.setLiveTime(comp.getLiveTime());
                 _ad.setEvtRateA(comp.getEventRateAverage());
                 _ad.setDataRateA(comp.getDataRateAverage());
+                _ad.setMaster(comp.isMaster());
                 owner.reportingCompDataMap.put(_ad.getName(), _ad);
             }
 
@@ -426,8 +427,13 @@ class StatusCB extends cMsgCallbackAdapter {
 
             updateTableTreeData(comp);
 
-            // add reporting ts-component list
-            if (comp.getType().equals(ACodaType.TS.name())) {
+            // define reporting ts-component
+//            if (comp.getType().equals(ACodaType.TS.name())) {
+//                owner.tsComponent = _ad;
+//            }
+            // ts component, i.e. trigger source component is
+            // defined as a ROC that is master defined by JcEdit. 02.17 VG
+            if (comp.isMaster()) {
                 owner.tsComponent = _ad;
             }
 
