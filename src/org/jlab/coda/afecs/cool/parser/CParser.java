@@ -712,10 +712,6 @@ public class CParser {
         return cl;
     }
 
-    private void isMaster(String s) {
-       ;
-    }
-
     /**
      * Method parses the cool Plugin concept
      *
