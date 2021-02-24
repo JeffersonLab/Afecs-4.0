@@ -22,7 +22,9 @@
 
 package org.jlab.coda.afecs.platform.thread;
 
+import org.jlab.coda.afecs.platform.APlatform;
 import org.jlab.coda.afecs.system.ABase;
+import org.jlab.coda.afecs.system.AConstants;
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.cMsgException;
 import org.jlab.coda.cMsg.cMsgMessage;
@@ -37,40 +39,51 @@ import org.jlab.coda.cMsg.common.cMsgServerFinder;
  * </p>
  *
  * @author gurjyan
- *         Date: 4/27/15 Time: 11:49 AM
+ * Date: 4/27/15 Time: 11:49 AM
  * @version 4.x
  */
 public class PlatformSpy extends ABase implements Runnable {
     cMsgServerFinder finder;
+    APlatform myPlatform;
 
-    public PlatformSpy(){
+    public PlatformSpy(APlatform myPlatform) {
         finder = new cMsgServerFinder();
+        this.myPlatform = myPlatform;
     }
 
     @Override
     public void run() {
         myName = "spy";
-        while(true){
+        while (true) {
             finder.findRcServers();
             cMsgMessage[] msgs = finder.getRcServers();
-            if(msgs!=null){
+            if (msgs != null) {
                 try {
-                    for(cMsgMessage msg: msgs){
-                        if(msg.getPayloadItem("host")!=null && msg.getPayloadItem("expid")!=null){
+                    for (cMsgMessage msg : msgs) {
+                        if (msg.getPayloadItem("host") != null && msg.getPayloadItem("expid") != null) {
                             String h;
                             h = msg.getPayloadItem("host").getString();
                             String e = msg.getPayloadItem("expid").getString();
-                            if(!cMsgUtilities.isHostLocal(h) && e.equals(getPlEXPID()) ) {
+                            if (!cMsgUtilities.isHostLocal(h) && e.equals(getPlEXPID())) {
                                 System.out.println("Warning! Detected conflicting platform " +
-                                        "running on the host = "+ h +" witth EXPID = "+e);
+                                        "running on the host = " + h + " witth EXPID = " + e);
                             }
+                            reportAlarmMsg(myPlatform.lastRegistrationRequestSession + "/"
+                                            + myPlatform.lastRegistrationRequestRunType,
+                                    myName,
+                                    11,
+                                    AConstants.ERROR,
+                                    " Warning! Detected conflicting platform"
+                                            + "running on the host =" + h
+                                            + " witth EXPID =" + e
+                            );
                         }
                     }
                 } catch (cMsgException e) {
                     e.printStackTrace();
                 }
             }
-            AfecsTool.sleep(10000);
+            AfecsTool.sleep(300000); // 5 min
         }
     }
 }

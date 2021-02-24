@@ -71,6 +71,9 @@ public class APlatform extends ABase {
 
     public static boolean influxDb = false;
 
+    public String lastRegistrationRequestSession = AConstants.udf;
+    public String lastRegistrationRequestRunType = AConstants.udf;
+
     /**
      * <p>
      * Platform main method
@@ -262,7 +265,7 @@ public class APlatform extends ABase {
         // Note that this thread will simply print the host and the port of the platform
         // (i.e. multicast server) on the console. No action will be taken. It is up to user
         // to stop the conflicting platform.
-        new Thread(new PlatformSpy()).start();
+        new Thread(new PlatformSpy(this)).start();
     }
 
 
@@ -402,6 +405,8 @@ public class APlatform extends ABase {
     public void platformRegistrationRequestSetRunNum(String session,
                                                      String runType,
                                                      int runNumber) {
+        lastRegistrationRequestSession = session;
+        lastRegistrationRequestRunType = session;
         int cd = registrar.setSessionRunNumber(session, runNumber);
         if (cd < 0) {
             reportAlarmMsg(session +
