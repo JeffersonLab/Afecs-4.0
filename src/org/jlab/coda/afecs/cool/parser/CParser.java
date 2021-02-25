@@ -25,7 +25,6 @@ package org.jlab.coda.afecs.cool.parser;
 import com.hp.hpl.jena.rdf.model.*;
 import com.hp.hpl.jena.rdql.*;
 
-import com.sun.xml.internal.rngom.digested.DOptionalPattern;
 import org.jlab.coda.afecs.client.AClientInfo;
 import org.jlab.coda.afecs.codarc.CodaRCAgent;
 import org.jlab.coda.afecs.container.AContainer;
