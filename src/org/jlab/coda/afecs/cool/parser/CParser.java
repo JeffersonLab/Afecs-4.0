@@ -110,7 +110,7 @@ public class CParser {
         c.setName(runType);
         ArrayList<AComponent> al = parseComponent(AConstants.COOL_HTTP_BASE + "Control" +
                 File.separator + runType +
-                File.separator + runType + "#" + runType, "hasComponent");
+                File.separator + runType + "#" + runType, "hasComponent", runType);
         c.setComponents(al);
 
         // update Container agentMap with new configuration data
@@ -404,7 +404,7 @@ public class CParser {
      * @return cl               list of {@link org.jlab.coda.afecs.cool.ontology.AComponent} objects
      */
 
-    private ArrayList<AComponent> parseComponent(Object subject, String predicate) {
+    private ArrayList<AComponent> parseComponent(Object subject, String predicate, String runType) {
         AComponent cmp;
         ArrayList<AProcess> processlist;
         ArrayList<AState> statelist;
@@ -685,7 +685,7 @@ public class CParser {
                     cmp.getType().equals(ACodaType.GT.name())) {
                 String configFileName = _coolHome +
                         "Control" + File.separator +
-                        cmp.getRunType() + File.separator +
+                        runType + File.separator +
                         "Options" + File.separator +
                         cmp.getName() + ".dat";
                 try {
