@@ -695,6 +695,8 @@ public class CParser {
                     Stream<String> l = br.lines();
                     try {
                         String s = l.filter(line -> line.contains("isMaster")).findFirst().get();
+                        System.out.println("DDDD <<<<<<<<<<<<<<<<< "+s);
+
                         if (s.split("=")[1].equals("true")) {
                             cmp.setMaster(true);
                             System.out.println("DDDD <<<<<<<<<<<<<<<<< "+cmp.getName()+" "+cmp.isMaster());
