@@ -683,9 +683,6 @@ public class CoolServiceAnalyser {
                     if (comp.getCoda2Component().equals(AConstants.seton)) {
                         owner.haveCoda2Component.set(true);
                     }
-                    // update mastership of the CodaRcAgent based on the Control component description. vg 02.26
-//                    owner.myContainer.getContainerAgents().get(comp.getName()).me.setMaster(comp.isMaster());
-                    System.out.println("DDDDD ================================= "+comp.getName()+" "+comp.isMaster());
                     // update supervisor controlled agent map
                     owner.myComponents.put(comp.getName(), owner.myContainer.getContainerAgents().get(comp.getName()));
 

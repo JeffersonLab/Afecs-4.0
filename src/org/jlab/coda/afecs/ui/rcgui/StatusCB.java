@@ -434,7 +434,6 @@ class StatusCB extends cMsgCallbackAdapter {
 //            }
             // ts component, i.e. trigger source component is
             // defined as a ROC that is master defined by JcEdit. 02.17 VG
-            System.out.println("DDDD ============================ " + comp.getName()+" "+comp.isMaster());
             if (comp.isMaster()) {
                 owner.tsComponent = _ad;
             }
