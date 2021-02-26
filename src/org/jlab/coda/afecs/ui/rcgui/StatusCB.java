@@ -408,6 +408,7 @@ class StatusCB extends cMsgCallbackAdapter {
                 _ad.setLiveTime(comp.getLiveTime());
                 _ad.setEvtRateA(comp.getEventRateAverage());
                 _ad.setDataRateA(comp.getDataRateAverage());
+                _ad.setMaster(comp.isMaster());
             } else {
                 _ad = new AAgentData();
                 _ad.setName(comp.getName());
