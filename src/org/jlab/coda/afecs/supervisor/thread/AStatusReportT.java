@@ -233,6 +233,11 @@ public class AStatusReportT extends Thread {
                             owner.s_fileWriting,
                             owner.sortedComponentList);
 //                    }
+                    System.out.println("DDDDD ==================================");
+                    for(AComponent c: owner.sortedComponentList.values()){
+                        System.out.println("DDD "+c.getName()+" "+c.isMaster());
+                    }
+                    System.out.println("DDDDD ==================================");
 
 
                     // get the second (the first might be -clas component) entry of the agents map and define the state of the agent
