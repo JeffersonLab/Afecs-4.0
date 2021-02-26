@@ -119,6 +119,8 @@ public class CParser {
             if (myContainer.getContainerAgents().containsKey(agent.getName())) {
                 // update registered agent information on the container
                 CodaRCAgent cAgent = myContainer.getContainerAgents().get(agent.getName());
+                // update mastership of the container agent vg 02.27
+                cAgent.me.setMaster(agent.isMaster());
                 if (cAgent != null && cAgent.me.getClient() != null) {
 
                     // saving IP information
