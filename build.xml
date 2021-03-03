@@ -205,11 +205,6 @@
             <available file="${jar_dir}/CChart.jar" type="file"/>
         </condition>
     </target>
-    <target name="fx_jar.check">
-        <condition property="fx_jar.exists">
-            <available file="${jar_dir}/jfxrt.jar" type="file"/>
-        </condition>
-    </target>
     <target name="jena_jar.check">
         <condition property="jena_jar.exists">
             <available file="${jena_jar_dir}/jena.jar" type="file"/>
@@ -308,7 +303,7 @@
         <copy file = "${module.afecs.basedir}/lib/CChart.jar" todir="${build_dir}/common/jar"/>
     </target>
 
-    <target name="fx_jar.install" depends="fx_jar.check" unless="fx_jar.exists">
+    <target name="fx_jar.install" >
         <echo>... installing javafx from ${module.afecs.basedir}"</echo>
         <copy todir="${build_dir}/common/jar/javafx" >
             <fileset dir="${module.afecs.basedir}/lib/javafx-sdk-11.0.2/lib" includes="**"/>
