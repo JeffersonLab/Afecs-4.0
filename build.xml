@@ -76,6 +76,9 @@
             <fileset dir="${build_dir}/common/jar/jena" >
                 <include name="*.jar" />
             </fileset>
+            <fileset dir="${build_dir}/common/jar/javafx" >
+                <include name="*.jar" />
+            </fileset>
         </path>
     </target>
 
@@ -303,7 +306,7 @@
     </target>
 
     <target name="fx_jar.install" depends="fx_jar.check" unless="fx_jar.exists">
-        <echo>... installing javafx"</echo>
+        <echo>... installing javafx from ${module.afecs.basedir}"</echo>
         <copy todir="${build_dir}/common/jar/javafx" >
             <fileset dir="${module.afecs.basedir}/lib/javafx-sdk-11.0.2/lib" includes="**"/>
         </copy>

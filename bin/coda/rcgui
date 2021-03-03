@@ -4,7 +4,7 @@
 # author: vhg, 29-aug-2013
 
 # set classpath
-setenv CLASSPATH "$CODA/common/jar/*:$CODA/common/jar/jena/*"
+setenv CLASSPATH "$CODA/common/jar/*:$CODA/common/jar/jena/*:$CODA/common/jar/javafx/*"
 
 umask 000
 
