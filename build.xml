@@ -41,6 +41,7 @@
         <property name="build_dir"  value="${env.CODA}" />
         <property name="jar_dir" value="${build_dir}/common/jar"/>
         <property name="jena_jar_dir" value="${build_dir}/common/jar/jena"/>
+        <property name="javafx_dir" value="${build_dir}/common/jar/javafx"/>
         <property name="common_bin_dir" value="${build_dir}/common/bin"/>
         <property name="bin_dir" value="${build_dir}/Linux-i686/bin"/>
         <property name="bin64_dir" value="${build_dir}/Linux-x86_64/bin"/>
@@ -62,6 +63,7 @@
         <property name="build_dir"  value="./build" />
         <property name="jar_dir" value="${build_dir}/common/jar"/>
         <property name="jena_jar_dir" value="${build_dir}/common/jar/jena"/>
+        <property name="javafx_dir" value="${build_dir}/common/jar/javafx"/>
         <property name="common_bin_dir" value="${build_dir}/common/bin"/>
         <property name="bin_dir" value="${build_dir}/Linux-i686/bin"/>
         <property name="bin64_dir" value="${build_dir}/Linux-x86_64/bin"/>
@@ -163,6 +165,12 @@
         </condition>
     </target>
 
+    <target name="javafx.dir.check">
+        <condition property="javafx.dir.exists">
+            <available file="${javafx_dir}" type="dir"/>
+        </condition>
+    </target>
+
     <target name="common_bin_dir.check">
         <condition property="common_bin_dir.exists">
             <available file="${common_bin_dir}" type="dir"/>
@@ -258,6 +266,11 @@
         <mkdir dir="${jena_jar_dir}"/>
     </target>
 
+    <target name="javafx_dir.create" depends="javafx.dir.check" unless="javafx.dir.exists">
+        <echo>... creating ${javafx_dir} </echo>
+        <mkdir dir="${javafx_dir}"/>
+    </target>
+
      <target name="common_bin_dir.create" depends="common_bin_dir.check" unless="common_bin_dir.exists">
         <echo>... creating missing ${common_bin_dir}"</echo>
         <mkdir dir = "${common_bin_dir}"/>
@@ -288,10 +301,14 @@
         <echo>... installing ${module.afecs.basedir}/lib/CChart.jar"</echo>
         <copy file = "${module.afecs.basedir}/lib/CChart.jar" todir="${build_dir}/common/jar"/>
     </target>
+
     <target name="fx_jar.install" depends="fx_jar.check" unless="fx_jar.exists">
-        <echo>... installing ${module.afecs.basedir}/lib/jfxrt.jar"</echo>
-        <copy file = "${module.afecs.basedir}/lib/jfxrt.jar" todir="${build_dir}/common/jar"/>
+        <echo>... installing javafx"</echo>
+        <copy todir="${build_dir}/common/jar/javafx" >
+            <fileset dir="${module.afecs.basedir}/lib/javafx-sdk-11.0.2/lib" includes="**"/>
+        </copy>
     </target>
+
     <target name="jena_jar.install" depends="jena_jar.check" unless="jena_jar.exists">
         <echo>... installing ${module.afecs.basedir}/lib/jena.jar"</echo>
         <copy file = "${module.afecs.basedir}/lib/jena.jar" todir="${build_dir}/common/jar/jena"/>
@@ -332,7 +349,7 @@
     </target>
 
     <target name="check_config"
-            depends="setup, jar_dir.create, jena_jar_dir.create, common_bin_dir.create, bin_dir.create, bin64_dir.create, img_dir.create, CChart_jar.install, fx_jar.install, jena_jar.install, spikechart_jar.install, jas_jar.install, jsap_jar.install, jsch_jar.install, msql_jar.install, JinFlux.install, xercesImpl.install, xml-apis.install, image.install "
+            depends="setup, jar_dir.create, jena_jar_dir.create, javafx_dir.create, common_bin_dir.create, bin_dir.create, bin64_dir.create, img_dir.create, CChart_jar.install, fx_jar.install, jena_jar.install, spikechart_jar.install, jas_jar.install, jsap_jar.install, jsch_jar.install, msql_jar.install, JinFlux.install, xercesImpl.install, xml-apis.install, image.install "
             description="Check configuration"/>
 
 
