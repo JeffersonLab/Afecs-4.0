@@ -171,11 +171,6 @@ public class ABase implements Serializable {
                 cMsg myRcDomainConnection = new cMsg(rcUDL, "x", "y");
                 // send a monitor packet
                 m = myRcDomainConnection.monitor(Integer.toString(sleep));
-                System.out.println("DDDDDD ============================");
-                System.out.println(rcUDL);
-                System.out.println(m+" "+ sleep);
-                System.out.println("DDDDDD ============================");
-
             } catch (cMsgException e) {
 
                 e.printStackTrace();
