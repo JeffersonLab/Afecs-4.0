@@ -324,7 +324,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
             cMsgMessage m = null;
             System.out.printf("Connecting to "+ base.getPlEXPID()+" platform");
             for (int i = 0; i < 10; i++) {
-                m = base.rcMonitor(30);
+                m = base.rcMonitor(300);
                 if (m != null) {
                     System.out.println("/n");
                     break;
