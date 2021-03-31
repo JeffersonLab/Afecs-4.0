@@ -562,7 +562,7 @@ public class CParser {
                 } else if (tmps.startsWith("/")) {
                     cmp.setUserConfig(tmps);
                 } else if (tmps.startsWith("$env(")) {
-                    String t0 = tmps.substring(tmps.indexOf("("), tmps.indexOf(")"));
+                    String t0 = tmps.substring(tmps.indexOf("(") + 1, tmps.indexOf(")"));
                     System.out.println("DDDDDDDDDDDDDDDDDDDDDDD 1 "+t0);
                     String t1 = System.getenv(t0);
                     if(t1 != null) {
