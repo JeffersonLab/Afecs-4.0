@@ -567,7 +567,7 @@ public class CParser {
                     String t1 = System.getenv(t0);
                     if(t1 != null) {
                         String t2 = tmps.substring(tmps.indexOf(")") + 1);
-                        System.out.println("DDDDDDDDDDDDDDDDDDDDDDD 2 "+t1 + File.separator + t2);
+                        System.out.println("DDDDDDDDDDDDDDDDDDDDDDD 2 "+t1 + t2);
 
                         cmp.setUserConfig(t1 + File.separator + t2);
                     }
