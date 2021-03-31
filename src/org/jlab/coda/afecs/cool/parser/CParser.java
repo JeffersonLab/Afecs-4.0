@@ -552,7 +552,10 @@ public class CParser {
                 else if (cmp.getType().equalsIgnoreCase(ACodaType.FILE.name()))
                     cmp.setPriority(ACodaType.FILE.priority());
                 else
-                    System.err.println("Error: " + cmp.getType() + " type is not defined for the component " + " " + cmp.getName());
+                    System.err.println("Error: "
+                            + cmp.getType()
+                            + " type is not defined for the component "
+                            + " " + cmp.getName());
             }
 
             tmps = getValue(x, "hasUserConfig");
@@ -568,7 +571,9 @@ public class CParser {
                         String t2 = tmps.substring(tmps.indexOf(")") + 1);
                         cmp.setUserConfig(t1 + File.separator + t2);
                     } else {
-                        System.err.println("Error: " + cmp.getType() + "env variable " + t0 + " is not defined.");
+                        System.err.println("Error: "
+                                + "env variable " + t0
+                                + " within the userConfig file is not defined.");
                     }
                 } else {
                     cmp.setUserConfig(_userConfigDir + tmps);

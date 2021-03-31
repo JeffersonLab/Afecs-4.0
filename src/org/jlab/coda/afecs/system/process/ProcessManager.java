@@ -440,6 +440,9 @@ public class ProcessManager {
                     if (sc.getSync() != null && sc.getSync().trim().equals(AConstants.seton)) {
                         try {
                             sp = AfecsTool.fork(l, true);
+                            System.err.println("Error: "
+                                    + " executing  script \n"
+                                    + sp.getStdErr());
                         } catch (AException e) {
                             e.printStackTrace();
                         }
