@@ -561,11 +561,14 @@ public class CParser {
                     cmp.setUserConfig(AfecsTool.checkRtvs(tmps, setRTVs));
                 } else if (tmps.startsWith("/")) {
                     cmp.setUserConfig(tmps);
-                } else if (tmps.startsWith("$(")) {
-                    String t0 = tmps.substring(tmps.indexOf("$("), tmps.indexOf(")"));
+                } else if (tmps.startsWith("$env(")) {
+                    String t0 = tmps.substring(tmps.indexOf("$env("), tmps.indexOf(")"));
+                    System.out.println("DDDDDDDDDDDDDDDDDDDDDDD 1 "+t0);
                     String t1 = System.getenv(t0);
                     if(t1 != null) {
                         String t2 = tmps.substring(tmps.indexOf(")"));
+                        System.out.println("DDDDDDDDDDDDDDDDDDDDDDD 2 "+t1 + File.separator + t2);
+
                         cmp.setUserConfig(t1 + File.separator + t2);
                     }
                 } else {
