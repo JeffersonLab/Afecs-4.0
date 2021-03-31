@@ -563,13 +563,12 @@ public class CParser {
                     cmp.setUserConfig(tmps);
                 } else if (tmps.startsWith("$env(")) {
                     String t0 = tmps.substring(tmps.indexOf("(") + 1, tmps.indexOf(")"));
-                    System.out.println("DDDDDDDDDDDDDDDDDDDDDDD 1 "+t0);
                     String t1 = System.getenv(t0);
                     if(t1 != null) {
                         String t2 = tmps.substring(tmps.indexOf(")") + 1);
-                        System.out.println("DDDDDDDDDDDDDDDDDDDDDDD 2 "+t1 + t2);
-
                         cmp.setUserConfig(t1 + File.separator + t2);
+                    } else {
+                        System.err.println("Error: " + cmp.getType() + "env variable " + t0 + " is not defined.");
                     }
                 } else {
                     cmp.setUserConfig(_userConfigDir + tmps);
