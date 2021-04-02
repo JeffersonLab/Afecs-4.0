@@ -1142,8 +1142,6 @@ public class AfecsTool {
                     String resolved = System.getenv(tmp1);
                     if (resolved != null) {
                         input = input.replace(codaEnv, resolved);
-                        System.out.println("DDDDDDDDDDDDDDDDDDDDDDD 3 "+ input);
-
                     } else {
                         System.out.println("Error: environmental variable "
                                 + codaEnv
