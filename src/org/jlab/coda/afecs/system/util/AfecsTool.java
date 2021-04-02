@@ -878,7 +878,7 @@ public class AfecsTool {
         if(rtv.startsWith("%(env.")){
             res = rtv.substring(rtv.indexOf(".") + 1, rtv.lastIndexOf(")"));
         } else if(rtv.startsWith("%(")){
-            res = rtv.substring(rtv.indexOf("(")+1,rtv.lastIndexOf(")"));
+            res = rtv.substring(rtv.indexOf("(") + 1,rtv.lastIndexOf(")"));
         }
         return res;
     }
@@ -1128,6 +1128,30 @@ public class AfecsTool {
             }
         }
         return res;
+    }
+
+    public static String resolveCodaEnvVariables(String input){
+        List<String> l = new ArrayList<>();
+        if(input.contains("$env(")){
+            StringTokenizer st = new StringTokenizer(input,"$env(");
+
+            while(st.hasMoreTokens()){
+                String tmp = st.nextToken();
+                if(tmp.contains(")")){
+                    String tmp1 = tmp.substring(0, tmp.indexOf(")"));
+                    String codaEnv = "$env("+tmp1+")";
+                    String resolved = System.getenv(tmp1);
+                    if (resolved != null) {
+                        input = input.replaceAll(codaEnv, resolved);
+                    } else {
+                        System.out.println("Error: environmental variable "
+                                + codaEnv
+                                + " is not defined.");
+                    }
+                }
+            }
+        }
+        return input;
     }
 
     /**
