@@ -1140,10 +1140,14 @@ public class AfecsTool {
                 if(tmp.contains(")")){
                     String tmp1 = tmp.substring(0, tmp.indexOf(")"));
                     String codaEnv = "$env("+tmp1+")";
-                    System.out.println("DDDDDDDDDDDDDDDDDDDDDDD "+ codaEnv);
+                    System.out.println("DDDDDDDDDDDDDDDDDDDDDDD 1 "+ codaEnv + " tmp1");
                     String resolved = System.getenv(tmp1);
+                    System.out.println("DDDDDDDDDDDDDDDDDDDDDDD 2 "+ resolved);
+
                     if (resolved != null) {
                         input = input.replaceAll(codaEnv, resolved);
+                        System.out.println("DDDDDDDDDDDDDDDDDDDDDDD 3 "+ input);
+
                     } else {
                         System.out.println("Error: environmental variable "
                                 + codaEnv
