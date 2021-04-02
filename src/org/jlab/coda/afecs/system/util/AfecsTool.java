@@ -1145,7 +1145,7 @@ public class AfecsTool {
                     System.out.println("DDDDDDDDDDDDDDDDDDDDDDD 2 "+ resolved);
 
                     if (resolved != null) {
-                        out = input.replaceAll(codaEnv, resolved);
+                        out = input.replace(codaEnv, resolved);
                         System.out.println("DDDDDDDDDDDDDDDDDDDDDDD 3 "+ out);
 
                     } else {
