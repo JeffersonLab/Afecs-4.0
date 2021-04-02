@@ -1131,7 +1131,7 @@ public class AfecsTool {
     }
 
     public static String resolveCodaEnvVariables(String input){
-        List<String> l = new ArrayList<>();
+        String out;
         if(input.contains("$env(")){
             StringTokenizer st = new StringTokenizer(input,"$env(");
 
@@ -1145,8 +1145,8 @@ public class AfecsTool {
                     System.out.println("DDDDDDDDDDDDDDDDDDDDDDD 2 "+ resolved);
 
                     if (resolved != null) {
-                        input = input.replaceAll(codaEnv, resolved);
-                        System.out.println("DDDDDDDDDDDDDDDDDDDDDDD 3 "+ input);
+                        out = input.replaceAll(codaEnv, resolved);
+                        System.out.println("DDDDDDDDDDDDDDDDDDDDDDD 3 "+ out);
 
                     } else {
                         System.out.println("Error: environmental variable "
