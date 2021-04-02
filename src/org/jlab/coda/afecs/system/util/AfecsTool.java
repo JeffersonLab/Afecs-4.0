@@ -1140,6 +1140,7 @@ public class AfecsTool {
                 if(tmp.contains(")")){
                     String tmp1 = tmp.substring(0, tmp.indexOf(")"));
                     String codaEnv = "$env("+tmp1+")";
+                    System.out.println("DDDDDDDDDDDDDDDDDDDDDDD "+ codaEnv);
                     String resolved = System.getenv(tmp1);
                     if (resolved != null) {
                         input = input.replaceAll(codaEnv, resolved);
