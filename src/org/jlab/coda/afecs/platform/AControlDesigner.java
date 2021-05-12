@@ -324,6 +324,7 @@ class AControlDesigner extends ABase {
             else if (c.getType().equalsIgnoreCase(ACodaType.DC.name())) c.setPriority(ACodaType.DC.priority());
             else if (c.getType().equalsIgnoreCase(ACodaType.ROC.name())) c.setPriority(ACodaType.ROC.priority());
             else if (c.getType().equalsIgnoreCase(ACodaType.GT.name())) c.setPriority(ACodaType.GT.priority());
+            else if (c.getType().equalsIgnoreCase(ACodaType.FPGA.name())) c.setPriority(ACodaType.FPGA.priority());
             else if (c.getType().equalsIgnoreCase(ACodaType.TS.name())) c.setPriority(ACodaType.TS.priority());
             else if (c.getType().equalsIgnoreCase(ACodaType.SMS.name())) c.setPriority(ACodaType.SMS.priority());
             else if (c.getType().equalsIgnoreCase(ACodaType.RCS.name())) c.setPriority(ACodaType.RCS.priority());

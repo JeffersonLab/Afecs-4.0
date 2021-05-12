@@ -1021,9 +1021,9 @@ public class ABase implements Serializable {
                 // substitute rtvs
                 out = AfecsTool.checkRtvs(out, _RTVs);
             }
-            System.out.println("DDDDDDDDDDDDD 1 "+out);
-            out = AfecsTool.resolveCodaEnvVariables(out);
-            System.out.println("DDDDDDDDDDDDD 2 "+out);
+//            System.out.println("DDDDDDDDDDDDD 1 "+out);
+//            out = AfecsTool.resolveCodaEnvVariables(out);
+//            System.out.println("DDDDDDDDDDDDD 2 "+out);
         } catch (FileNotFoundException e) {
 
             e.printStackTrace();

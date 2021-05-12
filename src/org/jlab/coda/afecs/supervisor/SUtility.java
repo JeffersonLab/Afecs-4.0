@@ -138,6 +138,7 @@ public class SUtility {
             if (com.me.getType().equals(ACodaType.TS.name())) {
                 return com;
             } else if (com.me.getType().equals(ACodaType.GT.name()) ||
+                    com.me.getType().equals(ACodaType.FPGA.name()) ||
                     com.me.getType().equals(ACodaType.ROC.name())) {
                 rocComponents.add(com.me);
             }

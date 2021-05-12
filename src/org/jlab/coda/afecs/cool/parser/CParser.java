@@ -543,6 +543,8 @@ public class CParser {
                     cmp.setPriority(ACodaType.ROC.priority());
                 else if (cmp.getType().equalsIgnoreCase(ACodaType.GT.name()))
                     cmp.setPriority(ACodaType.GT.priority());
+                else if (cmp.getType().equalsIgnoreCase(ACodaType.FPGA.name()))
+                    cmp.setPriority(ACodaType.GT.priority());
                 else if (cmp.getType().equalsIgnoreCase(ACodaType.TS.name()))
                     cmp.setPriority(ACodaType.TS.priority());
                 else if (cmp.getType().equalsIgnoreCase(ACodaType.SMS.name()))
@@ -689,6 +691,7 @@ public class CParser {
             // file created by JcEdit to get the mastership of the ROC
             if (cmp.getType().equals(ACodaType.ROC.name()) ||
                     cmp.getType().equals(ACodaType.TS.name()) ||
+                    cmp.getType().equals(ACodaType.FPGA.name()) ||
                     cmp.getType().equals(ACodaType.GT.name())) {
                 String configFileName = _coolHome +
                         "Control" + File.separator +

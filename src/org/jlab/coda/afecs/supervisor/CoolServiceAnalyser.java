@@ -740,6 +740,7 @@ public class CoolServiceAnalyser {
         List< AComponent> dcList = new ArrayList<>();
         List< AComponent> rocList = new ArrayList<>();
         List< AComponent> gtList = new ArrayList<>();
+        List< AComponent> fpgaList = new ArrayList<>();
         List< AComponent> tsList = new ArrayList<>();
 
 
@@ -769,6 +770,8 @@ public class CoolServiceAnalyser {
                 rocList.add(c.me);
             } else if (c.me.getType().equals(ACodaType.GT.name())) {
                 gtList.add(c.me);
+            } else if (c.me.getType().equals(ACodaType.FPGA.name())) {
+                fpgaList.add(c.me);
             } else if (c.me.getType().equals(ACodaType.TS.name())) {
                 tsList.add(c.me);
             }
@@ -787,6 +790,7 @@ public class CoolServiceAnalyser {
         dcList.sort(Comparator.comparingInt(AComponent::getPriority));
         rocList.sort(Comparator.comparingInt(AComponent::getPriority));
         gtList.sort(Comparator.comparingInt(AComponent::getPriority));
+        fpgaList.sort(Comparator.comparingInt(AComponent::getPriority));
         tsList.sort(Comparator.comparingInt(AComponent::getPriority));
 
         // fill sorted components map
@@ -853,6 +857,9 @@ public class CoolServiceAnalyser {
             owner.sortedComponentList.put(c.getName(), c);
         }
         for(AComponent c:gtList){
+            owner.sortedComponentList.put(c.getName(), c);
+        }
+        for(AComponent c:fpgaList){
             owner.sortedComponentList.put(c.getName(), c);
         }
         for(AComponent c:tsList){

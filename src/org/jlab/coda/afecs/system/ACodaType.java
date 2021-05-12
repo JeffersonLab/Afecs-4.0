@@ -45,6 +45,7 @@ public enum ACodaType {
     ROC  (1010),
     GT   (1110),
     TS   (1210),
+    FPGA (1250),
     SMS  (1310),
     RCS  (1410),
     FILE (1510);

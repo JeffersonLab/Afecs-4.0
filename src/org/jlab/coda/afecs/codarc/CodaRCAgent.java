@@ -675,6 +675,7 @@ public class CodaRCAgent extends AParent {
                 // Ask platform for the linked emu name
                 if (me.getType().equals(ACodaType.ROC.name()) ||
                         me.getType().equals(ACodaType.GT.name()) ||
+                        me.getType().equals(ACodaType.FPGA.name()) ||
                         me.getType().equals(ACodaType.TS.name())) {
                     ArrayList<cMsgPayloadItem> l = new ArrayList<>();
                     try {

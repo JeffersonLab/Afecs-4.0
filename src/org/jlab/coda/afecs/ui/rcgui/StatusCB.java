@@ -331,6 +331,7 @@ class StatusCB extends cMsgCallbackAdapter {
         for (AComponent s : cmp.values()) {
             if (s.getType().equals(ACodaType.ROC.name()) ||
                     s.getType().equals(ACodaType.TS.name()) ||
+                    s.getType().equals(ACodaType.FPGA.name()) ||
                     s.getType().equals(ACodaType.GT.name())) {
                 owner.bGdata.put(s.getName(), 0.1);
             }
@@ -475,6 +476,7 @@ class StatusCB extends cMsgCallbackAdapter {
 
                         if (_ad.getType().equals(ACodaType.ROC.name()) ||
                                 _ad.getType().equals(ACodaType.TS.name()) ||
+                                _ad.getType().equals(ACodaType.FPGA.name()) ||
                                 _ad.getType().equals(ACodaType.GT.name())
                                 ) {
                             owner.bGdata.put(_ad.getName(), _ad.getDataRate(owner.AIV));
@@ -497,6 +499,7 @@ class StatusCB extends cMsgCallbackAdapter {
                         _ad.getType().equals(ACodaType.ROC.name()) ||
                         _ad.getType().equals(ACodaType.TS.name()) ||
                         _ad.getType().equals(ACodaType.GT.name()) ||
+                        _ad.getType().equals(ACodaType.FPGA.name()) ||
                         _ad.getType().equals(ACodaType.ER.name())) {
 
                     // Input buffers
