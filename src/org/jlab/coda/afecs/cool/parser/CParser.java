@@ -140,7 +140,7 @@ public class CParser {
                     // update linked components IP information
                     for (String linkedCompName : cAgent.me.getLinkedComponentNames()) {
                         CodaRCAgent linkedAgent = cAgent.myContainer.getContainerAgents().get(linkedCompName);
-                        System.out.printf("linked component name = "+linkedAgent.myName);
+                        System.out.println("linked component name = "+linkedAgent.myName);
                         linkedAgent.agentControlRequestNetworkDetails(
                                 cAgent.myName,
                                 cAgent.me.getClient().getHostIps(),
