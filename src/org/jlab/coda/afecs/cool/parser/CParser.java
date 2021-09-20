@@ -131,8 +131,6 @@ public class CParser {
                     cAgent.me.setClient(ai);
                     cAgent.me.setLinkedIp(lip);
                     cAgent.me.setLinkedBa(lba);
-                    agent.setLinkedIp(lip);// vg 09.20.21
-                    agent.setLinkedBa(lba);// vg 09.20.21
                     // update registration
                     myContainer.myPlatform.registrar.addAgent(cAgent.me);
                     myContainer.myPlatform.registrar.addClient(cAgent.me.getClient());
