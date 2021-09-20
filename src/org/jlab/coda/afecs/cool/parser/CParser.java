@@ -138,12 +138,13 @@ public class CParser {
 //                    for (String linkedCompName : cAgent.me.getLinkedComponentNames()) { // commented out 09.20.21
                     for (String linkedCompName : agent.getLinkedComponentNames()) {
                         CodaRCAgent linkedAgent = cAgent.myContainer.getContainerAgents().get(linkedCompName);
-                        System.out.println("DDD HEYYYYYYYYYYYYYYYYYYY "+ linkedAgent.myName);
                         linkedAgent.agentControlRequestNetworkDetails(
                                 cAgent.myName,
                                 cAgent.me.getClient().getHostIps(),
                                 cAgent.me.getClient().getHostBroadcastAddresses()
                         );
+                        System.out.println("DDD HEYYYYYYYYYYYYYYYYYYY "+ linkedAgent.myName+" "+ linkedAgent.me.getLinkedIp().size());
+
                         // update registration
                         myContainer.myPlatform.registrar.addClient(linkedAgent.me.getClient());
                     }
