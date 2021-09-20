@@ -1020,8 +1020,8 @@ class AControlDesigner extends ABase {
             // Assign configuration id to the runType
             int conf_id = myPlatform.registrar.addConfigId(runType);
 
-            c.getComponents().parallelStream().forEach((com) -> {
-//            for (AComponent com : c.getComponents()) {
+//            c.getComponents().parallelStream().forEach((com) -> {
+            for (AComponent com : c.getComponents()) {
 
                 AClientInfo ci = null;
                 com.setExpid(getPlEXPID());
@@ -1111,8 +1111,8 @@ class AControlDesigner extends ABase {
 //                        return false;
                     }
                 }
-//            }
-            });
+            }
+//            });
 
             // Update client database in the COOL_HOME
             myPlatform.registrar.dumpClientDatabase();
