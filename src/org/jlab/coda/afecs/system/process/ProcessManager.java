@@ -36,6 +36,7 @@ import org.jlab.coda.cMsg.cMsgMessage;
 import org.jlab.coda.cMsg.cMsgPayloadItem;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -289,7 +290,7 @@ public class ProcessManager {
                 al.add(new cMsgPayloadItem(AConstants.STREAMID, comp.getStreamId()));
                 if (comp.getLinkNames() != null && comp.getLinkNames().length > 0)
                     al.add(new cMsgPayloadItem(AConstants.INPUTLINKS, comp.getLinkNames()));
-                System.out.println("DDD 6 --------------------------------------------- "+ comp.getName()+" " + comp.getLinkedBa().size());
+                System.out.println("DDD 6 --------------------------------------------- "+ comp.getName()+" " + comp.getLinkedBa().size() + " " + comp.getClient().getHostIps().length );
                 for (String n : comp.getLinkedIp().keySet()) {
                     System.out.println("DDD 3 ===================================== "+ n);
                     System.out.println(AConstants.IPADDRESSLIST + "_" + n + " "+ comp.getLinkedIp().get(n));
