@@ -278,10 +278,6 @@ public class ProcessManager {
 
         if (pck.getSendText() != null) {
             al = new ArrayList<>();
-//            System.out.println("DDD 3 =====================================");
-//            System.out.println(comp);
-//            System.out.println("DDD 3 =====================================");
-
             try {
                 al.add(new cMsgPayloadItem(AConstants.RUNTYPE, comp.getRunType()));
                 al.add(new cMsgPayloadItem(AConstants.CONFIGID, comp.getConfigID()));
@@ -291,12 +287,12 @@ public class ProcessManager {
                 if (comp.getLinkNames() != null && comp.getLinkNames().length > 0)
                     al.add(new cMsgPayloadItem(AConstants.INPUTLINKS, comp.getLinkNames()));
 
-                System.out.println("DDD 3 =====================================");
-                System.out.println(comp.getName()+" "+" "+comp.getLinkedComponentNames().size() +" "+comp.getLinkNames().length );
-                System.out.println("DDD 3 ===================================== ");
 
                 for (String n : comp.getLinkedIp().keySet()) {
                     al.add(new cMsgPayloadItem(AConstants.IPADDRESSLIST + "_" + n, comp.getLinkedIp().get(n)));
+                    System.out.println("DDD 3 =====================================");
+                    System.out.println(AConstants.IPADDRESSLIST + "_" + n+ " " + comp.getLinkedIp().get(n) );
+                    System.out.println("DDD 3 ===================================== ");
                 }
 
                 for (String n : comp.getLinkedBa().keySet()) {

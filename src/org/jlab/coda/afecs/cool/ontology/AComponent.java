@@ -760,9 +760,6 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
 
     public void addLinkedIp(String name, String[] linkedIpa) {
         if (linkedIpa.length > 0 && !linkedIpa[0].equals("")) {
-            System.out.println("DDD 4>>>>>>>>>>>>>>>>>> "+ name);
-            for (String s: linkedIpa) System.out.println(s);
-            System.out.println("DDD 4>>>>>>>>>>>>>>>>>> "+ name);
             this.linkedIp.put(name, linkedIpa);
         }
     }
@@ -773,9 +770,6 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
 
     public void addLinkedBa(String name, String[] linkedBaa) {
         this.linkedBa.put(name, linkedBaa);
-        System.out.println("DDD 5>>>>>>>>>>>>>>>>>> "+ name);
-        for (String s: linkedBaa) System.out.println(s);
-        System.out.println("DDD 5>>>>>>>>>>>>>>>>>> "+ name);
 
     }
 
