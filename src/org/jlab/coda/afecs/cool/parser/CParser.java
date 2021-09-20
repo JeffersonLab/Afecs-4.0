@@ -93,7 +93,7 @@ public class CParser {
 
 
     /**
-     * parses Cool control concept and fills {@link org.jlab.coda.afecs.cool.ontology.AControl} objetc
+     * parses Cool control concept and fills {@link org.jlab.coda.afecs.cool.ontology.AControl} object
      *
      * @param runType of the control
      * @return AControl object

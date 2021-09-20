@@ -435,6 +435,10 @@ public class AContainer extends ABase {
                 if (msg.getPayloadItem("IpAddresses") != null) {
                     cif.setHostIps(msg.getPayloadItem(
                             "IpAddresses").getStringArray());
+                    System.out.println("DDD 2 ====================================");
+                    System.out.println(cif.getHostIps());
+                    System.out.println("DDD 2 ====================================");
+
                 }
 
                 if (msg.getPayloadItem("BroadcastAddresses") != null) {
@@ -529,6 +533,9 @@ public class AContainer extends ABase {
                     msg.getPayloadItem("packetCount") != null &&
                     msg.getPayloadItem("SenderId") != null) {
                 String sender = msg.getSender();
+                System.out.println("DDD 1 ====================================");
+                System.out.println(sender +" request to join the platform");
+                System.out.println("DDD 1 ====================================");
 
                 try {
                     int packetCount = msg.getPayloadItem("packetCount").getInt();
