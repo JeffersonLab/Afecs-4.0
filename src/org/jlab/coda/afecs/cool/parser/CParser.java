@@ -138,7 +138,8 @@ public class CParser {
                     System.out.println("cAgent name = "+cAgent.myName);
                     for(String s: cAgent.me.getClient().getHostIps()) System.out.println("IP = "+s);
                     // update linked components IP information
-                    for (String linkedCompName : cAgent.me.getLinkedComponentNames()) {
+//                    for (String linkedCompName : cAgent.me.getLinkedComponentNames()) {
+                    for (String linkedCompName : agent.getLinkedComponentNames()) {
                         CodaRCAgent linkedAgent = cAgent.myContainer.getContainerAgents().get(linkedCompName);
                         System.out.println("HEY ........................ ..... ... .. ... .. . . .linked component name = "+linkedAgent.myName);
                         linkedAgent.agentControlRequestNetworkDetails(
