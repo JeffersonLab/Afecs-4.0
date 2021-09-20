@@ -437,7 +437,7 @@ public class AContainer extends ABase {
                             "IpAddresses").getStringArray());
                     System.out.println("DDD 2 ====================================");
                     for(String s:cif.getHostIps()) {
-                        System.out.println(cif.getHostIps());
+                        System.out.println(s);
                     }
                     System.out.println("DDD 2 ====================================");
 
