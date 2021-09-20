@@ -293,6 +293,7 @@ public class ProcessManager {
                     System.out.println("DDD 3 =====================================");
                     System.out.println(AConstants.IPADDRESSLIST + "_" + n+ " " + comp.getLinkedIp().get(n) );
                     System.out.println("DDD 3 ===================================== ");
+
                 }
 
                 for (String n : comp.getLinkedBa().keySet()) {
