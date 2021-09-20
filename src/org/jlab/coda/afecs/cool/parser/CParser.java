@@ -121,7 +121,7 @@ public class CParser {
                 CodaRCAgent cAgent = myContainer.getContainerAgents().get(agent.getName());
                 // update mastership of the container agent vg 02.27
                 cAgent.me.setMaster(agent.isMaster());
-                if (cAgent != null && cAgent.me.getClient() != null) {
+                if (cAgent.me.getClient() != null) {
 
                     // saving IP information
                     Map<String, String[]> lip = cAgent.me.getLinkedIp();
@@ -134,11 +134,11 @@ public class CParser {
                     // update registration
                     myContainer.myPlatform.registrar.addAgent(cAgent.me);
                     myContainer.myPlatform.registrar.addClient(cAgent.me.getClient());
-                    for(String s: cAgent.me.getClient().getHostIps()) System.out.println("IP = "+s);
                     // update linked components IP information
 //                    for (String linkedCompName : cAgent.me.getLinkedComponentNames()) { // commented out 09.20.21
                     for (String linkedCompName : agent.getLinkedComponentNames()) {
                         CodaRCAgent linkedAgent = cAgent.myContainer.getContainerAgents().get(linkedCompName);
+                        System.out.println("DDD HEYYYYYYYYYYYYYYYYYYY "+ linkedAgent.myName);
                         linkedAgent.agentControlRequestNetworkDetails(
                                 cAgent.myName,
                                 cAgent.me.getClient().getHostIps(),
