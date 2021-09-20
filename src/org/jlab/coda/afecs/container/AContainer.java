@@ -493,20 +493,9 @@ public class AContainer extends ABase {
                     startAgent(comp);
                 }
             }
-            System.out.println("DDD 2 ====================================");
             CodaRCAgent newUpdatedAgent = getContainerAgents().get(sender);
-            System.out.println("Sender agent name = " + newUpdatedAgent.myName);
             for (String linkedCompName : newUpdatedAgent.me.getLinkedComponentNames()) {
-                System.out.println("Linked Component Name = "+linkedCompName);
-
                 CodaRCAgent linkedAgent = getContainerAgents().get(linkedCompName);
-                System.out.println("Linked Agent name = " + linkedAgent.myName);
-
-                for (String s:newUpdatedAgent.me.getClient().getHostIps()) {
-                    System.out.println(s);
-                }
-                System.out.println("DDD 2 ====================================");
-
                 linkedAgent.agentControlRequestNetworkDetails(
                         newUpdatedAgent.myName,
                         newUpdatedAgent.me.getClient().getHostIps(),
