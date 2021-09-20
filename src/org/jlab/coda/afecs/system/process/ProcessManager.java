@@ -286,7 +286,11 @@ public class ProcessManager {
                 al.add(new cMsgPayloadItem(AConstants.STREAMID, comp.getStreamId()));
                 if (comp.getLinkNames() != null && comp.getLinkNames().length > 0)
                     al.add(new cMsgPayloadItem(AConstants.INPUTLINKS, comp.getLinkNames()));
-
+                System.out.println("DDD 3 =====================================");
+                for(String s:comp.getLinkNames()){
+                    System.out.println(s);
+                }
+                System.out.println("DDD 3 =====================================");
                 for (String n : comp.getLinkedIp().keySet()) {
                     al.add(new cMsgPayloadItem(AConstants.IPADDRESSLIST + "_" + n, comp.getLinkedIp().get(n)));
                 }
