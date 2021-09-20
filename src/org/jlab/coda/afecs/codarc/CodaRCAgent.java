@@ -1345,6 +1345,7 @@ public class CodaRCAgent extends AParent {
         me.addLinkedIp(sender, ip);
         me.addLinkedBa(sender, br);
         System.out.println("DDD HUYHUYHUYUYHYU "+me.getLinkedIp().size()+" "+me.getLinkNames().length+" "+me.getLinkedComponentNames().size());
+
     }
 
     public void agentControlRequestSetFileWriting(String control) {
