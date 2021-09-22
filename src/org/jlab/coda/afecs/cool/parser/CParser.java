@@ -144,8 +144,8 @@ public class CParser {
                                 cAgent.me.getClient().getHostBroadcastAddresses()
                         );
                         System.out.println("DDD HEYYYYYYYYYYYYYYYYYYY "+ linkedAgent.myName+" "+ linkedAgent.me.getLinkedIp().size());
-
                         // update registration
+                        myContainer.myPlatform.platformRegistrationRequestUpdate(linkedAgent.me);
                         myContainer.myPlatform.registrar.addClient(linkedAgent.me.getClient());
                     }
                 }

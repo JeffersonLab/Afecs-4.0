@@ -116,11 +116,6 @@ public class ProcessManager {
         boolean stat1 = true;
         boolean stat2 = true;
 
-        System.out.println("DDDD --------------- ------- ---------");
-        System.out.println(p.getName());
-        System.out.println("===========");
-        if(comp.getClient()!=null)System.out.println(comp);
-        System.out.println("DDDD --------------- ------- ---------");
         if (p.getPeriodicity() == 0) {
 
             // Execute scripts first
