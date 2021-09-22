@@ -115,6 +115,12 @@ public class ProcessManager {
                                   AComponent comp) {
         boolean stat1 = true;
         boolean stat2 = true;
+
+        System.out.println("DDDD --------------- ------- ---------");
+        System.out.println(p.getName());
+        System.out.println("===========");
+        System.out.println(comp);
+        System.out.println("DDDD --------------- ------- ---------");
         if (p.getPeriodicity() == 0) {
 
             // Execute scripts first
@@ -491,7 +497,6 @@ public class ProcessManager {
         to = to * 1000;
 
         ArrayList<cMsgMessage> backMessages = new ArrayList<>();
-        System.out.println("DDD -1");
         ArrayList<cMsgPayloadItem> al = _defineSendPackagePayload(pck, comp);
 
         try {
@@ -588,8 +593,6 @@ public class ProcessManager {
 
         ArrayList<cMsgMessage> backMessages = new ArrayList<>();
 
-        System.out.println("DDD -3");
-
         ArrayList<cMsgPayloadItem> al =
                 _defineSendPackagePayload(pck, comp);
 
@@ -646,8 +649,6 @@ public class ProcessManager {
      */
     private void _async_sendPckgUsingcMsg(APackage pck,
                                           AComponent comp) {
-
-        System.out.println("DDD -4");
 
         ArrayList<cMsgPayloadItem> al =
                 _defineSendPackagePayload(pck, comp);
