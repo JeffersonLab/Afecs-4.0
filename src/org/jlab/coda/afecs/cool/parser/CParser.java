@@ -145,6 +145,7 @@ public class CParser {
                         // update registration
                         myContainer.myPlatform.platformRegistrationRequestUpdate(linkedAgent.me);
                         myContainer.myPlatform.registrar.addClient(linkedAgent.me.getClient());
+
                         System.out.println("DDD +++++++++++++++++++++");
                         if(linkedAgent.me.getClient()!=null) {
                             System.out.println(linkedAgent.me);
