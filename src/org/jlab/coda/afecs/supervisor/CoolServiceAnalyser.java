@@ -685,7 +685,7 @@ public class CoolServiceAnalyser {
                     }
                     // update supervisor controlled agent map
                     System.out.println("DDD <-><-><-><-><-><-><-><-><-><-> ");
-                    System.out.println(owner.myContainer.getContainerAgents().get(comp.getName()));
+                    System.out.println(owner.myContainer.getContainerAgents().get(comp.getName()).me);
                     System.out.println("DDD <-><-><-><-><-><-><-><-><-><-> ");
                     owner.myComponents.put(comp.getName(), owner.myContainer.getContainerAgents().get(comp.getName()));
 
