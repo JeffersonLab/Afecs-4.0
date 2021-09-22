@@ -22,7 +22,6 @@
 
 package org.jlab.coda.afecs.system.process;
 
-import com.sun.scenario.effect.impl.sw.java.JSWBlend_SRC_OUTPeer;
 import org.jlab.coda.afecs.agent.AParent;
 import org.jlab.coda.afecs.cool.ontology.*;
 import org.jlab.coda.afecs.plugin.IAClientCommunication;
@@ -36,7 +35,6 @@ import org.jlab.coda.cMsg.cMsgMessage;
 import org.jlab.coda.cMsg.cMsgPayloadItem;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -493,7 +491,7 @@ public class ProcessManager {
         to = to * 1000;
 
         ArrayList<cMsgMessage> backMessages = new ArrayList<>();
-
+        System.out.println("DDD -1");
         ArrayList<cMsgPayloadItem> al = _defineSendPackagePayload(pck, comp);
 
         try {
@@ -544,6 +542,8 @@ public class ProcessManager {
     private boolean _async_sendPckgUsingRc(APackage pck,
                                            AComponent comp) {
         boolean b = true;
+        System.out.println("DDD -2");
+
         ArrayList<cMsgPayloadItem> al = _defineSendPackagePayload(pck, comp);
 
         try {
@@ -587,6 +587,8 @@ public class ProcessManager {
         to = to * 1000;
 
         ArrayList<cMsgMessage> backMessages = new ArrayList<>();
+
+        System.out.println("DDD -3");
 
         ArrayList<cMsgPayloadItem> al =
                 _defineSendPackagePayload(pck, comp);
@@ -644,6 +646,8 @@ public class ProcessManager {
      */
     private void _async_sendPckgUsingcMsg(APackage pck,
                                           AComponent comp) {
+
+        System.out.println("DDD -4");
 
         ArrayList<cMsgPayloadItem> al =
                 _defineSendPackagePayload(pck, comp);
