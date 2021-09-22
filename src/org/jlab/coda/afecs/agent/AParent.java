@@ -223,6 +223,9 @@ public class AParent extends ABase implements Serializable {
      */
     public void update_registration() {
         myPlatform.platformRegistrationRequestUpdate(me);
+        System.out.println("DDD ++++++++++++++++++++++");
+        System.out.println(me);
+        System.out.println("DDD ++++++++++++++++++++++");
     }
 
     /**
