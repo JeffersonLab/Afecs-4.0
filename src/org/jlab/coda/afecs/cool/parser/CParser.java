@@ -143,10 +143,11 @@ public class CParser {
                                 cAgent.me.getClient().getHostBroadcastAddresses()
                         );
                         // update registration
+                        System.out.println("DDD +++++++++++++++++++++");
+
                         myContainer.myPlatform.platformRegistrationRequestUpdate(linkedAgent.me);
                         myContainer.myPlatform.registrar.addClient(linkedAgent.me.getClient());
 
-                        System.out.println("DDD +++++++++++++++++++++");
                         if(linkedAgent.me.getClient()!=null) {
                             System.out.println(linkedAgent.me);
                         } else System.out.println(linkedAgent.me.getName());
