@@ -917,7 +917,6 @@ public class CodaRCAgent extends AParent {
         if (b) {
             // Ask platform to register client
             myPlatform.platformControlRegisterClient(cInfo);
-            System.out.println("DDD-1");
             // Differentiate agent
             differentiate(me);
 

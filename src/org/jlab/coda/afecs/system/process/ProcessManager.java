@@ -542,7 +542,6 @@ public class ProcessManager {
     private boolean _async_sendPckgUsingRc(APackage pck,
                                            AComponent comp) {
         boolean b = true;
-        System.out.println("DDD -2");
 
         ArrayList<cMsgPayloadItem> al = _defineSendPackagePayload(pck, comp);
 

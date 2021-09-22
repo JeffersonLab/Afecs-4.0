@@ -146,11 +146,12 @@ public class CParser {
                         // update registration
                         myContainer.myPlatform.platformRegistrationRequestUpdate(linkedAgent.me);
                         myContainer.myPlatform.registrar.addClient(linkedAgent.me.getClient()); // vg added 09.20.22
-                        System.out.println("DDD ++++++++++++++++++++++");
+                        myContainer.startAgent(linkedAgent.me); // vg added 09.20.22
+                        System.out.println("DDD ++++++++++++++++++++++ "+onlyComponents);
                         if(linkedAgent.me.getClient()!=null) {
                             System.out.println(linkedAgent.me);
                         } else System.out.println(linkedAgent.me.getName());
-                        System.out.println("DDD ++++++++++++++++++++++");
+                        System.out.println("DDD ++++++++++++++++++++++ "+onlyComponents);
                     }
                 }
             }
