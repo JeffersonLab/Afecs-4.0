@@ -1356,8 +1356,6 @@ public class CodaRCAgent extends AParent {
 
     public void agentControlRequestSetup() {
 
-        System.out.println("DDD-2");
-
         // differentiate agent
         differentiate(me);
 
