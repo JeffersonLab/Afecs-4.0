@@ -135,7 +135,8 @@ public class CParser {
                     myContainer.myPlatform.registrar.addAgent(cAgent.me);
                     myContainer.myPlatform.registrar.addClient(cAgent.me.getClient());
                     // update linked components IP information
-                    for (String linkedCompName : cAgent.me.getLinkedComponentNames()) {
+//                    for (String linkedCompName : cAgent.me.getLinkedComponentNames()) { // commented out 09.20.21
+                    for (String linkedCompName : agent.getLinkedComponentNames()) {
                         CodaRCAgent linkedAgent = cAgent.myContainer.getContainerAgents().get(linkedCompName);
                         linkedAgent.agentControlRequestNetworkDetails(
                                 cAgent.myName,
@@ -143,16 +144,13 @@ public class CParser {
                                 cAgent.me.getClient().getHostBroadcastAddresses()
                         );
                         // update registration
-                        System.out.println("DDD +++++++++++++++++++++");
-
                         myContainer.myPlatform.platformRegistrationRequestUpdate(linkedAgent.me);
                         myContainer.myPlatform.registrar.addClient(linkedAgent.me.getClient());
-
+                        System.out.println("DDD ++++++++++++++++++++++");
                         if(linkedAgent.me.getClient()!=null) {
                             System.out.println(linkedAgent.me);
                         } else System.out.println(linkedAgent.me.getName());
-                        System.out.println("DDD +++++++++++++++++++++");
-
+                        System.out.println("DDD ++++++++++++++++++++++");
                     }
                 }
             }
