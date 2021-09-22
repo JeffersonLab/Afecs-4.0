@@ -280,8 +280,8 @@ public class AParent extends ABase implements Serializable {
         }
         // vg added 09.22.21
         if(me.getName().equals(ad.getName())) {
-            me.setLinkedIp(ad.getLinkedIp());
-            me.setLinkedBa(ad.getLinkedBa());
+            me.setLinkedIp(myContainer.myPlatform.registrar.getAgent(me.getName()).getLinkedIp());
+            me.setLinkedBa(myContainer.myPlatform.registrar.getAgent(me.getName()).getLinkedBa());
         }
         // vg added 09.22.21
         System.out.println("DDD &&&&&&&&&&&&&&&&&&&&&");
