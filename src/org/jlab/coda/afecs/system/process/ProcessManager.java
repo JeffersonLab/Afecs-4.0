@@ -119,7 +119,7 @@ public class ProcessManager {
         System.out.println("DDDD --------------- ------- ---------");
         System.out.println(p.getName());
         System.out.println("===========");
-        System.out.println(comp);
+        if(comp.getClient()!=null)System.out.println(comp);
         System.out.println("DDDD --------------- ------- ---------");
         if (p.getPeriodicity() == 0) {
 
