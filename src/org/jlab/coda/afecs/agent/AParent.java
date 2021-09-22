@@ -278,7 +278,12 @@ public class AParent extends ABase implements Serializable {
             System.out.println(myName + ": Wrong agent name. ");
             return;
         }
-       me = myContainer.myPlatform.registrar.getAgent(ad.getName()); // vg added 09.22.21
+        // vg added 09.22.21
+        if(me.getName().equals(ad.getName())) {
+            me.setLinkedIp(ad.getLinkedIp());
+            me.setLinkedBa(ad.getLinkedBa());
+        }
+        // vg added 09.22.21
         System.out.println("DDD &&&&&&&&&&&&&&&&&&&&&");
         if(me.getClient()!=null) {
             System.out.println(me);
