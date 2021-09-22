@@ -286,11 +286,11 @@ public class AParent extends ABase implements Serializable {
         }
         // vg added 09.22.21
 
-        System.out.println("DDD &&&&&&&&&&&&&&&&&&&&&");
-        if(me.getClient()!=null) {
-            System.out.println(me);
-        } else System.out.println(me.getName());
-        System.out.println("DDD &&&&&&&&&&&&&&&&&&&&&&");
+//        System.out.println("DDD &&&&&&&&&&&&&&&&&&&&&");
+//        if(me.getClient()!=null) {
+//            System.out.println(me);
+//        } else System.out.println(me.getName());
+//        System.out.println("DDD &&&&&&&&&&&&&&&&&&&&&&");
 
         // expid is not defined in the cool database
         ad.setExpid(me.getExpid());

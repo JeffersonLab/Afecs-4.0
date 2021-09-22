@@ -684,11 +684,7 @@ public class CoolServiceAnalyser {
                         owner.haveCoda2Component.set(true);
                     }
                     // update supervisor controlled agent map
-                    System.out.println("DDD <-><-><-><-><-><-><-><-><-><-> ");
-                    System.out.println(owner.myPlatform.container.getContainerAgents().get(comp.getName()).me);
-                    System.out.println("DDD <-><-><-><-><-><-><-><-><-><-> ");
                     owner.myComponents.put(comp.getName(), owner.myContainer.getContainerAgents().get(comp.getName()));
-
 //                    owner.myComponents.put(comp.getName(), comp);
                     owner.myCompReportingTimes.put(comp.getName(), new AReportingTime());
                 }

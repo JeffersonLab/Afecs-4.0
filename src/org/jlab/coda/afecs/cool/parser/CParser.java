@@ -135,8 +135,12 @@ public class CParser {
                     myContainer.myPlatform.registrar.addAgent(cAgent.me);
                     myContainer.myPlatform.registrar.addClient(cAgent.me.getClient());
                     // update linked components IP information
+
+                        // vg added 09.20.22
 //                    for (String linkedCompName : cAgent.me.getLinkedComponentNames()) { // vg commented out 09.20.21
                     for (String linkedCompName : agent.getLinkedComponentNames()) {
+                        // vg added 09.20.22
+
                         CodaRCAgent linkedAgent = cAgent.myContainer.getContainerAgents().get(linkedCompName);
                         linkedAgent.agentControlRequestNetworkDetails(
                                 cAgent.myName,
@@ -145,13 +149,17 @@ public class CParser {
                         );
                         // update registration
                         myContainer.myPlatform.platformRegistrationRequestUpdate(linkedAgent.me);
-                        myContainer.myPlatform.registrar.addClient(linkedAgent.me.getClient()); // vg added 09.20.22
-                        myContainer.startAgent(linkedAgent.me); // vg added 09.20.22
-                        System.out.println("DDD ++++++++++++++++++++++ "+onlyComponents);
-                        if(linkedAgent.me.getClient()!=null) {
-                            System.out.println(linkedAgent.me);
-                        } else System.out.println(linkedAgent.me.getName());
-                        System.out.println("DDD ++++++++++++++++++++++ "+onlyComponents);
+
+                        // vg added 09.20.22
+                        myContainer.myPlatform.registrar.addClient(linkedAgent.me.getClient());
+                        myContainer.startAgent(linkedAgent.me);
+                        // vg added 09.20.22
+
+//                        System.out.println("DDD ++++++++++++++++++++++ "+onlyComponents);
+//                        if(linkedAgent.me.getClient()!=null) {
+//                            System.out.println(linkedAgent.me);
+//                        } else System.out.println(linkedAgent.me.getName());
+//                        System.out.println("DDD ++++++++++++++++++++++ "+onlyComponents);
                     }
                 }
             }
