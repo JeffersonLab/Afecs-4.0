@@ -224,7 +224,7 @@ public class AParent extends ABase implements Serializable {
     public void update_registration() {
         myPlatform.platformRegistrationRequestUpdate(me);
         System.out.println("DDD ++++++++++++++++++++++");
-        System.out.println(me);
+        if(me.getClient()!=null) System.out.println(me);
         System.out.println("DDD ++++++++++++++++++++++");
     }
 
@@ -281,6 +281,9 @@ public class AParent extends ABase implements Serializable {
             System.out.println(myName + ": Wrong agent name. ");
             return;
         }
+        System.out.println("DDD &&&&&&&&&&&&&&&&&&&&&");
+        if(me.getClient()!=null) System.out.println(me);
+        System.out.println("DDD &&&&&&&&&&&&&&&&&&&&&&");
 
         // expid is not defined in the cool database
         ad.setExpid(me.getExpid());
