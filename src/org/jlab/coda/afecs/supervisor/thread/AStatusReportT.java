@@ -237,14 +237,15 @@ public class AStatusReportT extends Thread {
                     // get the second (the first might be -clas component) entry of the agents map and define the state of the agent
                     Iterator it = owner.sortedComponentList.entrySet().iterator();
                     Map.Entry<String, AComponent> entry1 = (Map.Entry<String, AComponent>) it.next();
-                    Map.Entry<String, AComponent> entry2 = (Map.Entry<String, AComponent>) it.next();
+//                    Map.Entry<String, AComponent> entry2 = (Map.Entry<String, AComponent>) it.next(); // commented out vg 09.23.21
 
                     String tmpState = AConstants.booted;
                     if (entry1 != null && !entry1.getValue().getState().equals("na")) {
                         tmpState = entry1.getValue().getState();
-                    } else if (entry2 != null && !entry2.getValue().getState().equals("na")) {
-                        tmpState = entry2.getValue().getState();
                     }
+//                    else if (entry2 != null && !entry2.getValue().getState().equals("na")) { // commented out vg 09.23.21
+//                        tmpState = entry2.getValue().getState();
+//                    }
 
                     // this will be true in case all agents of the reporting map will report the same state
                     boolean allSet = true;
