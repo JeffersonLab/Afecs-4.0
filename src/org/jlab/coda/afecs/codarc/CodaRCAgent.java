@@ -951,7 +951,7 @@ public class CodaRCAgent extends AParent {
                 // If we are not in a middle of transitioning to a CODA state
                 // then update agent-component parameters based on the client
                 // data.
-                if (!isTransitioning.get()) {
+//                if (!isTransitioning.get()) { // vg 10.11.21 commented out
                     try {
                         if (msg.getPayloadItem(AConstants.CODACLASS) != null) {
                             String tp = msg.getPayloadItem(AConstants.CODACLASS).getString().trim();
@@ -1061,7 +1061,8 @@ public class CodaRCAgent extends AParent {
                         _calculateIntegratedAverages();
                     }
                 }
-            }
+
+//            } // vg 10.11.21 commented out
 
         }
     }
