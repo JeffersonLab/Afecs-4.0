@@ -33,10 +33,7 @@ import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.cMsg.*;
 import org.jlab.coda.cMsg.cMsgDomain.server.cMsgNameServer;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -62,6 +59,8 @@ public class APlatform extends ABase {
 
     private static boolean DaLogArchiveRequest = false;
     private static String DaLogArchivePath = "default";
+
+    private static boolean LogFile = false;
 
     private ADaLogArchive daLogArchive;
 
@@ -93,6 +92,9 @@ public class APlatform extends ABase {
                 case "-web":
                     influxDb = true;
                     break;
+                case "-log":
+                    LogFile = true;
+                   break;
                 case "-h":
                 case "-help":
                     System.out.println("Synopsis: platform -<option> <value>\n"
@@ -172,6 +174,23 @@ public class APlatform extends ABase {
                 System.exit(1);
             }
         }
+
+        if(LogFile) { // vg 10.11.21
+            try {
+                PrintStream out = new PrintStream(new FileOutputStream(coolHome + File.separator
+                        + platformExpid + File.separator
+                        + "log" + File.separator
+                        + "afecs.log", true), true);
+                System.setErr(out);
+                System.setOut(out);
+            } catch (FileNotFoundException ignore) {
+                // cannot redirect out and err to file, so we don't
+                System.out.println("Warning: Unable to redirect stdout/stderr to file afecs.log. " +
+                        "Will continue without redirecting stdout/stderr.");
+                ignore.printStackTrace();
+            }
+        }
+
 
         // This is restart of the platform.
         // Remove the client registration database
