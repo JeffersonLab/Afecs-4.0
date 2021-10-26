@@ -22,7 +22,6 @@
 
 package org.jlab.coda.afecs.cool.ontology;
 
-import com.sun.scenario.effect.impl.sw.java.JSWBlend_SRC_OUTPeer;
 import org.jlab.coda.afecs.client.AClientInfo;
 import org.jlab.coda.afecs.system.ACodaType;
 import org.jlab.coda.afecs.system.AConstants;

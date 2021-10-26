@@ -142,6 +142,20 @@ public class CParser {
                         // vg added 09.20.22
 
                         CodaRCAgent linkedAgent = cAgent.myContainer.getContainerAgents().get(linkedCompName);
+                        // vg added 10.26.22
+                        if (linkedAgent == null) {
+                            // linked component agent is not yet started. Start the agent for the linked component
+                            // first get AComponent for the linked component
+                            for (AComponent aa: c.getComponents()){
+                                if (aa.getName().equals(linkedCompName)) {
+                                    // start the linked component agent
+                                    myContainer.startAgent(aa);
+                                    // get the reference to it
+                                    linkedAgent = cAgent.myContainer.getContainerAgents().get(linkedCompName);
+                                }
+                            }
+                        }
+                        // vg added 10.26.22
                         linkedAgent.agentControlRequestNetworkDetails(
                                 cAgent.myName,
                                 cAgent.me.getClient().getHostIps(),
@@ -152,7 +166,7 @@ public class CParser {
 
                         // vg added 09.20.22
                         myContainer.myPlatform.registrar.addClient(linkedAgent.me.getClient());
-                        myContainer.startAgent(linkedAgent.me);
+//                        myContainer.startAgent(linkedAgent.me); // commented out 10.26.22
                         // vg added 09.20.22
 
 //                        System.out.println("DDD ++++++++++++++++++++++ "+onlyComponents);
