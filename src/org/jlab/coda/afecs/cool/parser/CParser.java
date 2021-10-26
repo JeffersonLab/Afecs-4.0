@@ -137,8 +137,8 @@ public class CParser {
                     // update linked components IP information
 
                         // vg added 09.20.22
-//                    for (String linkedCompName : cAgent.me.getLinkedComponentNames()) { // vg commented out 09.20.21
-                    for (String linkedCompName : agent.getLinkedComponentNames()) {
+                    for (String linkedCompName : cAgent.me.getLinkedComponentNames()) {
+//                    for (String linkedCompName : agent.getLinkedComponentNames()) {
                         // vg added 09.20.22
 
                         CodaRCAgent linkedAgent = cAgent.myContainer.getContainerAgents().get(linkedCompName);
