@@ -159,8 +159,7 @@ public class CParser {
 
                         // vg added 09.20.22
                         myContainer.myPlatform.registrar.addClient(linkedAgent.me.getClient());
-//                        myContainer.startAgent(linkedAgent.me); // commented out 10.26.22
-                        // vg added 09.20.22
+                       // vg added 09.20.22
 
 //                        System.out.println("DDD ++++++++++++++++++++++ "+onlyComponents);
 //                        if(linkedAgent.me.getClient()!=null) {
