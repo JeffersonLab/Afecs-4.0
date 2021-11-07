@@ -25,6 +25,7 @@ package org.jlab.coda.afecs.system.process;
 import org.jlab.coda.afecs.agent.AParent;
 import org.jlab.coda.afecs.cool.ontology.*;
 import org.jlab.coda.afecs.plugin.IAClientCommunication;
+import org.jlab.coda.afecs.system.ACodaType;
 import org.jlab.coda.afecs.system.AConstants;
 import org.jlab.coda.afecs.system.AException;
 
@@ -145,6 +146,14 @@ public class ProcessManager {
 
                         // Execution rc domain
                         if (pck.getForRcClient().equals(AConstants.seton)) {
+
+                            // debug 11.07.21
+                            if(comp.getType().equals(ACodaType.ER.name()))
+                                System.out.println("DDD-SBS: sending message - type = " + pck.getSendType() +
+                                        " subject = "+ pck.getSendSubject() +
+                                        " text = " + pck.getSendText());
+                            // debug 11.07.21
+
                             stat2 = _sync_sendPckgUsingRc(pck, comp, p.getTimeout());
 
                             // Execution cMsg domain
