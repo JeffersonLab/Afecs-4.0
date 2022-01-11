@@ -172,8 +172,11 @@ public class CodaRCAgent extends AParent {
         myPlatform.registrar.dumpClientDatabase();
 
         // Subscribe control messages to this agent
-        me.setState(AConstants.booted);
-
+        if (me.getClient() == null) {
+            me.setState(AConstants.udf);
+        } else {
+            me.setState(AConstants.booted);
+        }
     }
 
     public void updateComponent(AComponent component) {
