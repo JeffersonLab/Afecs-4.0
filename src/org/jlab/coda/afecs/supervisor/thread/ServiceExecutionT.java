@@ -99,7 +99,6 @@ public class ServiceExecutionT implements Runnable {
 
     public void run() {
 //        super.run();
-        System.out.println("DDDUUUDDDUUUDDD "+ stateName);
 
         owner.isResetting.set(false);
         boolean failed = false;
