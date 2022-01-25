@@ -99,6 +99,7 @@ public class ServiceExecutionT implements Runnable {
 
     public void run() {
 //        super.run();
+        System.out.println("DDDUUUDDDUUUDDD "+ stateName);
 
         owner.isResetting.set(false);
         boolean failed = false;
@@ -440,8 +441,6 @@ public class ServiceExecutionT implements Runnable {
                         // So, for e.g. if the user specifies sync process attached
                         // to the end-after transition, then run control will not
                         // allow starting a new run before this script is done.
-
-                        System.out.println("DDDUUUDDDUUUDDD "+ stateName);
 
                         execProcessAfterTransition();
 
