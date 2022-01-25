@@ -612,7 +612,7 @@ public class SupervisorAgent extends AParent implements Serializable {
 
     /**
      * <p>
-     * Start-run service organization
+     * Start-run service organization (NB for auto start)
      * Starts the service execution thread
      * </p>
      */

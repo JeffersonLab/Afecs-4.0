@@ -435,11 +435,14 @@ public class ServiceExecutionT implements Runnable {
                         // Note that all components are already transitioned and before
                         // setting the state of the supervisor to the state of the control
                         // we check attached processes after a transition.
-                        // This is a trick to to implement sync processes attached
+                        // This is a trick to  implement sync processes attached
                         // to after transition of the supervisor.
                         // So, for e.g. if the user specifies sync process attached
                         // to the end-after transition, then run control will not
                         // allow starting a new run before this script is done.
+
+                        System.out.println("DDDUUUDDDUUUDDD "+ stateName);
+
                         execProcessAfterTransition();
 
                         owner.me.setState(stateName + "ed");
