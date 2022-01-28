@@ -131,7 +131,8 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
         addPrimitiveSlot("hasSession", 1, true, "String");
         addPrimitiveSlot("hasRunType", 1, true, "String");
         addConceptSlot("hasOption", 1, true, "Option");
-        addPrimitiveSlot("representsCoda2Component", 1, true, "String");
+//        addPrimitiveSlot("representsCoda2Component", 1, true, "String");
+        addPrimitiveSlot("streamingComponent", 1, true, "String"); // vg 01.26.22
         addPrimitiveSlot("isCodaComponent", 1, true, "String");
         addPrimitiveSlot("hasReportingInterval", 1, true, "Integer");
         addConceptSlot("hasState", 2, true, "AState");
