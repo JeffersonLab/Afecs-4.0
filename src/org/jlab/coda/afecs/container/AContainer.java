@@ -463,10 +463,6 @@ public class AContainer extends ABase {
                             ": host = " + clHost + " port = " + clPort +
                             ". " + AfecsTool.getCurrentTimeInH());
 
-            System.out.println("DDD =================== DDD");
-            System.out.println(cif);
-            System.out.println("DDD =================== DDD");
-
             if (!clHost.equals(AConstants.udf) && clPort > 0) {
 
                 if (containerAgents.containsKey(sender)) {
