@@ -837,6 +837,17 @@ public class SupervisorAgent extends AParent implements Serializable {
      * a file output responsible component/components
      */
     private void setFileWriting() {
+
+        //send to every component except ROC, TS file-writing on
+        for (CodaRCAgent cc : myComponents.values()) {
+            if(!cc.me.getType().equals(ACodaType.ROC.name())
+                    && !cc.me.getType().equals(ACodaType.FPGA.name())
+                    && !cc.me.getType().equals(ACodaType.GT.name())
+                    && !cc.me.getType().equals(ACodaType.TS.name())
+            ) {
+                cc.agentControlRequestSetFileWriting(s_fileWriting);
+            }
+        }
         if (persistencyComponent != null) {
             if (persistencyComponent.getName().contains("class")) {
                 switch (persistencyComponent.getName()) {

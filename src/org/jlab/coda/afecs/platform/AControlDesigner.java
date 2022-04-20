@@ -158,7 +158,7 @@ class AControlDesigner extends ABase {
 
             // start named thread that will periodically getState of
             // the components. This objects will be stored under
-            // key = session_runType in a orphan clients database.
+            // key = session_runType in an orphan client's database.
             // The next method in this code (parseControlDescription with 3 parameters)
             // will stop the corresponding thread from the map and remove thread object
             // from the map.
