@@ -545,15 +545,16 @@ public class AContainer extends ABase {
                             jr.setSenderId(senderId);
                             jr.setPacketCount(packetCount);
                             joinPlatformAction(msg);
-                        } else {
-                            // do not service the callback if this is a burst of requests
-
-                            if (packetCount <= jr.getPacketCount()) {
-
-                                jr.setPacketCount(packetCount);
-                                joinPlatformAction(msg);
-                            }
                         }
+//                        else {
+//                            // do not service the callback if this is a burst of requests
+//
+//                            if (packetCount <= jr.getPacketCount()) {
+//
+//                                jr.setPacketCount(packetCount);
+//                                joinPlatformAction(msg);
+//                            }
+//                        }
                     }
                 } catch (cMsgException e) {
                     e.printStackTrace();
