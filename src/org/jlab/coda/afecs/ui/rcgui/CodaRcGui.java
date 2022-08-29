@@ -1208,7 +1208,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
 
     /**
      * <p>
-     * Asks supervisor agent to report the persistency agent,
+     * Asks supervisor agent to report the persistent agent,
      * i.e. the tail agent of the configuration,
      * the agent who possibly will writes data to the file
      * </p>
@@ -1232,6 +1232,28 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
                 addRemoveSelected2Graph(true);
             }
         }
+        // Added 08.29.22 vg
+        // Add the second graph to the event_rate and data_rate graph
+        // As a second graph we show trigger source component
+        // So, we ask supervisor agent to report trigger component
+        msg = null;
+        try {
+            msg = base.p2pSend(_supervisorName,
+                    AConstants.SupervisorReportTriggerSourceComponent,
+                    "",
+                    AConstants.TIMEOUT);
+        } catch (AException e) {
+            System.out.println(e.getMessage());
+        }
+
+        if (msg != null) {
+            String cm = msg.getText();
+            if (reportingCompDataMap.containsKey(cm)) {
+                selectedComponent = cm;
+                addRemoveSelected2Graph(true);
+            }
+        }
+
     }
 
     /**
