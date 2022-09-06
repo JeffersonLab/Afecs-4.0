@@ -368,7 +368,7 @@ public class PLAsk {
                     }
                 }
             } else {
-                // NON interactive mode
+                //  now interactive mode
                 String[] _cmds = config.getStringArray(ARG_CMD);
                 String _cmd = _cmds[0];
                 try{
@@ -378,6 +378,11 @@ public class PLAsk {
                         case art: {
                             if(_cmds.length==2){
                                 String _session = _cmds[1];
+                                // 09.6.22 vg
+                                // handle env variables for the session
+                                if(_session.startsWith("$")){
+                                    _session = System.getenv(_session);
+                                }
                                 System.out.println(api.getActiveRunType(_session));
                             }
                             break;
