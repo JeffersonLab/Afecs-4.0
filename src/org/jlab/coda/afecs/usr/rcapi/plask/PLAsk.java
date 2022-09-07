@@ -127,10 +127,18 @@ public class PLAsk {
         } else {
             // connect to the platform
             RcApi api = new RcApi();
-            if (!api.pl_connect(config.getString(ARG_HOST),config.getString(ARG_EXPID))){
-                System.out.println("Cannot connect to the platform at host = "+
-                        config.getString(ARG_HOST) +" name = "+config.getString(ARG_EXPID));
-                System.exit(1);
+            if(config.getString(ARG_HOST).equals("host")){
+                if (!api.pl_connect(config.getString(ARG_EXPID))) {
+                    System.out.println("Cannot connect to the platform  " +
+                             " name = " + config.getString(ARG_EXPID));
+                    System.exit(1);
+                }
+            } else {
+                if (!api.pl_connect(config.getString(ARG_HOST), config.getString(ARG_EXPID))) {
+                    System.out.println("Cannot connect to the platform at host = " +
+                            config.getString(ARG_HOST) + " name = " + config.getString(ARG_EXPID));
+                    System.exit(1);
+                }
             }
 
             if(config.getBoolean(ARG_INTER)){
