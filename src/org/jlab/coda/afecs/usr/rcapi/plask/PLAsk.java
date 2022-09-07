@@ -52,7 +52,7 @@ public class PLAsk {
 
         FlaggedOption host = new FlaggedOption(ARG_HOST)
                 .setStringParser(JSAP.STRING_PARSER)
-                .setRequired(true)
+                .setRequired(false)
                 .setShortFlag('h')
                 .setLongFlag("host");
         host.setHelp("Afecs platform host");
