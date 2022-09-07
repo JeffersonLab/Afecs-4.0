@@ -127,7 +127,7 @@ public class PLAsk {
         } else {
             // connect to the platform
             RcApi api = new RcApi();
-            if(config.getString(ARG_HOST).equals("host")){
+            if(config.getString(ARG_HOST) == null){
                 if (!api.pl_connect(config.getString(ARG_EXPID))) {
                     System.out.println("Cannot connect to the platform  " +
                              " name = " + config.getString(ARG_EXPID));
