@@ -131,13 +131,13 @@ public class PLAsk {
                 if (!api.pl_connect(config.getString(ARG_EXPID))) {
                     System.out.println("Cannot connect to the platform  " +
                              " name = " + config.getString(ARG_EXPID));
-                    System.exit(1);
+                    System.exit(13);
                 }
             } else {
                 if (!api.pl_connect(config.getString(ARG_HOST), config.getString(ARG_EXPID))) {
                     System.out.println("Cannot connect to the platform at host = " +
                             config.getString(ARG_HOST) + " name = " + config.getString(ARG_EXPID));
-                    System.exit(1);
+                    System.exit(13);
                 }
             }
 
