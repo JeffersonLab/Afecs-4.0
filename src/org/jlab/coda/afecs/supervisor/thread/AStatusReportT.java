@@ -127,7 +127,7 @@ public class AStatusReportT extends Thread {
                 tc.setExpid(owner.getPlEXPID());
             }
 
-            // aggregate SED class component parameters
+            // aggregate SEB class component parameters
             if (owner.sortedComponentList.containsKey("SEB_class")) {
                 int eventNumber = 0;
                 float eventRate = 0f;
@@ -171,6 +171,50 @@ public class AStatusReportT extends Thread {
                 tc.setDestinationNames(destinationNameArray);
                 tc.setExpid(owner.getPlEXPID());
             }
+            // aggregate SAGG class component parameters
+            if (owner.sortedComponentList.containsKey("SAGG_class")) {
+                int eventNumber = 0;
+                float eventRate = 0f;
+                float eventRateAverage = 0f;
+                double dataRate = 0d;
+                double dataRateAverage = 0d;
+                long numberOfLongs = 0;
+                int maxEventSize = 0;
+                int minEventSize = 0;
+                int avgEventSize = 0;
+                String[] destinationNameArray = new String[0];
+
+
+                for (AComponent c : owner.sortedComponentList.values()) {
+                    if (c.getType().equals(ACodaType.SAGG.name()) && !c.getName().contains("class")) {
+                        eventNumber += c.getEventNumber();
+                        eventRate += c.getEventRate();
+                        eventRateAverage += c.getEventRateAverage();
+                        dataRate += c.getDataRate();
+                        dataRateAverage += c.getDataRateAverage();
+                        numberOfLongs += c.getNumberOfLongs();
+                        maxEventSize += c.getMaxEventSize();
+                        minEventSize += c.getMinEventSize();
+                        avgEventSize += c.getAvgEventSize();
+                        if(c.getDestinationNames()!=null) {
+                            destinationNameArray = (String[]) AfecsTool.concatenate(
+                                    destinationNameArray, c.getDestinationNames());
+                        }
+                    }
+                }
+                AComponent tc = owner.sortedComponentList.get("SAGG_class");
+                tc.setEventNumber(eventNumber);
+                tc.setEventRate(eventRate);
+                tc.setEventRateAverage(eventRateAverage);
+                tc.setDataRate(dataRate);
+                tc.setDataRateAverage(dataRateAverage);
+                tc.setNumberOfLongs(numberOfLongs);
+                tc.setMaxEventSize(maxEventSize);
+                tc.setMinEventSize(minEventSize);
+                tc.setAvgEventSize(avgEventSize);
+                tc.setDestinationNames(destinationNameArray);
+                tc.setExpid(owner.getPlEXPID());
+            }
             // aggregate PED class component parameters
             if (owner.sortedComponentList.containsKey("PEB_class")) {
                 int eventNumber = 0;
@@ -202,6 +246,49 @@ public class AStatusReportT extends Thread {
                     }
                 }
                 AComponent tc = owner.sortedComponentList.get("PEB_class");
+                tc.setEventNumber(eventNumber);
+                tc.setEventRate(eventRate);
+                tc.setEventRateAverage(eventRateAverage);
+                tc.setDataRate(dataRate);
+                tc.setDataRateAverage(dataRateAverage);
+                tc.setNumberOfLongs(numberOfLongs);
+                tc.setMaxEventSize(maxEventSize);
+                tc.setMinEventSize(minEventSize);
+                tc.setAvgEventSize(avgEventSize);
+                tc.setDestinationNames(destinationNameArray);
+                tc.setExpid(owner.getPlEXPID());
+            }
+            // aggregate PAGG class component parameters
+            if (owner.sortedComponentList.containsKey("PAGG_class")) {
+                int eventNumber = 0;
+                float eventRate = 0f;
+                float eventRateAverage = 0f;
+                double dataRate = 0d;
+                double dataRateAverage = 0d;
+                long numberOfLongs = 0;
+                int maxEventSize = 0;
+                int minEventSize = 0;
+                int avgEventSize = 0;
+                String[] destinationNameArray = new String[0];
+
+                for (AComponent c : owner.sortedComponentList.values()) {
+                    if (c.getType().equals(ACodaType.PAGG.name()) && !c.getName().contains("class")) {
+                        eventNumber += c.getEventNumber();
+                        eventRate += c.getEventRate();
+                        eventRateAverage += c.getEventRateAverage();
+                        dataRate += c.getDataRate();
+                        dataRateAverage += c.getDataRateAverage();
+                        numberOfLongs += c.getNumberOfLongs();
+                        maxEventSize += c.getMaxEventSize();
+                        minEventSize += c.getMinEventSize();
+                        avgEventSize += c.getAvgEventSize();
+                        if(c.getDestinationNames()!=null) {
+                            destinationNameArray = (String[]) AfecsTool.concatenate(
+                                    destinationNameArray, c.getDestinationNames());
+                        }
+                    }
+                }
+                AComponent tc = owner.sortedComponentList.get("PAGG_class");
                 tc.setEventNumber(eventNumber);
                 tc.setEventRate(eventRate);
                 tc.setEventRateAverage(eventRateAverage);

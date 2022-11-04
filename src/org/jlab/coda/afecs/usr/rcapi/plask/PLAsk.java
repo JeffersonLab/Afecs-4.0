@@ -369,7 +369,6 @@ public class PLAsk {
                                 }
                                 break;
                             }
-
                         }
                     } catch (IllegalArgumentException e){
                         System.out.println("unknown command");

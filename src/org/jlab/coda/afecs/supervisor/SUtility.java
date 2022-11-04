@@ -170,6 +170,10 @@ public class SUtility {
             return owner.sortedComponentList.get("PEB_class");
         } else if (owner.sortedComponentList.containsKey("SEB_class")) {
             return owner.sortedComponentList.get("SEB_class");
+        } else if (owner.sortedComponentList.containsKey("PAGG_class")) {
+            return owner.sortedComponentList.get("PAGG_class");
+        } else if (owner.sortedComponentList.containsKey("SAGG_class")) {
+            return owner.sortedComponentList.get("SAGG_class");
         }
         List<AComponent> l = new ArrayList<>(owner.sortedComponentList.values());
         Collections.sort(l);
@@ -177,6 +181,8 @@ public class SUtility {
             if (comp.getType().equals(ACodaType.ER.name())) return comp;
             else if (comp.getType().equals(ACodaType.PEB.name())) return comp;
             else if (comp.getType().equals(ACodaType.SEB.name())) return comp;
+            else if (comp.getType().equals(ACodaType.PAGG.name())) return comp;
+            else if (comp.getType().equals(ACodaType.SAGG.name())) return comp;
             else if (comp.getType().equals(ACodaType.EB.name())) return comp;
             else if (comp.getType().equals(ACodaType.EBER.name())) return comp;
             else if (comp.getType().equals(ACodaType.DC.name())) return comp;

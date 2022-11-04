@@ -878,6 +878,23 @@ public class SupervisorAgent extends AParent implements Serializable {
                             }
                         }
                         break;
+                    case "PAGG_class":
+                        for (CodaRCAgent c : myComponents.values()) {
+
+                            if (c.me.getType().equals(ACodaType.PAGG.name())) {
+                                c.agentControlRequestSetFileWriting(s_fileWriting);
+                            }
+                        }
+                        break;
+
+                    case "SAGG_class":
+                        for (CodaRCAgent c : myComponents.values()) {
+
+                            if (c.me.getType().equals(ACodaType.SAGG.name())) {
+                                c.agentControlRequestSetFileWriting(s_fileWriting);
+                            }
+                        }
+                        break;
                 }
             } else {
                 CodaRCAgent c = myComponents.get(persistencyComponent.getName());

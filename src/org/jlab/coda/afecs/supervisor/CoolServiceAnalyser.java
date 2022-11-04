@@ -734,6 +734,8 @@ public class CoolServiceAnalyser {
         List< AComponent> fcsList = new ArrayList<>();
         List< AComponent> pebList = new ArrayList<>();
         List< AComponent> sebList = new ArrayList<>();
+        List< AComponent> paggList = new ArrayList<>();
+        List< AComponent> saggList = new ArrayList<>();
         List< AComponent> ebList = new ArrayList<>();
         List< AComponent> cdebList = new ArrayList<>();
         List< AComponent> dcList = new ArrayList<>();
@@ -759,6 +761,10 @@ public class CoolServiceAnalyser {
                 pebList.add(c.me);
             } else if (c.me.getType().equals(ACodaType.SEB.name())) {
                 sebList.add(c.me);
+            } else if (c.me.getType().equals(ACodaType.PAGG.name())) {
+                paggList.add(c.me);
+            } else if (c.me.getType().equals(ACodaType.SAGG.name())) {
+                saggList.add(c.me);
             } else if (c.me.getType().equals(ACodaType.EB.name())) {
                 ebList.add(c.me);
             } else if (c.me.getType().equals(ACodaType.EBER.name())) {
@@ -830,6 +836,17 @@ public class CoolServiceAnalyser {
             nc.setObjectType("coda3");
             owner.sortedComponentList.put(nc.getName(), nc);
         }
+        for(AComponent c:paggList){
+            owner.sortedComponentList.put(c.getName(), c);
+        }
+        if (paggList.size() > 1) {
+            AComponent nc = new AComponent();
+            nc.setName("PAGG_class");
+            nc.setType(ACodaType.PAGG.name());
+            nc.setState("na");
+            nc.setObjectType("coda3");
+            owner.sortedComponentList.put(nc.getName(), nc);
+        }
 
         for(AComponent c:sebList){
             owner.sortedComponentList.put(c.getName(), c);
@@ -838,6 +855,17 @@ public class CoolServiceAnalyser {
             AComponent nc = new AComponent();
             nc.setName("SEB_class");
             nc.setType(ACodaType.SEB.name());
+            nc.setState("na");
+            nc.setObjectType("coda3");
+            owner.sortedComponentList.put(nc.getName(), nc);
+        }
+        for(AComponent c:saggList){
+            owner.sortedComponentList.put(c.getName(), c);
+        }
+        if (saggList.size() > 1) {
+            AComponent nc = new AComponent();
+            nc.setName("SAGG_class");
+            nc.setType(ACodaType.SAGG.name());
             nc.setState("na");
             nc.setObjectType("coda3");
             owner.sortedComponentList.put(nc.getName(), nc);
@@ -888,9 +916,19 @@ public class CoolServiceAnalyser {
                 owner.sortedByOutputList.put(c.me.getName(), c.me);
             }
         }
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.SAGG.name())) {
+                owner.sortedByOutputList.put(c.me.getName(), c.me);
+            }
+        }
 
         for (CodaRCAgent c : owner.myComponents.values()) {
             if (c.me.getType().equals(ACodaType.PEB.name())) {
+                owner.sortedByOutputList.put(c.me.getName(), c.me);
+            }
+        }
+        for (CodaRCAgent c : owner.myComponents.values()) {
+            if (c.me.getType().equals(ACodaType.PAGG.name())) {
                 owner.sortedByOutputList.put(c.me.getName(), c.me);
             }
         }

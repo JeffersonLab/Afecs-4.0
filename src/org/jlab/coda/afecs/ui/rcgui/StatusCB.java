@@ -494,6 +494,8 @@ class StatusCB extends cMsgCallbackAdapter {
                 if (_ad.getType().equals(ACodaType.DC.name()) ||
                         _ad.getType().equals(ACodaType.SEB.name()) ||
                         _ad.getType().equals(ACodaType.PEB.name()) ||
+                        _ad.getType().equals(ACodaType.SAGG.name()) ||
+                        _ad.getType().equals(ACodaType.PAGG.name()) ||
                         _ad.getType().equals(ACodaType.EB.name()) ||
                         _ad.getType().equals(ACodaType.EBER.name()) ||
                         _ad.getType().equals(ACodaType.ROC.name()) ||

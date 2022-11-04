@@ -137,7 +137,7 @@ public class ServiceExecutionT implements Runnable {
                         owner.me.getSession() + "_" + owner.me.getRunType() + "/supervisor",
                         owner.me.getRunTimeDataAsPayload());
 
-                // Otherwise add ing to the service request name
+                // Otherwise, add ing to the service request name
             } else {
                 owner.me.setState(stateName + "ing");
                 owner.send(AConstants.GUI,

@@ -63,7 +63,7 @@ public class CParser {
     private Map<String, String> setRTVs;
 
     private int numberOfFileComponents;
-    private int erId = -1, pebId = -1, sebId = -1, ebId = -1, cdebId = -1, dcId = -1, usrId = -1;
+    private int erId = -1, pebId = -1, sebId = -1, paggId = -1, saggId = -1, ebId = -1, cdebId = -1, dcId = -1, usrId = -1;
 
     private AContainer myContainer;
 
@@ -489,6 +489,14 @@ public class CParser {
                         numberOfFileComponents++;
                         sebId++;
                         cmp.setStreamId(sebId);
+                    } else if (tmps.equals(ACodaType.PAGG.name())) {
+                        numberOfFileComponents++;
+                        paggId++;
+                        cmp.setStreamId(paggId);
+                    } else if (tmps.equals(ACodaType.SAGG.name())) {
+                        numberOfFileComponents++;
+                        saggId++;
+                        cmp.setStreamId(saggId);
                     } else if (tmps.equals(ACodaType.EB.name())) {
                         ebId++;
                         cmp.setStreamId(ebId);
@@ -556,6 +564,10 @@ public class CParser {
                     cmp.setPriority(ACodaType.PEB.priority());
                 else if (cmp.getType().equalsIgnoreCase(ACodaType.SEB.name()))
                     cmp.setPriority(ACodaType.SEB.priority());
+                else if (cmp.getType().equalsIgnoreCase(ACodaType.PAGG.name()))
+                    cmp.setPriority(ACodaType.PAGG.priority());
+                else if (cmp.getType().equalsIgnoreCase(ACodaType.SAGG.name()))
+                    cmp.setPriority(ACodaType.SAGG.priority());
                 else if (cmp.getType().equalsIgnoreCase(ACodaType.EB.name()))
                     cmp.setPriority(ACodaType.EB.priority());
                 else if (cmp.getType().equalsIgnoreCase(ACodaType.EBER.name()))
