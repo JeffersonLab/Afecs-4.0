@@ -404,12 +404,13 @@
     </target>
 
     <target name="build.jar" description="build jar file">
-        <jar destfile="afecs-4.0.jar" basedir="./classes/production/afecs"/>
+        <jar destfile="afecs-4.1.jar" basedir="./classes/production/afecs"/>
     </target>
 
 
     <target name="delete.jar" description="delete distribution jar file">
         <delete file="afecs-4.0.jar"/>
+        <delete file="afecs-4.1.jar"/>
         <delete>
             <fileset dir="${env.CODA}/common/jar">
                 <include name="afecs-*.jar"/>
@@ -452,7 +453,7 @@
 
 
     <target name="cp" description="Copies jars and executable into ${build_dir} area.">
-        <copy file = "${module.afecs.basedir}/afecs-4.0.jar" todir="${build_dir}/common/jar" overwrite="true"/>
+        <copy file = "${module.afecs.basedir}/afecs-4.1.jar" todir="${build_dir}/common/jar" overwrite="true"/>
        <copy file = "${module.afecs.basedir}/lib/JinFlux.jar" todir="${build_dir}/common/jar" overwrite="true"/>
        <copy file = "${module.afecs.basedir}/lib/xml-apis.jar" todir="${build_dir}/common/jar" overwrite="true"/>
        <copy file = "${module.afecs.basedir}/lib/xercesImpl.jar" todir="${build_dir}/common/jar" overwrite="true"/>
