@@ -196,7 +196,7 @@ public class AConstants {
     public static final String NODE = "node";
     public static final String USERNAME = "userName";
     public static final String PASSWORD = "password";
-    public static final int TIMEOUT = 30000;
+    public static final int TIMEOUT = 40000;
 
 
     /***********************************************************************
