@@ -83,6 +83,7 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
     private int fileWriting = 1;
 
     private String runStartTime = "0";
+    private long runStartTimeMS;
     private String runEndTime = "0";
     private boolean autoStart = false;
     private int eventLimit = 0;
@@ -146,6 +147,14 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
         addConceptSlot("linkedToType", 2, true, "String");
         addConceptSlot("hasUserConfig", 2, true, "String");
         addConceptSlot("usesLink", 2, true, "ALink");
+    }
+
+    public long getRunStartTimeMS() { //VG 08.23
+        return runStartTimeMS;
+    }
+
+    public void setRunStartTimeMS(long runStartTimeMS) { //VG 08.23
+        this.runStartTimeMS = runStartTimeMS;
     }
 
     public String getName() {
@@ -407,6 +416,10 @@ public class AComponent extends AOntologyConcept implements Serializable, Compar
 
     public void setTimeLimit(long timeLimit) {
         this.timeLimit = timeLimit;
+    }
+
+    public long getTimeLimit() {
+        return timeLimit ;
     }
 
     public ArrayList<AState> getStates() {

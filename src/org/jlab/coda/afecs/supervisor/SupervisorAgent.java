@@ -1580,6 +1580,14 @@ public class SupervisorAgent extends AParent implements Serializable {
                     }
                 }
 
+                // Check if time limit has reached (by vg 08.23)
+                if (me.getTimeLimit() > 0 &&
+                        me.getState().equals(AConstants.active)) {
+                    if ( me.getRunStartTimeMS() + me.getTimeLimit() > AfecsTool.getCurrentTimeInMs() ) {
+                        codaRC_stopRun();
+                    }
+                }
+
                 // Check if data limit has reached
                 if (me.getDataLimit() > 0 &&
                         me.getState().equals(AConstants.active)) {

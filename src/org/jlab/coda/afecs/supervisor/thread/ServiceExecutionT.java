@@ -408,6 +408,7 @@ public class ServiceExecutionT implements Runnable {
 
                         owner.me.setState(stateName);
                         owner.me.setRunStartTime(owner.startEndFormatter.format(new Date()));
+                        owner.me.setRunStartTimeMS(AfecsTool.getCurrentTimeInMs()); //VG 08.23
                         owner.me.setRunEndTime("0");
                         owner.me.setDestinationNames(owner.defineDestinationNames());
                         owner.send(AConstants.GUI,
