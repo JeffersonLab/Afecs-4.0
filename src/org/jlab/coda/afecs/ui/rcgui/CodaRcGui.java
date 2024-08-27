@@ -1269,7 +1269,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
      * the local rv map that are not set.
      * </p>
      *
-     * @return list of rtv (i.e. %(xyz))
+     * @return list  of rtv (i.e. %(xyz))
      */
     public List<String> getUnsetRTVs() {
         List<String> l = new ArrayList<>();
@@ -1938,7 +1938,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
         //======== this ========
         setTitle("CODA Run Control");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        Container contentPane = getContentPane();
+        var contentPane = getContentPane();
 
         //======== menuBar1 ========
         {
@@ -2024,7 +2024,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
 
                         //---- menuItem17 ----
                         menuItem17.setAction(action33);
-                        menuItem17.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, KeyEvent.CTRL_MASK));
+                        menuItem17.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, KeyEvent.CTRL_DOWN_MASK));
                         menuItem17.setText("Clear");
                         messageBoardMenu.add(menuItem17);
                         messageBoardMenu.addSeparator();
@@ -2045,13 +2045,13 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
 
                     //---- menuItem7 ----
                     menuItem7.setAction(action17);
-                    menuItem7.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.ALT_MASK));
+                    menuItem7.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.ALT_DOWN_MASK));
                     ChartsMenu.add(menuItem7);
                     ChartsMenu.addSeparator();
 
                     //---- menuItem8 ----
                     menuItem8.setAction(action18);
-                    menuItem8.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.ALT_MASK));
+                    menuItem8.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.ALT_DOWN_MASK));
                     ChartsMenu.add(menuItem8);
                     ChartsMenu.addSeparator();
 
@@ -2315,7 +2315,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
                 //---- RunNumberTextField ----
                 RunNumberTextField.setEditable(false);
                 RunNumberTextField.setFont(new Font(Font.DIALOG, Font.BOLD, 12));
-                RunNumberTextField.setForeground(new Color(153, 0, 51));
+                RunNumberTextField.setForeground(new Color(0x990033));
 
                 GroupLayout panel8Layout = new GroupLayout(panel8);
                 panel8.setLayout(panel8Layout);
@@ -2417,7 +2417,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
                 //---- EventNumberTextField ----
                 EventNumberTextField.setEditable(false);
                 EventNumberTextField.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
-                EventNumberTextField.setForeground(new Color(153, 0, 51));
+                EventNumberTextField.setForeground(new Color(0x990033));
 
                 GroupLayout panel2Layout = new GroupLayout(panel2);
                 panel2.setLayout(panel2Layout);
@@ -2717,7 +2717,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
 
         //======== Graph1 ========
         {
-            Graph1.setForeground(new Color(0, 77, 77));
+            Graph1.setForeground(new Color(0x004d4d));
             Graph1.setBackground(Color.orange);
         }
 
@@ -3087,7 +3087,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
             putValue(NAME, "Connect");
             putValue(SHORT_DESCRIPTION, "Connect to a control supervisor");
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.SHIFT_MASK));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.SHIFT_DOWN_MASK));
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
 
@@ -3107,7 +3107,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
             putValue(NAME, "Disconnect");
             putValue(SHORT_DESCRIPTION, "Disconnect from the control supervisor");
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.SHIFT_MASK));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.SHIFT_DOWN_MASK));
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
 
@@ -3148,7 +3148,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
             putValue(NAME, "Add");
             putValue(SHORT_DESCRIPTION, "Add selected component data to the chart");
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.ALT_MASK));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.ALT_DOWN_MASK));
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
 
@@ -3172,7 +3172,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
             putValue(NAME, "Remove");
             putValue(SHORT_DESCRIPTION, "Remove selected item from the chart");
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.ALT_MASK));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.ALT_DOWN_MASK));
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
 
@@ -3195,7 +3195,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
         private SmoothingAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
             putValue(NAME, "Smoothing");
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.ALT_MASK));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.ALT_DOWN_MASK));
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
 
@@ -3256,7 +3256,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
         private SetWatchAction() {
             // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
             putValue(NAME, "Set Watch");
-            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.ALT_MASK));
+            putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_W, KeyEvent.ALT_DOWN_MASK));
             // JFormDesigner - End of action initialization  //GEN-END:initComponents
         }
 

@@ -180,7 +180,10 @@ public class ProcessManager {
 
                         // Execution rc domain
                         if (pck.getForRcClient().equals(AConstants.seton)) {
+                            System.out.println("DDD => Sending cMsg as an attached process.");
                             stat2 = _async_sendPckgUsingRc(pck, comp);
+                            System.out.println("DDD => Done sending cMsg as an attached process.");
+
 
                             // Execution using native cMsg
                         } else if (pck.getForNativecMsg().equals(AConstants.seton)) {
