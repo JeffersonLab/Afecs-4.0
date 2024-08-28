@@ -1,0 +1,19 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/CChart.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/msql-jdbc-2-0b5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/xml-apis.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jsch-0.1.50.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/JSAP-2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/spikechart.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jfxrt.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/JinFlux.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jas-plotter-2.2.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/xercesImpl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jena.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

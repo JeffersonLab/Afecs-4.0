@@ -116,6 +116,8 @@ public class ProcessManager {
                                   AComponent comp) {
         boolean stat1 = true;
         boolean stat2 = true;
+        System.out.println("HHHH =========] executing a process");
+        System.out.println(p);
         if (p.getPeriodicity() == 0) {
 
             // Execute scripts first
