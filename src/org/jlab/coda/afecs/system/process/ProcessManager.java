@@ -151,13 +151,6 @@ public class ProcessManager {
                         // Execution rc domain
                         if (pck.getForRcClient().equals(AConstants.seton)) {
 
-                            // debug 11.07.21
-                            if(comp.getType().equals(ACodaType.ER.name()))
-                                System.out.println("DDD-SBS: sending message - type = " + pck.getSendType() +
-                                        " subject = "+ pck.getSendSubject() +
-                                        " text = " + pck.getSendText());
-                            // debug 11.07.21
-
                             stat2 = _sync_sendPckgUsingRc(pck, comp, p.getTimeout());
 
                             // Execution cMsg domain
@@ -194,6 +187,10 @@ public class ProcessManager {
                         // Execution rc domain
                         if (pck.getForRcClient().equals(AConstants.seton)) {
                             stat2 = _async_sendPckgUsingRc(pck, comp);
+
+                                System.out.println("HHH ==== ] sending message - type = " + pck.getSendType() +
+                                        " subject = "+ pck.getSendSubject() +
+                                        " text = " + pck.getSendText());
 
                             // Execution using native cMsg
                         } else if (pck.getForNativecMsg().equals(AConstants.seton)) {
