@@ -150,10 +150,12 @@ public class ProcessManager {
 
                         // Execution rc domain
                         if (pck.getForRcClient().equals(AConstants.seton)) {
-                            System.out.println("@VIK: sending RC domain message: "+ pck.getSendSubject()+" "+pck.getSendType());
+                            if(pck.getSendText() != null) {
+                                System.out.println("@VIK ======================== : "+ owner.me.getName());
+                                System.out.println("@VIK: sending RC domain message: " + pck.getSendSubject() + " " + pck.getSendType());
 
-                            stat2 = _sync_sendPckgUsingRc(pck, comp, p.getTimeout());
-
+                                stat2 = _sync_sendPckgUsingRc(pck, comp, p.getTimeout());
+                            }
                             // Execution cMsg domain
                         } else if (pck.getForNativecMsg().equals(AConstants.seton)) {
                             stat2 = _sync_sendPckgUsingcMsg(pck, comp, p.getTimeout());
