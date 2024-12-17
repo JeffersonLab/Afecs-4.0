@@ -150,6 +150,7 @@ public class ProcessManager {
 
                         // Execution rc domain
                         if (pck.getForRcClient().equals(AConstants.seton)) {
+                            System.out.println("@VIK: sending RC domain message: "+ pck.getSendSubject()+" "+pck.getSendType());
 
                             stat2 = _sync_sendPckgUsingRc(pck, comp, p.getTimeout());
 
