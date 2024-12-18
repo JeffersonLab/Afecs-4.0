@@ -304,7 +304,7 @@ public class ProcessManager {
                                 for (String item : items) {
 
                                     for (CodaRCAgent c : comp.myComponents.values()) {//VIK
-                                        if(c.me.getName().equals(item.trim()) {
+                                        if(c.me.getName().equals(item.trim())) {
                                             System.out.println("@VIK: "+ c.me.getName()
                                                     + " is sending RC domain message: subject = " + pck.getSendSubject()
                                                     + " type =" + pck.getSendType());
