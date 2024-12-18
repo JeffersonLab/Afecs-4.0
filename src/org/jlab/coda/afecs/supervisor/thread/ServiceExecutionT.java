@@ -638,7 +638,11 @@ public class ServiceExecutionT implements Runnable {
                                 AConstants.INFO,
                                 " Starting process = " + bp.getName());
                         // execute scripts before the state transition
-                        owner.pm.executeProcess(bp, owner.myPlugin, owner.me);
+
+//                        owner.pm.executeProcess(bp, owner.myPlugin, owner.me); //12.18.24 VG
+                        System.out.println("@VIK: Executing Supervisor attached process");
+                        owner.pm.executeSup2RCProcess(bp, owner.myPlugin, owner);
+
                         owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
                                 owner.myName,
                                 1,
@@ -675,7 +679,11 @@ public class ServiceExecutionT implements Runnable {
                                 " Starting process = " + bp.getName());
 
                         // execute scripts before the state transition
-                        owner.pm.executeProcess(bp, owner.myPlugin, owner.me);
+
+//                        owner.pm.executeProcess(bp, owner.myPlugin, owner.me); // 12/18/24 VG
+                        System.out.println("@VIK: Executing Supervisor attached process");
+                        owner.pm.executeSup2RCProcess(bp, owner.myPlugin, owner);
+
                         owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
                                 owner.myName,
                                 1,

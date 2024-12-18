@@ -24,8 +24,10 @@ package org.jlab.coda.afecs.system.process;
 
 import com.sun.scenario.effect.impl.sw.java.JSWBlend_SRC_OUTPeer;
 import org.jlab.coda.afecs.agent.AParent;
+import org.jlab.coda.afecs.codarc.CodaRCAgent;
 import org.jlab.coda.afecs.cool.ontology.*;
 import org.jlab.coda.afecs.plugin.IAClientCommunication;
+import org.jlab.coda.afecs.supervisor.SupervisorAgent;
 import org.jlab.coda.afecs.system.ACodaType;
 import org.jlab.coda.afecs.system.AConstants;
 import org.jlab.coda.afecs.system.AException;
@@ -151,9 +153,9 @@ public class ProcessManager {
                         // Execution rc domain
                         if (pck.getForRcClient().equals(AConstants.seton)) {
                             if(pck.getSendText() != null) {
-                                System.out.println("@VIK ======================== : "+ owner.me.getName());
-                                System.out.println("@VIK: sending RC domain message: " + pck.getSendSubject() + " " + pck.getSendType());
-
+                                System.out.println("HHH ==== ] sending message - type = " + pck.getSendType() +
+                                        " subject = "+ pck.getSendSubject() +
+                                        " text = " + pck.getSendText());
                                 stat2 = _sync_sendPckgUsingRc(pck, comp, p.getTimeout());
                             }
                             // Execution cMsg domain
@@ -216,6 +218,108 @@ public class ProcessManager {
 
             monProcesses.add((_startPeriodicProcess(p, plugin, comp)));
         }
+        return stat1;
+    }
+
+    public boolean executeSup2RCProcess(AProcess p,
+                                  IAClientCommunication plugin,
+                                  SupervisorAgent comp) {
+        boolean stat1 = true;
+        boolean stat2 = true;
+
+        System.out.println("HHH ====] Request to execute a process");
+        System.out.println(p);
+
+
+
+            // Now defined cMsg processes
+            if (p.getSendPackages() != null && !p.getSendPackages().isEmpty()) {
+
+                // Synchronous messaging
+                if (p.getSync() != null && p.getSync().equals(AConstants.seton)) {
+
+                    // Send a described packages.
+                    for (APackage pck : p.getSendPackages()) {
+
+                        // If cool does not define send or received subject,
+                        // set the subject to the name of this agent. This
+                        // means this agent represents the same name physical
+                        // client
+                        if (pck.getSendSubject().equals(AConstants.udf)) {
+                            pck.setSendSubject(owner.myName);
+                        }
+                        if (pck.getReceivedSubject().equals(AConstants.udf)) {
+                            pck.setReceivedSubject(owner.myName);
+                        }
+
+                        // Execution rc domain
+                        if (pck.getForRcClient().equals(AConstants.seton)) {
+                            if(pck.getSendText() != null) {
+                                // Split the string using comma as the delimiter
+                                String[] items = pck.getSendText().split(",");
+
+                                // Iterate through the array and print each item
+                                for (String item : items) {
+
+                                    for (CodaRCAgent c : comp.myComponents.values()) {//VIK
+                                        if(c.me.getName().equals(item.trim()) {
+                                            System.out.println("@VIK: "+ c.me.getName()
+                                                    + " is sending sync RC domain message: subject = " + pck.getSendSubject()
+                                                    + " type =" + pck.getSendType());
+                                            stat2 = _sync_sendPckgUsingRc(pck, c.me, p.getTimeout());
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        // One of the send packages of the process failed to send
+                        // fail the process execution
+                        if (!stat2) return false;
+                    }
+
+                    // Asynchronous process execution.
+                } else {
+
+                    // Send a described packages.
+                    for (APackage pck : p.getSendPackages()) {
+
+                        // If cool does not define send or received subject,
+                        // set the subject to the name of this agent. This
+                        // means this agent represents the same name physical
+                        // client
+                        if (pck.getSendSubject().equals(AConstants.udf)) {
+                            pck.setSendSubject(owner.myName);
+                        }
+                        if (pck.getReceivedSubject().equals(AConstants.udf)) {
+                            pck.setReceivedSubject(owner.myName);
+                        }
+
+                        // Execution rc domain
+                        if (pck.getForRcClient().equals(AConstants.seton)) {
+                            if(pck.getSendText() != null) {
+                                // Split the string using comma as the delimiter
+                                String[] items = pck.getSendText().split(",");
+
+                                // Iterate through the array and print each item
+                                for (String item : items) {
+
+                                    for (CodaRCAgent c : comp.myComponents.values()) {//VIK
+                                        if(c.me.getName().equals(item.trim()) {
+                                            System.out.println("@VIK: "+ c.me.getName()
+                                                    + " is sending RC domain message: subject = " + pck.getSendSubject()
+                                                    + " type =" + pck.getSendType());
+                                            stat2 = _async_sendPckgUsingRc(pck, c.me);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        // One of the send packages of the process failed to send
+                        // fail the process execution
+                        if (!stat2) return false;
+                    }
+                }
+            }
         return stat1;
     }
 
