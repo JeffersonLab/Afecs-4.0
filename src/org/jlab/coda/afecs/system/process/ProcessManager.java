@@ -34,6 +34,7 @@ import org.jlab.coda.afecs.system.AException;
 
 import org.jlab.coda.afecs.system.util.AfecsTool;
 import org.jlab.coda.afecs.system.util.StdOutput;
+import org.jlab.coda.cMsg.cMsg;
 import org.jlab.coda.cMsg.cMsgException;
 import org.jlab.coda.cMsg.cMsgMessage;
 import org.jlab.coda.cMsg.cMsgPayloadItem;
@@ -266,7 +267,7 @@ public class ProcessManager {
                                             System.out.println("@VIK: "+ c.me.getName()
                                                     + " is sending sync RC domain message: subject = " + pck.getSendSubject()
                                                     + " type =" + pck.getSendType());
-                                            stat2 = _sync_sendPckgUsingRc(pck, c.me, p.getTimeout());
+                                            stat2 = _sync_sendPckgUsingRcSupervisedAgent(c.me, c.myCRCClientConnection, pck, p.getTimeout());
                                         }
                                     }
                                 }
@@ -606,7 +607,6 @@ public class ProcessManager {
 
         to = to * 1000;
 
-        System.out.println("@VIK: =============== "+owner.me.getName());
         ArrayList<cMsgMessage> backMessages = new ArrayList<>();
         ArrayList<cMsgPayloadItem> al = _defineSendPackagePayload(pck, comp);
 
@@ -642,6 +642,68 @@ public class ProcessManager {
         }
 
         return b;
+    }
+    private boolean _sync_sendPckgUsingRcSupervisedAgent(AComponent comp,
+                                                         cMsg connection,
+                                                         APackage pck,
+                                                         int to) {
+        boolean b = true;
+
+        cMsgMessage msgBack;
+        cMsgMessage msg;
+        String subject = pck.getSendSubject();
+        String type = pck.getSendType();
+        String text = pck.getSendText();
+        to = to * 1000;
+
+        System.out.println("@VIK: =============== " + comp.getName());
+
+        ArrayList<cMsgMessage> backMessages = new ArrayList<>();
+
+        if (connection != null &&
+                connection.isConnected() &&
+                subject != null &&
+                type != null) {
+            msg = new cMsgMessage();
+            msg.setSubject(subject);
+            msg.setType(type);
+
+            if (text != null) msg.setText(text);
+
+
+            try {
+                System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                        comp.getName() + "----|: Info - rc_sendAndGet subject = " + subject +
+                        " type = " + type);
+
+                msgBack = connection.sendAndGet(msg, to);
+            } catch (Exception e) {
+                if (e.getMessage() == null) {
+                    System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                            comp.getName() + ": Error - rc_sendAndGet subject = " + subject +
+                            " type = " + type + " => timed out.");
+                } else {
+                    System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                            comp.getName() + ": Error - rc_sendAndGet subject = " + subject +
+                            " type = " + type + " => exception message = " + e.getMessage());
+                }
+                return false;
+            }
+
+            // check the return message
+                if (msgBack != null &&
+                        msgBack.getSubject() != null &&
+                        msgBack.getType() != null &&
+                        msgBack.getSubject().equals(pck.getReceivedSubject()) &&
+                        msgBack.getType().equals(pck.getReceivedType())) {
+                    if (!pck.getReceivedText().contains(msgBack.getText())) {
+                        b = false;
+                    }
+                }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

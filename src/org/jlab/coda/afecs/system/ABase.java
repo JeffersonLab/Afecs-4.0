@@ -719,8 +719,6 @@ public class ABase implements Serializable {
         cMsgMessage msgBack = null;
         cMsgMessage msg;
 
-        System.out.println("@VIK: RC connection status: "+ myCRCClientConnection+" "+myName);
-
         if (myCRCClientConnection != null &&
                 myCRCClientConnection.isConnected() &&
                 subject != null &&
