@@ -349,9 +349,12 @@
         <copy file="${module.afecs.basedir}/lib/xercesImpl.jar" todir="${build_dir}/common/jar"/>
     </target>
 
+<!--    <target name="check_config"-->
+<!--            depends="setup, jar_dir.create, jena_jar_dir.create, javafx_dir.create, common_bin_dir.create, bin_dir.create, bin64_dir.create, img_dir.create, CChart_jar.install, fx_jar.install, jena_jar.install, spikechart_jar.install, jas_jar.install, jsap_jar.install, jsch_jar.install, msql_jar.install, JinFlux.install, xercesImpl.install, xml-apis.install, image.install "-->
+<!--            description="Check configuration"/>-->
+
     <target name="check_config"
             depends="setup, jar_dir.create, jena_jar_dir.create, javafx_dir.create, common_bin_dir.create, bin_dir.create, bin64_dir.create, img_dir.create, CChart_jar.install, fx_jar.install, spikechart_jar.install, jas_jar.install, jsap_jar.install, jsch_jar.install, msql_jar.install, JinFlux.install, xercesImpl.install, xml-apis.install, image.install "
-<!--            depends="setup, jar_dir.create, jena_jar_dir.create, javafx_dir.create, common_bin_dir.create, bin_dir.create, bin64_dir.create, img_dir.create, CChart_jar.install, fx_jar.install, jena_jar.install, spikechart_jar.install, jas_jar.install, jsap_jar.install, jsch_jar.install, msql_jar.install, JinFlux.install, xercesImpl.install, xml-apis.install, image.install "-->
             description="Check configuration"/>
 
 
