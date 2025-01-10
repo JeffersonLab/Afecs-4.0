@@ -53,7 +53,7 @@ import java.util.StringTokenizer;
  * </p>
  *
  * @author gurjyan
- *         Date: 11/7/14 Time: 2:51 PM
+ * Date: 11/7/14 Time: 2:51 PM
  * @version 4.x
  */
 public class ProcessManager {
@@ -153,9 +153,9 @@ public class ProcessManager {
 
                         // Execution rc domain
                         if (pck.getForRcClient().equals(AConstants.seton)) {
-                            if(pck.getSendText() != null) {
+                            if (pck.getSendText() != null) {
                                 System.out.println("HHH ==== ] sending message - type = " + pck.getSendType() +
-                                        " subject = "+ pck.getSendSubject() +
+                                        " subject = " + pck.getSendSubject() +
                                         " text = " + pck.getSendText());
                                 stat2 = _sync_sendPckgUsingRc(pck, comp, p.getTimeout());
                             }
@@ -194,9 +194,9 @@ public class ProcessManager {
                         if (pck.getForRcClient().equals(AConstants.seton)) {
                             stat2 = _async_sendPckgUsingRc(pck, comp);
 
-                                System.out.println("HHH ==== ] sending message - type = " + pck.getSendType() +
-                                        " subject = "+ pck.getSendSubject() +
-                                        " text = " + pck.getSendText());
+                            System.out.println("HHH ==== ] sending message - type = " + pck.getSendType() +
+                                    " subject = " + pck.getSendSubject() +
+                                    " text = " + pck.getSendText());
 
                             // Execution using native cMsg
                         } else if (pck.getForNativecMsg().equals(AConstants.seton)) {
@@ -223,8 +223,8 @@ public class ProcessManager {
     }
 
     public boolean executeSup2RCProcess(AProcess p,
-                                  IAClientCommunication plugin,
-                                  SupervisorAgent comp) {
+                                        IAClientCommunication plugin,
+                                        SupervisorAgent comp) {
         boolean stat1 = true;
         boolean stat2 = true;
 
@@ -232,95 +232,71 @@ public class ProcessManager {
         System.out.println(p);
 
 
+        // Now defined cMsg processes
+        if (p.getSendPackages() != null && !p.getSendPackages().isEmpty()) {
 
-            // Now defined cMsg processes
-            if (p.getSendPackages() != null && !p.getSendPackages().isEmpty()) {
+            // Synchronous messaging
+            if (p.getSync() != null && p.getSync().equals(AConstants.seton)) {
 
-                // Synchronous messaging
-                if (p.getSync() != null && p.getSync().equals(AConstants.seton)) {
+                // Send a described packages.
+                for (APackage pck : p.getSendPackages()) {
 
-                    // Send a described packages.
-                    for (APackage pck : p.getSendPackages()) {
-
-                        // If cool does not define send or received subject,
-                        // set the subject to the name of this agent. This
-                        // means this agent represents the same name physical
-                        // client
-                        if (pck.getSendSubject().equals(AConstants.udf)) {
-                            pck.setSendSubject(owner.myName);
-                        }
-                        if (pck.getReceivedSubject().equals(AConstants.udf)) {
-                            pck.setReceivedSubject(owner.myName);
-                        }
-
-                        // Execution rc domain
-                        if (pck.getForRcClient().equals(AConstants.seton)) {
-                            if(pck.getSendText() != null) {
-                                // Split the string using comma as the delimiter
-                                String[] items = pck.getSendText().split(",");
-
-                                // Iterate through the array and print each item
-                                for (String item : items) {
-
-                                    for (CodaRCAgent c : comp.myComponents.values()) {//VIK
-                                        if(c.me.getName().equals(item.trim())) {
-                                            System.out.println("@VIK: "+ c.me.getName()
-                                                    + " is sending sync RC domain message: subject = " + pck.getSendSubject()
-                                                    + " type =" + pck.getSendType());
-                                            stat2 = _sync_sendPckgUsingRcSupervisedAgent(c.me, c.myCRCClientConnection, pck, p.getTimeout());
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        // One of the send packages of the process failed to send
-                        // fail the process execution
-                        if (!stat2) return false;
+                    // If cool does not define send or received subject,
+                    // set the subject to the name of this agent. This
+                    // means this agent represents the same name physical
+                    // client
+                    if (pck.getSendSubject().equals(AConstants.udf)) {
+                        pck.setSendSubject(owner.myName);
+                    }
+                    if (pck.getReceivedSubject().equals(AConstants.udf)) {
+                        pck.setReceivedSubject(owner.myName);
                     }
 
-                    // Asynchronous process execution.
-                } else {
-
-                    // Send a described packages.
-                    for (APackage pck : p.getSendPackages()) {
-
-                        // If cool does not define send or received subject,
-                        // set the subject to the name of this agent. This
-                        // means this agent represents the same name physical
-                        // client
-                        if (pck.getSendSubject().equals(AConstants.udf)) {
-                            pck.setSendSubject(owner.myName);
-                        }
-                        if (pck.getReceivedSubject().equals(AConstants.udf)) {
-                            pck.setReceivedSubject(owner.myName);
-                        }
-
-                        // Execution rc domain
-                        if (pck.getForRcClient().equals(AConstants.seton)) {
-                            if(pck.getSendText() != null) {
-                                // Split the string using comma as the delimiter
-                                String[] items = pck.getSendText().split(",");
-
-                                // Iterate through the array and print each item
-                                for (String item : items) {
-
-                                    for (CodaRCAgent c : comp.myComponents.values()) {//VIK
-                                        if(c.me.getName().equals(item.trim())) {
-                                            System.out.println("@VIK: "+ c.me.getName()
-                                                    + " is sending RC domain message: subject = " + pck.getSendSubject()
-                                                    + " type =" + pck.getSendType());
-                                            stat2 = _async_sendPckgUsingRcSupervisedAgent(c.me, c.myCRCClientConnection, pck);
-                                        }
-                                    }
-                                }
+                    // Execution rc domain
+                    if (pck.getForRcClient().equals(AConstants.seton)) {
+                        for (CodaRCAgent c : comp.myComponents.values()) {//VIK
+                            if (c.me.getName().equals(pck.getSendSubject().trim())) {
+                                System.out.println("@VIK: " + c.me.getName()
+                                        + " is sending sync RC domain message: subject = " + pck.getSendSubject()
+                                        + " type =" + pck.getSendType());
+                                stat2 = _sync_sendPckgUsingRcSupervisedAgent(c.me, c.myCRCClientConnection, pck, p.getTimeout());
                             }
                         }
-                        // One of the send packages of the process failed to send
-                        // fail the process execution
-                        if (!stat2) return false;
                     }
+                    if (!stat2) return false;
+                }
+
+                // Asynchronous process execution.
+            } else {
+
+                // Send a described packages.
+                for (APackage pck : p.getSendPackages()) {
+
+                    // If cool does not define send or received subject,
+                    // set the subject to the name of this agent. This
+                    // means this agent represents the same name physical
+                    // client
+                    if (pck.getSendSubject().equals(AConstants.udf)) {
+                        pck.setSendSubject(owner.myName);
+                    }
+
+                    // Execution rc domain
+                    if (pck.getForRcClient().equals(AConstants.seton)) {
+                        for (CodaRCAgent c : comp.myComponents.values()) {//VIK
+                            if (c.me.getName().equals(pck.getSendSubject().trim())) {
+                                System.out.println("@VIK: " + c.me.getName()
+                                        + " is sending RC domain message: subject = " + pck.getSendSubject()
+                                        + " type =" + pck.getSendType());
+                                stat2 = _async_sendPckgUsingRcSupervisedAgent(c.me, c.myCRCClientConnection, pck);
+                            }
+                        }
+                    }
+                    // One of the send packages of the process failed to send
+                    // fail the process execution
+                    if (!stat2) return false;
                 }
             }
+        }
         return stat1;
     }
 
@@ -643,6 +619,7 @@ public class ProcessManager {
 
         return b;
     }
+
     private boolean _sync_sendPckgUsingRcSupervisedAgent(AComponent comp,
                                                          cMsg connection,
                                                          APackage pck,
@@ -691,15 +668,15 @@ public class ProcessManager {
             }
 
             // check the return message
-                if (msgBack != null &&
-                        msgBack.getSubject() != null &&
-                        msgBack.getType() != null &&
-                        msgBack.getSubject().equals(pck.getReceivedSubject()) &&
-                        msgBack.getType().equals(pck.getReceivedType())) {
-                    if (!pck.getReceivedText().contains(msgBack.getText())) {
-                        b = false;
-                    }
+            if (msgBack != null &&
+                    msgBack.getSubject() != null &&
+                    msgBack.getType() != null &&
+                    msgBack.getSubject().equals(pck.getReceivedSubject()) &&
+                    msgBack.getType().equals(pck.getReceivedType())) {
+                if (!pck.getReceivedText().contains(msgBack.getText())) {
+                    b = false;
                 }
+            }
             return true;
         } else {
             return false;
@@ -707,8 +684,8 @@ public class ProcessManager {
     }
 
     private boolean _async_sendPckgUsingRcSupervisedAgent(AComponent comp,
-                                                         cMsg connection,
-                                                         APackage pck) {
+                                                          cMsg connection,
+                                                          APackage pck) {
         cMsgMessage msg;
         String subject = pck.getSendSubject();
         String type = pck.getSendType();
