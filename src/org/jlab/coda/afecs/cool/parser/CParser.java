@@ -884,8 +884,12 @@ public class CParser {
         String tmps;
         ArrayList<AProcess> pl = new ArrayList<>();
 
-        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
-                "> <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
+//        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
+//                "> <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
+
+        String tq = "SELECT ?x WHERE { <" + subject.toString() + "> <" +
+                AConstants.COOL_CORE + predicate + "> ?x } ORDER BY ?x";
+
         Query query = new Query(tq);
         query.setSource(Gmodel);
         QueryExecution qe = new QueryEngine(query);
