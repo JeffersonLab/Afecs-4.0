@@ -284,7 +284,7 @@ public class ProcessManager {
                     if (pck.getForRcClient().equals(AConstants.seton)) {
                         for (CodaRCAgent c : comp.myComponents.values()) {//VIK
                             if (c.me.getName().equals(pck.getSendSubject().trim())) {
-                                System.out.println("@VIK: " + c.me.getName()
+                                System.out.println("@VIKo: " + c.me.getName()
                                         + " is sending RC domain message: subject = " + pck.getSendSubject()
                                         + " type =" + pck.getSendType());
                                 stat2 = _async_sendPckgUsingRcSupervisedAgent(c.me, c.myCRCClientConnection, pck);
