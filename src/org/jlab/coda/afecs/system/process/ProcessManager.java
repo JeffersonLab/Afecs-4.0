@@ -309,7 +309,7 @@ public class ProcessManager {
                                             System.out.println("@VIK: "+ c.me.getName()
                                                     + " is sending RC domain message: subject = " + pck.getSendSubject()
                                                     + " type =" + pck.getSendType());
-                                            stat2 = _async_sendPckgUsingRc(pck, c.me);
+                                            stat2 = _async_sendPckgUsingRcSupervisedAgent(c.me, c.myCRCClientConnection, pck);
                                         }
                                     }
                                 }
@@ -700,6 +700,53 @@ public class ProcessManager {
                         b = false;
                     }
                 }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean _async_sendPckgUsingRcSupervisedAgent(AComponent comp,
+                                                         cMsg connection,
+                                                         APackage pck) {
+        cMsgMessage msg;
+        String subject = pck.getSendSubject();
+        String type = pck.getSendType();
+        String text = pck.getSendText();
+
+        System.out.println("@VIK: =============== " + comp.getName());
+
+        ArrayList<cMsgMessage> backMessages = new ArrayList<>();
+
+        if (connection != null &&
+                connection.isConnected() &&
+                subject != null &&
+                type != null) {
+            msg = new cMsgMessage();
+            msg.setSubject(subject);
+            msg.setType(type);
+
+            if (text != null) msg.setText(text);
+
+
+            try {
+                System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                        comp.getName() + "----|: Info - rc_send subject = " + subject +
+                        " type = " + type);
+
+                connection.send(msg);
+            } catch (Exception e) {
+                if (e.getMessage() == null) {
+                    System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                            comp.getName() + ": Error - rc_send subject = " + subject +
+                            " type = " + type + " => timed out.");
+                } else {
+                    System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                            comp.getName() + ": Error - rc_send subject = " + subject +
+                            " type = " + type + " => exception message = " + e.getMessage());
+                }
+                return false;
+            }
             return true;
         } else {
             return false;
