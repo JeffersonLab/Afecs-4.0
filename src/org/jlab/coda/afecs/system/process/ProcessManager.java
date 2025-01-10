@@ -230,7 +230,7 @@ public class ProcessManager {
 
         System.out.println("HHH ====] Request to execute a process");
         System.out.println(p);
-
+        System.out.println("@VIKUSH+++++++++ "+p.getSendPackages().isEmpty());
 
         // Now defined cMsg processes
         if (p.getSendPackages() != null && !p.getSendPackages().isEmpty()) {
@@ -282,7 +282,6 @@ public class ProcessManager {
 
                     // Execution rc domain
                     if (pck.getForRcClient().equals(AConstants.seton)) {
-                        System.out.println("@VIKUSH+++++++++ "+pck.getSendSubject().trim());
                         for (CodaRCAgent c : comp.myComponents.values()) {//VIK
                             if (c.me.getName().equals(pck.getSendSubject().trim())) {
                                 System.out.println("@VIK: " + c.me.getName()
