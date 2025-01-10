@@ -22,8 +22,16 @@
 
 package org.jlab.coda.afecs.cool.parser;
 
-import com.hp.hpl.jena.rdf.model.*;
-import com.hp.hpl.jena.rdql.*;
+//import com.hp.hpl.jena.rdf.model.*;
+//import com.hp.hpl.jena.rdql.*;
+
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.*;
 
 import org.jlab.coda.afecs.client.AClientInfo;
 import org.jlab.coda.afecs.codarc.CodaRCAgent;
@@ -364,27 +372,55 @@ public class CParser {
      * @param predicate String: cool predicate ( for example has timestamp, hasdatatype, etc.)
      * @return result           string
      */
-    private String getValue(Object subject, String predicate) {
-        Object x = null;
-        String sq = "SELECT ?x " + "WHERE(<" + subject.toString() +
-                "> <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
-        try {
-            Query query = new Query(sq);
-            query.setSource(Gmodel);
-            QueryExecution qe = new QueryEngine(query);
+//    private String _Old_getValue(Object subject, String predicate) {
+//        Object x = null;
+//        String sq = "SELECT ?x " + "WHERE(<" + subject.toString() +
+//                "> <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
+//        try {
+//            Query query = new Query(sq);
+//            query.setSource(Gmodel);
+//            QueryExecution qe = new QueryEngine(query);
+//
+//            QueryResults results = qe.exec();
+//            for (; results.hasNext(); ) {
+//                ResultBinding res = (ResultBinding) results.next();
+//                x = res.get("x");
+//            }
+//            results.close();
+//        } catch (Exception ex) {
+//            System.out.println(AfecsTool.stack2str(ex));
+//        }
+//        if (x == null) {
+//            return null;
+//        } else return x.toString();
+//    }
 
-            QueryResults results = qe.exec();
-            for (; results.hasNext(); ) {
-                ResultBinding res = (ResultBinding) results.next();
-                x = res.get("x");
+    private String getValue(Object subject, String predicate) {
+        RDFNode x = null;
+        // Build a SPARQL query string. Note the braces { } and SPARQL syntax.
+        String queryString =
+                "SELECT ?x WHERE { "
+                        + "   <" + subject.toString() + "> <" + AConstants.COOL_CORE + predicate + "> ?x . "
+                        + "} ORDER BY ?x";
+
+        // Parse the SPARQL query
+        Query query = QueryFactory.create(queryString);
+
+        // Execute the query over your model
+        try (QueryExecution qe = QueryExecutionFactory.create(query, Gmodel)) {
+            ResultSet rs = qe.execSelect();
+
+            // Iterate over the results
+            while (rs.hasNext()) {
+                QuerySolution sol = rs.nextSolution();
+                x = sol.get("x");
             }
-            results.close();
-        } catch (Exception ex) {
-            System.out.println(AfecsTool.stack2str(ex));
         }
         if (x == null) {
             return null;
-        } else return x.toString();
+        } else {
+            return x.toString();
+        }
     }
 
 
@@ -396,29 +432,57 @@ public class CParser {
      * @param predicate String: cool predicate ( for example has timestamp, hasdatatype, etc.)
      * @return result           string
      */
+//    private ArrayList<String> _old_getValueList(Object subject, String predicate) {
+//        Object x;
+//        ArrayList<String> l = new ArrayList<>();
+//
+//        String sq = "SELECT ?x " + "WHERE(<" + subject.toString() +
+//                "> <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
+//        try {
+//            Query query = new Query(sq);
+//            query.setSource(Gmodel);
+//            QueryExecution qe = new QueryEngine(query);
+//
+//            QueryResults results = qe.exec();
+//            for (; results.hasNext(); ) {
+//                ResultBinding res = (ResultBinding) results.next();
+//                x = res.get("x");
+//                if (x != null) l.add(x.toString());
+//            }
+//            results.close();
+//        } catch (Exception ex) {
+//            System.out.println(AfecsTool.stack2str(ex));
+//        }
+//        return l;
+//    }
+
     private ArrayList<String> getValueList(Object subject, String predicate) {
-        Object x;
-        ArrayList<String> l = new ArrayList<String>();
+        RDFNode x;
+        ArrayList<String> l = new ArrayList<>();
+        // Build a SPARQL query string. Note the braces { } and SPARQL syntax.
+        String queryString =
+                "SELECT ?x WHERE { "
+                        + "   <" + subject.toString() + "> <" + AConstants.COOL_CORE + predicate + "> ?x . "
+                        + "} ORDER BY ?x";
 
-        String sq = "SELECT ?x " + "WHERE(<" + subject.toString() +
-                "> <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
-        try {
-            Query query = new Query(sq);
-            query.setSource(Gmodel);
-            QueryExecution qe = new QueryEngine(query);
+        // Parse the SPARQL query
+        Query query = QueryFactory.create(queryString);
 
-            QueryResults results = qe.exec();
-            for (; results.hasNext(); ) {
-                ResultBinding res = (ResultBinding) results.next();
-                x = res.get("x");
-                if (x != null) l.add(x.toString());
+        // Execute the query over your model
+        try (QueryExecution qe = QueryExecutionFactory.create(query, Gmodel)) {
+            ResultSet rs = qe.execSelect();
+
+            // Iterate over the results
+            while (rs.hasNext()) {
+                QuerySolution sol = rs.nextSolution();
+                x = sol.get("x");
+                if( x!=null ) {
+                    l.add(x.toString());
+                }
             }
-            results.close();
-        } catch (Exception ex) {
-            System.out.println(AfecsTool.stack2str(ex));
         }
         return l;
-    }
+     }
 
 
     /**
@@ -429,7 +493,335 @@ public class CParser {
      * @return cl               list of {@link org.jlab.coda.afecs.cool.ontology.AComponent} objects
      */
 
+//    private ArrayList<AComponent> _old_parseComponent(Object subject, String predicate, String runType) {
+//        AComponent cmp;
+//        ArrayList<AProcess> processlist;
+//        ArrayList<AState> statelist;
+//        ArrayList<AService> services;
+//        HMI gui;
+//        APlugin plugin;
+//        AOption option;
+//        ArrayList<ALink> link;
+//        String tmps;
+//
+//        ArrayList<AComponent> cl = new ArrayList<>();
+//        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
+//                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
+//        Query query = new Query(tq);
+//        query.setSource(Gmodel);
+//        QueryExecution qe = new QueryEngine(query);
+//
+//        QueryResults results = qe.exec();
+//        for (; results.hasNext(); ) {
+//            ResultBinding res = (ResultBinding) results.next();
+//            Object x = res.get("x");
+//            if (x == null) break;
+//            cmp = new AComponent();
+//
+//            tmps = getValue(x, "hasName");
+//            if (tmps != null) {
+//                cmp.setName(tmps);
+//            } else {
+//                System.out.println("COOL: Component " + x + " does not have a name");
+//                return null;
+//            }
+//
+//            tmps = getValue(x, "hasClassPath");
+//            if (tmps != null) {
+//                cmp.setClassPath(tmps);
+//            }
+//
+//            tmps = getValue(x, "hasClassName");
+//            if (tmps != null) {
+//                cmp.setClassName(tmps);
+//            }
+//
+//            tmps = getValue(x, "hasType");
+//            if (tmps != null) {
+//                if (tmps.equals(ACodaType.FILE.name())) {
+//                    continue;
+//                } else {
+//                    cmp.setType(tmps);
+//                    if (tmps.equals(ACodaType.ER.name())) {
+//                        erId++;
+//                        cmp.setStreamId(erId);
+//                    } else if (tmps.equals(ACodaType.PEB.name())) {
+//                        numberOfFileComponents++;
+//                        pebId++;
+//                        cmp.setStreamId(pebId);
+//                    } else if (tmps.equals(ACodaType.SEB.name())) {
+//                        numberOfFileComponents++;
+//                        sebId++;
+//                        cmp.setStreamId(sebId);
+//                    } else if (tmps.equals(ACodaType.PAGG.name())) {
+//                        numberOfFileComponents++;
+//                        paggId++;
+//                        cmp.setStreamId(paggId);
+//                    } else if (tmps.equals(ACodaType.SAGG.name())) {
+//                        numberOfFileComponents++;
+//                        saggId++;
+//                        cmp.setStreamId(saggId);
+//                    } else if (tmps.equals(ACodaType.EB.name())) {
+//                        ebId++;
+//                        cmp.setStreamId(ebId);
+//                    } else if (tmps.equals(ACodaType.EBER.name())) {
+//                        cdebId++;
+//                        cmp.setStreamId(cdebId);
+//                    } else if (tmps.equals(ACodaType.DC.name())) {
+//                        dcId++;
+//                        cmp.setStreamId(dcId);
+//                    } else if (tmps.equals(ACodaType.USR.name())) {
+//                        usrId++;
+//                        cmp.setStreamId(usrId);
+//                    }
+//                }
+//            }
+//
+//
+//            tmps = getValue(x, "hasID");
+//            if (tmps != null) {
+//                try {
+//                    cmp.setId(Integer.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            tmps = getValue(x, "hasDescription");
+//            if (tmps != null) {
+//                cmp.setDescription(tmps);
+//            }
+//
+//            tmps = getValue(x, "hasHost");
+//            if (tmps != null) {
+//                cmp.setHost(tmps);
+//            }
+//
+////            tmps = getValue(x, "hasCode");
+////            if (tmps != null) {
+////                if (AfecsTool.containsRTV(tmps)) {
+////                    cmp.setCode(AfecsTool.checkRtvs(tmps, setRTVs));
+////                } else {
+////                    cmp.setCode(tmps);
+////                }
+////            }
+//
+//            tmps = getValue(x, "hasPriority");
+//            if (tmps != null) {
+//                try {
+//                    cmp.setPriority(Integer.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            } else {
+//                if (cmp.getType().equalsIgnoreCase(ACodaType.USR.name()))
+//                    cmp.setPriority(ACodaType.USR.priority());
+//                else if (cmp.getType().equalsIgnoreCase(ACodaType.SLC.name()))
+//                    cmp.setPriority(ACodaType.SLC.priority());
+//                else if (cmp.getType().equalsIgnoreCase(ACodaType.WNC.name()))
+//                    cmp.setPriority(ACodaType.WNC.priority());
+//                else if (cmp.getType().equalsIgnoreCase(ACodaType.ER.name()))
+//                    cmp.setPriority(ACodaType.ER.priority());
+//                else if (cmp.getType().equalsIgnoreCase(ACodaType.FCS.name()))
+//                    cmp.setPriority(ACodaType.FCS.priority());
+//                else if (cmp.getType().equalsIgnoreCase(ACodaType.PEB.name()))
+//                    cmp.setPriority(ACodaType.PEB.priority());
+//                else if (cmp.getType().equalsIgnoreCase(ACodaType.SEB.name()))
+//                    cmp.setPriority(ACodaType.SEB.priority());
+//                else if (cmp.getType().equalsIgnoreCase(ACodaType.PAGG.name()))
+//                    cmp.setPriority(ACodaType.PAGG.priority());
+//                else if (cmp.getType().equalsIgnoreCase(ACodaType.SAGG.name()))
+//                    cmp.setPriority(ACodaType.SAGG.priority());
+//                else if (cmp.getType().equalsIgnoreCase(ACodaType.EB.name()))
+//                    cmp.setPriority(ACodaType.EB.priority());
+//                else if (cmp.getType().equalsIgnoreCase(ACodaType.EBER.name()))
+//                    cmp.setPriority(ACodaType.EBER.priority());
+//                else if (cmp.getType().equalsIgnoreCase(ACodaType.DC.name()))
+//                    cmp.setPriority(ACodaType.DC.priority());
+//                else if (cmp.getType().equalsIgnoreCase(ACodaType.ROC.name()))
+//                    cmp.setPriority(ACodaType.ROC.priority());
+//                else if (cmp.getType().equalsIgnoreCase(ACodaType.GT.name()))
+//                    cmp.setPriority(ACodaType.GT.priority());
+//                else if (cmp.getType().equalsIgnoreCase(ACodaType.FPGA.name()))
+//                    cmp.setPriority(ACodaType.GT.priority());
+//                else if (cmp.getType().equalsIgnoreCase(ACodaType.TS.name()))
+//                    cmp.setPriority(ACodaType.TS.priority());
+//                else if (cmp.getType().equalsIgnoreCase(ACodaType.SMS.name()))
+//                    cmp.setPriority(ACodaType.SMS.priority());
+//                else if (cmp.getType().equalsIgnoreCase(ACodaType.RCS.name()))
+//                    cmp.setPriority(ACodaType.RCS.priority());
+//                else if (cmp.getType().equalsIgnoreCase(ACodaType.FILE.name()))
+//                    cmp.setPriority(ACodaType.FILE.priority());
+//                else
+//                    System.err.println("Error: "
+//                            + cmp.getType()
+//                            + " type is not defined for the component "
+//                            + " " + cmp.getName());
+//            }
+//
+//            tmps = getValue(x, "hasUserConfig");
+//            if (tmps != null) {
+//                if (AfecsTool.containsRTV(tmps)) {
+//                    cmp.setUserConfig(AfecsTool.checkRtvs(tmps, setRTVs));
+//                } else if (tmps.startsWith("/")) {
+//                    cmp.setUserConfig(tmps);
+//                } else if (tmps.contains("$env(")) {
+//                    cmp.setUserConfig(AfecsTool.resolveCodaEnvVariables(tmps));
+//                } else {
+//                    cmp.setUserConfig(_userConfigDir + tmps);
+//                }
+//            }
+//
+//            tmps = getValue(x, "hasSession");
+//            if (tmps != null) {
+//                cmp.setSession(tmps);
+//            }
+//
+//            tmps = getValue(x, "hasRunType");
+//            if (tmps != null) cmp.setRunType(tmps);
+//
+//            option = parseOption(x, "hasOption");
+//            if (option != null) {
+//                cmp.setOption(option);
+//                for (String s : _opDirs) {
+//                    cmp.addDod(s);
+//                }
+//            }
+//
+//            tmps = getValue(x, "representsCoda2Component");
+//            if (tmps != null) {
+//                cmp.setCoda2Component(tmps);
+//            }
+//
+//            tmps = getValue(x, "isCodaComponent");
+//            if (tmps != null) {
+//                cmp.setCodaComponent(tmps);
+//            }
+//
+//
+//            link = parseLink(x, "usesLink");
+//            if (link != null) {
+//                cmp.setLinks(link);
+//            }
+//
+//            tmps = getValue(x, "hasReportingInterval");
+//            if (tmps != null) {
+//                try {
+//                    cmp.setReportingInterval(Integer.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//
+//            statelist = parseStates(x, "hasState");
+//
+//            if (statelist != null && !statelist.isEmpty()) {
+//
+//                cmp.setStates(statelist);
+//            }
+//            processlist = parseProcess(x, "hasProcess");
+//            if (processlist != null && !processlist.isEmpty()) {
+//                cmp.setProcesses(processlist);
+//            }
+//
+//            services = parseServices(x, "providesService");
+//            if (services != null && !services.isEmpty()) {
+//                cmp.setServices(services);
+//            }
+//
+//            gui = parseHmi(x, "hasHMI");
+//            if (gui != null) {
+//                cmp.setGui(gui);
+//            }
+//
+//            plugin = parsePlugin(x, "hasCommunicationPlugin");
+//            if (plugin != null) {
+//                cmp.setPlugin(plugin);
+//            }
+//
+//            tmps = getValue(x, "XCo");
+//            if (tmps != null) {
+//                try {
+//                    cmp.setX(Double.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            tmps = getValue(x, "YCo");
+//            if (tmps != null) {
+//                try {
+//                    cmp.setY(Double.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            tmps = getValue(x, "WCo");
+//            if (tmps != null) {
+//                try {
+//                    cmp.setW(Double.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            tmps = getValue(x, "HCo");
+//            if (tmps != null) {
+//                try {
+//                    cmp.setH(Double.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            ArrayList<String> tmL = getValueList(x, "linkedTo");
+//            if (tmL != null && !tmL.isEmpty()) {
+//                cmp.setLinkedComponentNames(tmL);
+//            }
+//
+//            ArrayList<String> tmLt = getValueList(x, "linkedToType");
+//            if (tmLt != null && !tmLt.isEmpty()) {
+//                cmp.setLinkedComponentTypes(tmLt);
+//            }
+//
+//            // If type is ROC or TS read component specific .dat configuration
+//            // file created by JcEdit to get the mastership of the ROC
+//            if (cmp.getType().equals(ACodaType.ROC.name()) ||
+//                    cmp.getType().equals(ACodaType.TS.name()) ||
+//                    cmp.getType().equals(ACodaType.FPGA.name()) ||
+//                    cmp.getType().equals(ACodaType.GT.name())) {
+//                String configFileName = _coolHome +
+//                        "Control" + File.separator +
+//                        runType + File.separator +
+//                        "Options" + File.separator +
+//                        cmp.getName() + ".dat";
+//                try {
+//                    BufferedReader br = new BufferedReader(new FileReader(configFileName));
+//                    Stream<String> l = br.lines();
+//                    try {
+//                        String s = l.filter(line -> line.contains("isMaster")).findFirst().get();
+//                        if (s.split("=")[1].trim().equals("true")) {
+//                            cmp.setMaster(true);
+//                        }
+//                    } catch (NoSuchElementException e) {
+//                        e.printStackTrace();
+//                    }
+//                    br.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            cl.add(cmp);
+//        }
+//        results.close();
+//        return cl;
+//    }
     private ArrayList<AComponent> parseComponent(Object subject, String predicate, String runType) {
+        RDFNode x;
+
         AComponent cmp;
         ArrayList<AProcess> processlist;
         ArrayList<AState> statelist;
@@ -441,318 +833,316 @@ public class CParser {
         String tmps;
 
         ArrayList<AComponent> cl = new ArrayList<>();
-        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
-                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
-        Query query = new Query(tq);
-        query.setSource(Gmodel);
-        QueryExecution qe = new QueryEngine(query);
+        // Build a SPARQL query string. Note the braces { } and SPARQL syntax.
+        String queryString =
+                "SELECT ?x WHERE { "
+                        + "   <" + subject.toString() + "> <" + AConstants.COOL_CORE + predicate + "> ?x . "
+                        + "} ORDER BY ?x";
 
-        QueryResults results = qe.exec();
-        for (; results.hasNext(); ) {
-            ResultBinding res = (ResultBinding) results.next();
-            Object x = res.get("x");
-            if (x == null) break;
-            cmp = new AComponent();
+        // Parse the SPARQL query
+        Query query = QueryFactory.create(queryString);
 
-            tmps = getValue(x, "hasName");
-            if (tmps != null) {
-                cmp.setName(tmps);
-            } else {
-                System.out.println("COOL: Component " + x + " does not have a name");
-                return null;
-            }
+        // Execute the query over your model
+        try (QueryExecution qe = QueryExecutionFactory.create(query, Gmodel)) {
+            ResultSet rs = qe.execSelect();
 
-            tmps = getValue(x, "hasClassPath");
-            if (tmps != null) {
-                cmp.setClassPath(tmps);
-            }
+            // Iterate over the results
+            while (rs.hasNext()) {
+                QuerySolution sol = rs.nextSolution();
+                x = sol.get("x");
+                if (x == null) break;
 
-            tmps = getValue(x, "hasClassName");
-            if (tmps != null) {
-                cmp.setClassName(tmps);
-            }
+                cmp = new AComponent();
 
-            tmps = getValue(x, "hasType");
-            if (tmps != null) {
-                if (tmps.equals(ACodaType.FILE.name())) {
-                    continue;
+                tmps = getValue(x, "hasName");
+                if (tmps != null) {
+                    cmp.setName(tmps);
                 } else {
-                    cmp.setType(tmps);
-                    if (tmps.equals(ACodaType.ER.name())) {
-                        erId++;
-                        cmp.setStreamId(erId);
-                    } else if (tmps.equals(ACodaType.PEB.name())) {
-                        numberOfFileComponents++;
-                        pebId++;
-                        cmp.setStreamId(pebId);
-                    } else if (tmps.equals(ACodaType.SEB.name())) {
-                        numberOfFileComponents++;
-                        sebId++;
-                        cmp.setStreamId(sebId);
-                    } else if (tmps.equals(ACodaType.PAGG.name())) {
-                        numberOfFileComponents++;
-                        paggId++;
-                        cmp.setStreamId(paggId);
-                    } else if (tmps.equals(ACodaType.SAGG.name())) {
-                        numberOfFileComponents++;
-                        saggId++;
-                        cmp.setStreamId(saggId);
-                    } else if (tmps.equals(ACodaType.EB.name())) {
-                        ebId++;
-                        cmp.setStreamId(ebId);
-                    } else if (tmps.equals(ACodaType.EBER.name())) {
-                        cdebId++;
-                        cmp.setStreamId(cdebId);
-                    } else if (tmps.equals(ACodaType.DC.name())) {
-                        dcId++;
-                        cmp.setStreamId(dcId);
-                    } else if (tmps.equals(ACodaType.USR.name())) {
-                        usrId++;
-                        cmp.setStreamId(usrId);
+                    System.out.println("COOL: Component " + x + " does not have a name");
+                    return null;
+                }
+
+                tmps = getValue(x, "hasClassPath");
+                if (tmps != null) {
+                    cmp.setClassPath(tmps);
+                }
+
+                tmps = getValue(x, "hasClassName");
+                if (tmps != null) {
+                    cmp.setClassName(tmps);
+                }
+
+                tmps = getValue(x, "hasType");
+                if (tmps != null) {
+                    if (tmps.equals(ACodaType.FILE.name())) {
+                        continue;
+                    } else {
+                        cmp.setType(tmps);
+                        if (tmps.equals(ACodaType.ER.name())) {
+                            erId++;
+                            cmp.setStreamId(erId);
+                        } else if (tmps.equals(ACodaType.PEB.name())) {
+                            numberOfFileComponents++;
+                            pebId++;
+                            cmp.setStreamId(pebId);
+                        } else if (tmps.equals(ACodaType.SEB.name())) {
+                            numberOfFileComponents++;
+                            sebId++;
+                            cmp.setStreamId(sebId);
+                        } else if (tmps.equals(ACodaType.PAGG.name())) {
+                            numberOfFileComponents++;
+                            paggId++;
+                            cmp.setStreamId(paggId);
+                        } else if (tmps.equals(ACodaType.SAGG.name())) {
+                            numberOfFileComponents++;
+                            saggId++;
+                            cmp.setStreamId(saggId);
+                        } else if (tmps.equals(ACodaType.EB.name())) {
+                            ebId++;
+                            cmp.setStreamId(ebId);
+                        } else if (tmps.equals(ACodaType.EBER.name())) {
+                            cdebId++;
+                            cmp.setStreamId(cdebId);
+                        } else if (tmps.equals(ACodaType.DC.name())) {
+                            dcId++;
+                            cmp.setStreamId(dcId);
+                        } else if (tmps.equals(ACodaType.USR.name())) {
+                            usrId++;
+                            cmp.setStreamId(usrId);
+                        }
                     }
                 }
-            }
 
 
-            tmps = getValue(x, "hasID");
-            if (tmps != null) {
-                try {
-                    cmp.setId(Integer.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            tmps = getValue(x, "hasDescription");
-            if (tmps != null) {
-                cmp.setDescription(tmps);
-            }
-
-            tmps = getValue(x, "hasHost");
-            if (tmps != null) {
-                cmp.setHost(tmps);
-            }
-
-//            tmps = getValue(x, "hasCode");
-//            if (tmps != null) {
-//                if (AfecsTool.containsRTV(tmps)) {
-//                    cmp.setCode(AfecsTool.checkRtvs(tmps, setRTVs));
-//                } else {
-//                    cmp.setCode(tmps);
-//                }
-//            }
-
-            tmps = getValue(x, "hasPriority");
-            if (tmps != null) {
-                try {
-                    cmp.setPriority(Integer.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                if (cmp.getType().equalsIgnoreCase(ACodaType.USR.name()))
-                    cmp.setPriority(ACodaType.USR.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.SLC.name()))
-                    cmp.setPriority(ACodaType.SLC.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.WNC.name()))
-                    cmp.setPriority(ACodaType.WNC.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.ER.name()))
-                    cmp.setPriority(ACodaType.ER.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.FCS.name()))
-                    cmp.setPriority(ACodaType.FCS.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.PEB.name()))
-                    cmp.setPriority(ACodaType.PEB.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.SEB.name()))
-                    cmp.setPriority(ACodaType.SEB.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.PAGG.name()))
-                    cmp.setPriority(ACodaType.PAGG.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.SAGG.name()))
-                    cmp.setPriority(ACodaType.SAGG.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.EB.name()))
-                    cmp.setPriority(ACodaType.EB.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.EBER.name()))
-                    cmp.setPriority(ACodaType.EBER.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.DC.name()))
-                    cmp.setPriority(ACodaType.DC.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.ROC.name()))
-                    cmp.setPriority(ACodaType.ROC.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.GT.name()))
-                    cmp.setPriority(ACodaType.GT.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.FPGA.name()))
-                    cmp.setPriority(ACodaType.GT.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.TS.name()))
-                    cmp.setPriority(ACodaType.TS.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.SMS.name()))
-                    cmp.setPriority(ACodaType.SMS.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.RCS.name()))
-                    cmp.setPriority(ACodaType.RCS.priority());
-                else if (cmp.getType().equalsIgnoreCase(ACodaType.FILE.name()))
-                    cmp.setPriority(ACodaType.FILE.priority());
-                else
-                    System.err.println("Error: "
-                            + cmp.getType()
-                            + " type is not defined for the component "
-                            + " " + cmp.getName());
-            }
-
-            tmps = getValue(x, "hasUserConfig");
-            if (tmps != null) {
-                if (AfecsTool.containsRTV(tmps)) {
-                    cmp.setUserConfig(AfecsTool.checkRtvs(tmps, setRTVs));
-                } else if (tmps.startsWith("/")) {
-                    cmp.setUserConfig(tmps);
-                } else if (tmps.contains("$env(")) {
-                    cmp.setUserConfig(AfecsTool.resolveCodaEnvVariables(tmps));
-                } else {
-                    cmp.setUserConfig(_userConfigDir + tmps);
-                }
-            }
-
-            tmps = getValue(x, "hasSession");
-            if (tmps != null) {
-                cmp.setSession(tmps);
-            }
-
-            tmps = getValue(x, "hasRunType");
-            if (tmps != null) cmp.setRunType(tmps);
-
-            option = parseOption(x, "hasOption");
-            if (option != null) {
-                cmp.setOption(option);
-                for (String s : _opDirs) {
-                    cmp.addDod(s);
-                }
-            }
-
-            tmps = getValue(x, "representsCoda2Component");
-            if (tmps != null) {
-                cmp.setCoda2Component(tmps);
-            }
-
-            tmps = getValue(x, "isCodaComponent");
-            if (tmps != null) {
-                cmp.setCodaComponent(tmps);
-            }
-
-
-            link = parseLink(x, "usesLink");
-            if (link != null) {
-                cmp.setLinks(link);
-            }
-
-            tmps = getValue(x, "hasReportingInterval");
-            if (tmps != null) {
-                try {
-                    cmp.setReportingInterval(Integer.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
-
-
-            statelist = parseStates(x, "hasState");
-
-            if (statelist != null && !statelist.isEmpty()) {
-
-                cmp.setStates(statelist);
-            }
-            processlist = parseProcess(x, "hasProcess");
-            if (processlist != null && !processlist.isEmpty()) {
-                cmp.setProcesses(processlist);
-            }
-
-            services = parseServices(x, "providesService");
-            if (services != null && !services.isEmpty()) {
-                cmp.setServices(services);
-            }
-
-            gui = parseHmi(x, "hasHMI");
-            if (gui != null) {
-                cmp.setGui(gui);
-            }
-
-            plugin = parsePlugin(x, "hasCommunicationPlugin");
-            if (plugin != null) {
-                cmp.setPlugin(plugin);
-            }
-
-            tmps = getValue(x, "XCo");
-            if (tmps != null) {
-                try {
-                    cmp.setX(Double.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            tmps = getValue(x, "YCo");
-            if (tmps != null) {
-                try {
-                    cmp.setY(Double.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            tmps = getValue(x, "WCo");
-            if (tmps != null) {
-                try {
-                    cmp.setW(Double.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            tmps = getValue(x, "HCo");
-            if (tmps != null) {
-                try {
-                    cmp.setH(Double.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            ArrayList<String> tmL = getValueList(x, "linkedTo");
-            if (tmL != null && !tmL.isEmpty()) {
-                cmp.setLinkedComponentNames(tmL);
-            }
-
-            ArrayList<String> tmLt = getValueList(x, "linkedToType");
-            if (tmLt != null && !tmLt.isEmpty()) {
-                cmp.setLinkedComponentTypes(tmLt);
-            }
-
-            // If type is ROC or TS read component specific .dat configuration
-            // file created by JcEdit to get the mastership of the ROC
-            if (cmp.getType().equals(ACodaType.ROC.name()) ||
-                    cmp.getType().equals(ACodaType.TS.name()) ||
-                    cmp.getType().equals(ACodaType.FPGA.name()) ||
-                    cmp.getType().equals(ACodaType.GT.name())) {
-                String configFileName = _coolHome +
-                        "Control" + File.separator +
-                        runType + File.separator +
-                        "Options" + File.separator +
-                        cmp.getName() + ".dat";
-                try {
-                    BufferedReader br = new BufferedReader(new FileReader(configFileName));
-                    Stream<String> l = br.lines();
+                tmps = getValue(x, "hasID");
+                if (tmps != null) {
                     try {
-                        String s = l.filter(line -> line.contains("isMaster")).findFirst().get();
-                        if (s.split("=")[1].trim().equals("true")) {
-                            cmp.setMaster(true);
-                        }
-                    } catch (NoSuchElementException e) {
+                        cmp.setId(Integer.valueOf(tmps));
+                    } catch (NumberFormatException e) {
                         e.printStackTrace();
                     }
-                    br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
-            }
 
-            cl.add(cmp);
+                tmps = getValue(x, "hasDescription");
+                if (tmps != null) {
+                    cmp.setDescription(tmps);
+                }
+
+                tmps = getValue(x, "hasHost");
+                if (tmps != null) {
+                    cmp.setHost(tmps);
+                }
+
+                tmps = getValue(x, "hasPriority");
+                if (tmps != null) {
+                    try {
+                        cmp.setPriority(Integer.valueOf(tmps));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    if (cmp.getType().equalsIgnoreCase(ACodaType.USR.name()))
+                        cmp.setPriority(ACodaType.USR.priority());
+                    else if (cmp.getType().equalsIgnoreCase(ACodaType.SLC.name()))
+                        cmp.setPriority(ACodaType.SLC.priority());
+                    else if (cmp.getType().equalsIgnoreCase(ACodaType.WNC.name()))
+                        cmp.setPriority(ACodaType.WNC.priority());
+                    else if (cmp.getType().equalsIgnoreCase(ACodaType.ER.name()))
+                        cmp.setPriority(ACodaType.ER.priority());
+                    else if (cmp.getType().equalsIgnoreCase(ACodaType.FCS.name()))
+                        cmp.setPriority(ACodaType.FCS.priority());
+                    else if (cmp.getType().equalsIgnoreCase(ACodaType.PEB.name()))
+                        cmp.setPriority(ACodaType.PEB.priority());
+                    else if (cmp.getType().equalsIgnoreCase(ACodaType.SEB.name()))
+                        cmp.setPriority(ACodaType.SEB.priority());
+                    else if (cmp.getType().equalsIgnoreCase(ACodaType.PAGG.name()))
+                        cmp.setPriority(ACodaType.PAGG.priority());
+                    else if (cmp.getType().equalsIgnoreCase(ACodaType.SAGG.name()))
+                        cmp.setPriority(ACodaType.SAGG.priority());
+                    else if (cmp.getType().equalsIgnoreCase(ACodaType.EB.name()))
+                        cmp.setPriority(ACodaType.EB.priority());
+                    else if (cmp.getType().equalsIgnoreCase(ACodaType.EBER.name()))
+                        cmp.setPriority(ACodaType.EBER.priority());
+                    else if (cmp.getType().equalsIgnoreCase(ACodaType.DC.name()))
+                        cmp.setPriority(ACodaType.DC.priority());
+                    else if (cmp.getType().equalsIgnoreCase(ACodaType.ROC.name()))
+                        cmp.setPriority(ACodaType.ROC.priority());
+                    else if (cmp.getType().equalsIgnoreCase(ACodaType.GT.name()))
+                        cmp.setPriority(ACodaType.GT.priority());
+                    else if (cmp.getType().equalsIgnoreCase(ACodaType.FPGA.name()))
+                        cmp.setPriority(ACodaType.GT.priority());
+                    else if (cmp.getType().equalsIgnoreCase(ACodaType.TS.name()))
+                        cmp.setPriority(ACodaType.TS.priority());
+                    else if (cmp.getType().equalsIgnoreCase(ACodaType.SMS.name()))
+                        cmp.setPriority(ACodaType.SMS.priority());
+                    else if (cmp.getType().equalsIgnoreCase(ACodaType.RCS.name()))
+                        cmp.setPriority(ACodaType.RCS.priority());
+                    else if (cmp.getType().equalsIgnoreCase(ACodaType.FILE.name()))
+                        cmp.setPriority(ACodaType.FILE.priority());
+                    else
+                        System.err.println("Error: "
+                                + cmp.getType()
+                                + " type is not defined for the component "
+                                + " " + cmp.getName());
+                }
+
+                tmps = getValue(x, "hasUserConfig");
+                if (tmps != null) {
+                    if (AfecsTool.containsRTV(tmps)) {
+                        cmp.setUserConfig(AfecsTool.checkRtvs(tmps, setRTVs));
+                    } else if (tmps.startsWith("/")) {
+                        cmp.setUserConfig(tmps);
+                    } else if (tmps.contains("$env(")) {
+                        cmp.setUserConfig(AfecsTool.resolveCodaEnvVariables(tmps));
+                    } else {
+                        cmp.setUserConfig(_userConfigDir + tmps);
+                    }
+                }
+
+                tmps = getValue(x, "hasSession");
+                if (tmps != null) {
+                    cmp.setSession(tmps);
+                }
+
+                tmps = getValue(x, "hasRunType");
+                if (tmps != null) cmp.setRunType(tmps);
+
+                option = parseOption(x, "hasOption");
+                if (option != null) {
+                    cmp.setOption(option);
+                    for (String s : _opDirs) {
+                        cmp.addDod(s);
+                    }
+                }
+
+                tmps = getValue(x, "representsCoda2Component");
+                if (tmps != null) {
+                    cmp.setCoda2Component(tmps);
+                }
+
+                tmps = getValue(x, "isCodaComponent");
+                if (tmps != null) {
+                    cmp.setCodaComponent(tmps);
+                }
+
+
+                link = parseLink(x, "usesLink");
+                if (link != null) {
+                    cmp.setLinks(link);
+                }
+
+                tmps = getValue(x, "hasReportingInterval");
+                if (tmps != null) {
+                    try {
+                        cmp.setReportingInterval(Integer.valueOf(tmps));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                statelist = parseStates(x, "hasState");
+
+                if (statelist != null && !statelist.isEmpty()) {
+
+                    cmp.setStates(statelist);
+                }
+                processlist = parseProcess(x, "hasProcess");
+                if (processlist != null && !processlist.isEmpty()) {
+                    cmp.setProcesses(processlist);
+                }
+
+                services = parseServices(x, "providesService");
+                if (services != null && !services.isEmpty()) {
+                    cmp.setServices(services);
+                }
+
+                gui = parseHmi(x, "hasHMI");
+                if (gui != null) {
+                    cmp.setGui(gui);
+                }
+
+                plugin = parsePlugin(x, "hasCommunicationPlugin");
+                if (plugin != null) {
+                    cmp.setPlugin(plugin);
+                }
+
+                tmps = getValue(x, "XCo");
+                if (tmps != null) {
+                    try {
+                        cmp.setX(Double.valueOf(tmps));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                tmps = getValue(x, "YCo");
+                if (tmps != null) {
+                    try {
+                        cmp.setY(Double.valueOf(tmps));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                tmps = getValue(x, "WCo");
+                if (tmps != null) {
+                    try {
+                        cmp.setW(Double.valueOf(tmps));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                tmps = getValue(x, "HCo");
+                if (tmps != null) {
+                    try {
+                        cmp.setH(Double.valueOf(tmps));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                ArrayList<String> tmL = getValueList(x, "linkedTo");
+                if (tmL != null && !tmL.isEmpty()) {
+                    cmp.setLinkedComponentNames(tmL);
+                }
+
+                ArrayList<String> tmLt = getValueList(x, "linkedToType");
+                if (tmLt != null && !tmLt.isEmpty()) {
+                    cmp.setLinkedComponentTypes(tmLt);
+                }
+
+                // If type is ROC or TS read component specific .dat configuration
+                // file created by JcEdit to get the mastership of the ROC
+                if (cmp.getType().equals(ACodaType.ROC.name()) ||
+                        cmp.getType().equals(ACodaType.TS.name()) ||
+                        cmp.getType().equals(ACodaType.FPGA.name()) ||
+                        cmp.getType().equals(ACodaType.GT.name())) {
+                    String configFileName = _coolHome +
+                            "Control" + File.separator +
+                            runType + File.separator +
+                            "Options" + File.separator +
+                            cmp.getName() + ".dat";
+                    try {
+                        BufferedReader br = new BufferedReader(new FileReader(configFileName));
+                        Stream<String> l = br.lines();
+                        try {
+                            String s = l.filter(line -> line.contains("isMaster")).findFirst().get();
+                            if (s.split("=")[1].trim().equals("true")) {
+                                cmp.setMaster(true);
+                            }
+                        } catch (NoSuchElementException e) {
+                            e.printStackTrace();
+                        }
+                        br.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                cl.add(cmp);
+            }
         }
-        results.close();
         return cl;
     }
 
@@ -763,48 +1153,100 @@ public class CParser {
      * @param predicate String of the cool predicate name
      * @return states           The {@link org.jlab.coda.afecs.cool.ontology.APlugin} object
      */
+//    private APlugin _old_parsePlugin(Object subject, String predicate) {
+//        APlugin plugin = null;
+//        String name;
+//        String description;
+//        String className;
+//
+//        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
+//                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
+//        Query query = new Query(tq);
+//        query.setSource(Gmodel);
+//        QueryExecution qe = new QueryEngine(query);
+//
+//        QueryResults results = qe.exec();
+//        for (; results.hasNext(); ) {
+//            ResultBinding res = (ResultBinding) results.next();
+//            Object x = res.get("x");
+//            if (x == null) break;
+//            plugin = new APlugin();
+//
+//            name = getValue(x, "hasName");
+//            if (name != null) {
+//                plugin.setName(name);
+//            } else {
+//                System.out.println("COOL: Name is not defined for the Plugin of the" + x.toString());
+//                return null;
+//            }
+//
+//            className = getValue(x, "hasClass");
+//            if (className != null) {
+//                plugin.setClassName(className);
+//            } else {
+//                System.out.println("COOL: ClassName is not defined for the Plugin of the" + x.toString());
+//                return null;
+//            }
+//
+//            description = getValue(x, "hasDescription");
+//            if (description != null) {
+//                plugin.setDescription(description);
+//            }
+//
+//        }
+//        results.close();
+//        return plugin;
+//    }
     private APlugin parsePlugin(Object subject, String predicate) {
+        RDFNode x;
         APlugin plugin = null;
         String name;
         String description;
         String className;
 
-        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
-                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
-        Query query = new Query(tq);
-        query.setSource(Gmodel);
-        QueryExecution qe = new QueryEngine(query);
+        // Build a SPARQL query string. Note the braces { } and SPARQL syntax.
+        String queryString =
+                "SELECT ?x WHERE { "
+                        + "   <" + subject.toString() + "> <" + AConstants.COOL_CORE + predicate + "> ?x . "
+                        + "} ORDER BY ?x";
 
-        QueryResults results = qe.exec();
-        for (; results.hasNext(); ) {
-            ResultBinding res = (ResultBinding) results.next();
-            Object x = res.get("x");
-            if (x == null) break;
-            plugin = new APlugin();
+        // Parse the SPARQL query
+        Query query = QueryFactory.create(queryString);
 
-            name = getValue(x, "hasName");
-            if (name != null) {
-                plugin.setName(name);
-            } else {
-                System.out.println("COOL: Name is not defined for the Plugin of the" + x.toString());
-                return null;
+        // Execute the query over your model
+        try (QueryExecution qe = QueryExecutionFactory.create(query, Gmodel)) {
+            ResultSet rs = qe.execSelect();
+
+            // Iterate over the results
+            while (rs.hasNext()) {
+                QuerySolution sol = rs.nextSolution();
+                x = sol.get("x");
+                if (x == null) break;
+                plugin = new APlugin();
+
+                name = getValue(x, "hasName");
+                if (name != null) {
+                    plugin.setName(name);
+                } else {
+                    System.out.println("COOL: Name is not defined for the Plugin of the" + x.toString());
+                    return null;
+                }
+
+                className = getValue(x, "hasClass");
+                if (className != null) {
+                    plugin.setClassName(className);
+                } else {
+                    System.out.println("COOL: ClassName is not defined for the Plugin of the" + x.toString());
+                    return null;
+                }
+
+                description = getValue(x, "hasDescription");
+                if (description != null) {
+                    plugin.setDescription(description);
+                }
+
             }
-
-            className = getValue(x, "hasClass");
-            if (className != null) {
-                plugin.setClassName(className);
-            } else {
-                System.out.println("COOL: ClassName is not defined for the Plugin of the" + x.toString());
-                return null;
-            }
-
-            description = getValue(x, "hasDescription");
-            if (description != null) {
-                plugin.setDescription(description);
-            }
-
         }
-        results.close();
         return plugin;
     }
 
@@ -815,7 +1257,61 @@ public class CParser {
      * @param predicate String of the cool predicate name
      * @return states           List of the {@link org.jlab.coda.afecs.cool.ontology.AState} objects
      */
+//    private ArrayList<AState> _old_parseStates(Object subject, String predicate) {
+//        AState state;
+//        String name;
+//        String description;
+//        ArrayList<String> compNames;
+//        ArrayList<AProcess> processes;
+//
+//
+//        ArrayList<AState> states = new ArrayList<>();
+//
+//        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
+//                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
+//        Query query = new Query(tq);
+//        query.setSource(Gmodel);
+//        QueryExecution qe = new QueryEngine(query);
+//
+//        QueryResults results = qe.exec();
+//        for (; results.hasNext(); ) {
+//            ResultBinding res = (ResultBinding) results.next();
+//            Object x = res.get("x");
+//            if (x == null) break;
+//
+//            state = new AState();
+//
+//            name = getValue(x, "hasName");
+//            if (name != null) {
+//                state.setName(name);
+//            } else {
+//                System.out.println("COOL: Name is not defined for the State of the" + x.toString());
+//                return null;
+//            }
+//
+//            description = getValue(x, "hasDescription");
+//            if (description != null) {
+//                state.setDescription(description);
+//            }
+//
+//
+//            processes = parseProcess(x, "achievedThrough");
+//            if (processes != null && !processes.isEmpty()) {
+//                state.setProcesses(processes);
+//            }
+//
+//            compNames = getValueList(x, "addressedTo");
+//            if (compNames != null && !compNames.isEmpty()) {
+//                state.setComponentNames(compNames);
+//            }
+//            states.add(state);
+//        }
+//        results.close();
+//        return states;
+//    }
     private ArrayList<AState> parseStates(Object subject, String predicate) {
+        RDFNode x;
+
         AState state;
         String name;
         String description;
@@ -825,46 +1321,53 @@ public class CParser {
 
         ArrayList<AState> states = new ArrayList<>();
 
-        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
-                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
-        Query query = new Query(tq);
-        query.setSource(Gmodel);
-        QueryExecution qe = new QueryEngine(query);
+        // Build a SPARQL query string. Note the braces { } and SPARQL syntax.
+        String queryString =
+                "SELECT ?x WHERE { "
+                        + "   <" + subject.toString() + "> <" + AConstants.COOL_CORE + predicate + "> ?x . "
+                        + "} ORDER BY ?x";
 
-        QueryResults results = qe.exec();
-        for (; results.hasNext(); ) {
-            ResultBinding res = (ResultBinding) results.next();
-            Object x = res.get("x");
-            if (x == null) break;
+        // Parse the SPARQL query
+        Query query = QueryFactory.create(queryString);
 
-            state = new AState();
+        // Execute the query over your model
+        try (QueryExecution qe = QueryExecutionFactory.create(query, Gmodel)) {
+            ResultSet rs = qe.execSelect();
 
-            name = getValue(x, "hasName");
-            if (name != null) {
-                state.setName(name);
-            } else {
-                System.out.println("COOL: Name is not defined for the State of the" + x.toString());
-                return null;
+            // Iterate over the results
+            while (rs.hasNext()) {
+                QuerySolution sol = rs.nextSolution();
+                x = sol.get("x");
+                if (x == null) break;
+
+                state = new AState();
+
+                name = getValue(x, "hasName");
+                if (name != null) {
+                    state.setName(name);
+                } else {
+                    System.out.println("COOL: Name is not defined for the State of the" + x.toString());
+                    return null;
+                }
+
+                description = getValue(x, "hasDescription");
+                if (description != null) {
+                    state.setDescription(description);
+                }
+
+
+                processes = parseProcess(x, "achievedThrough");
+                if (processes != null && !processes.isEmpty()) {
+                    state.setProcesses(processes);
+                }
+
+                compNames = getValueList(x, "addressedTo");
+                if (compNames != null && !compNames.isEmpty()) {
+                    state.setComponentNames(compNames);
+                }
+                states.add(state);
             }
-
-            description = getValue(x, "hasDescription");
-            if (description != null) {
-                state.setDescription(description);
-            }
-
-
-            processes = parseProcess(x, "achievedThrough");
-            if (processes != null && !processes.isEmpty()) {
-                state.setProcesses(processes);
-            }
-
-            compNames = getValueList(x, "addressedTo");
-            if (compNames != null && !compNames.isEmpty()) {
-                state.setComponentNames(compNames);
-            }
-            states.add(state);
         }
-        results.close();
         return states;
     }
 
@@ -875,115 +1378,232 @@ public class CParser {
      * @param predicate String of the cool predicate name
      * @return pl              List of {@link org.jlab.coda.afecs.cool.ontology.AProcess} objects
      */
+//    private ArrayList<AProcess> _old_parseProcess(Object subject, String predicate) {
+//        AProcess process;
+//        String name, before, after, status, initiator, description, critical, sync;
+//        ArrayList<AScript> scripts;
+//        ArrayList<APackage> sendPackages;
+//        ArrayList<APackage> receivePackages;
+//        String tmps;
+//        ArrayList<AProcess> pl = new ArrayList<>();
+//
+////        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
+////                "> <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
+//
+//        String tq = "SELECT ?x WHERE { <" + subject.toString() + "> <" +
+//                AConstants.COOL_CORE + predicate + "> ?x } ORDER BY ?x";
+//
+//        Query query = new Query(tq);
+//        query.setSource(Gmodel);
+//        QueryExecution qe = new QueryEngine(query);
+//
+//        QueryResults results = qe.exec();
+//        for (; results.hasNext(); ) {
+//            ResultBinding res = (ResultBinding) results.next();
+//            Object x = res.get("x");
+//            if (x == null) break;
+//            process = new AProcess();
+//
+//            name = getValue(x, "hasName");
+//            if (name != null) {
+//                process.setName(name);
+//            } else {
+//                System.out.println("COOL: Name is not defined for the Process " + x.toString());
+//                return null;
+//            }
+//
+//            description = getValue(x, "hasDescription");
+//            if (description != null) {
+//                process.setDescription(description);
+//            }
+//
+//            critical = getValue(x, "isCritical");
+//            if (critical != null) {
+//                process.setCritical(critical);
+//            }
+//
+//            sync = getValue(x, "isSync");
+//            if (sync != null) {
+//                process.setSync(sync);
+//            }
+//
+//            before = getValue(x, "before");
+//            if (before != null) {
+//                process.setBefore(before);
+//            }
+//
+//            after = getValue(x, "after");
+//            if (after != null) {
+//                process.setAfter(after);
+//            }
+//
+//            tmps = getValue(x, "hasPeriodicity");
+//            if (tmps != null) {
+//                process.setPeriodicity(Integer.parseInt(tmps));
+//            }
+//
+//            tmps = getValue(x, "hasDelay");
+//            if (tmps != null) {
+//                process.setDelay(Integer.parseInt(tmps));
+//            }
+//
+//            tmps = getValue(x, "hasTimeOut");
+//            // Note: time-outs are in seconds
+//            if (tmps != null) {
+//                process.setTimeout(Integer.parseInt(tmps));
+//            }
+//
+//            tmps = getValue(x, "hasRequestId");
+//            if (tmps != null) {
+//                process.setRequestid(Integer.parseInt(tmps));
+//            }
+//
+//            status = getValue(x, "status");
+//            if (status != null) {
+//                process.setStatus(status);
+//            }
+//
+//            initiator = getValue(x, "isInitiator");
+//            if (initiator != null) {
+//                process.setInitiator(initiator);
+//            }
+//            scripts = parseScript(x, "runs");
+//            if (scripts != null && !scripts.isEmpty()) {
+//                process.setScripts(scripts);
+//            }
+//
+//            sendPackages = parsePackage(x, "sends");
+//            if (sendPackages != null && !sendPackages.isEmpty()) {
+//                process.setSendPackages(sendPackages);
+//            }
+//            receivePackages = parsePackage(x, "receives");
+//            if (receivePackages != null && !receivePackages.isEmpty()) {
+//                process.setReceivePackages(receivePackages);
+//            }
+//
+//            pl.add(process);
+//        }
+//        results.close();
+//        return pl;
+//    }
+
     private ArrayList<AProcess> parseProcess(Object subject, String predicate) {
-        AProcess process;
-        String name, before, after, status, initiator, description, critical, sync;
-        ArrayList<AScript> scripts;
-        ArrayList<APackage> sendPackages;
-        ArrayList<APackage> receivePackages;
-        String tmps;
         ArrayList<AProcess> pl = new ArrayList<>();
 
-//        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
-//                "> <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
+        // Build a SPARQL query string. Note the braces { } and SPARQL syntax.
+        String queryString =
+                "SELECT ?x WHERE { "
+                        + "   <" + subject.toString() + "> <" + AConstants.COOL_CORE + predicate + "> ?x . "
+                        + "} ORDER BY ?x";
 
-        String tq = "SELECT ?x WHERE { <" + subject.toString() + "> <" +
-                AConstants.COOL_CORE + predicate + "> ?x } ORDER BY ?x";
+        // Parse the SPARQL query
+        Query query = QueryFactory.create(queryString);
 
-        Query query = new Query(tq);
-        query.setSource(Gmodel);
-        QueryExecution qe = new QueryEngine(query);
+        // Execute the query over your model
+        try (QueryExecution qe = QueryExecutionFactory.create(query, Gmodel)) {
+            ResultSet rs = qe.execSelect();
 
-        QueryResults results = qe.exec();
-        for (; results.hasNext(); ) {
-            ResultBinding res = (ResultBinding) results.next();
-            Object x = res.get("x");
-            if (x == null) break;
-            process = new AProcess();
+            // Iterate over the results
+            while (rs.hasNext()) {
+                QuerySolution sol = rs.nextSolution();
+                RDFNode x = sol.get("x");
+                if (x == null) {
+                    // If there's no ?x binding, skip
+                    break;
+                }
 
-            name = getValue(x, "hasName");
-            if (name != null) {
-                process.setName(name);
-            } else {
-                System.out.println("COOL: Name is not defined for the Process " + x.toString());
-                return null;
+                AProcess process = new AProcess();
+
+                String name = getValue(x, "hasName");
+                if (name != null) {
+                    process.setName(name);
+                } else {
+                    System.out.println("COOL: Name is not defined for the Process " + x.toString());
+                    // Return null if you truly want to stop everything here;
+                    // or consider continuing to the next solution instead.
+                    return null;
+                }
+
+                String description = getValue(x, "hasDescription");
+                if (description != null) {
+                    process.setDescription(description);
+                }
+
+                String critical = getValue(x, "isCritical");
+                if (critical != null) {
+                    process.setCritical(critical);
+                }
+
+                String sync = getValue(x, "isSync");
+                if (sync != null) {
+                    process.setSync(sync);
+                }
+
+                String before = getValue(x, "before");
+                if (before != null) {
+                    process.setBefore(before);
+                }
+
+                String after = getValue(x, "after");
+                if (after != null) {
+                    process.setAfter(after);
+                }
+
+                String tmps = getValue(x, "hasPeriodicity");
+                if (tmps != null) {
+                    process.setPeriodicity(Integer.parseInt(tmps));
+                }
+
+                tmps = getValue(x, "hasDelay");
+                if (tmps != null) {
+                    process.setDelay(Integer.parseInt(tmps));
+                }
+
+                tmps = getValue(x, "hasTimeOut");
+                // Note: time-outs are in seconds
+                if (tmps != null) {
+                    process.setTimeout(Integer.parseInt(tmps));
+                }
+
+                tmps = getValue(x, "hasRequestId");
+                if (tmps != null) {
+                    process.setRequestid(Integer.parseInt(tmps));
+                }
+
+                String status = getValue(x, "status");
+                if (status != null) {
+                    process.setStatus(status);
+                }
+
+                String initiator = getValue(x, "isInitiator");
+                if (initiator != null) {
+                    process.setInitiator(initiator);
+                }
+
+                // Parse scripts
+                ArrayList<AScript> scripts = parseScript(x, "runs");
+                if (scripts != null && !scripts.isEmpty()) {
+                    process.setScripts(scripts);
+                }
+
+                // Parse outgoing packages
+                ArrayList<APackage> sendPackages = parsePackage(x, "sends");
+                if (sendPackages != null && !sendPackages.isEmpty()) {
+                    process.setSendPackages(sendPackages);
+                }
+
+                // Parse incoming packages
+                ArrayList<APackage> receivePackages = parsePackage(x, "receives");
+                if (receivePackages != null && !receivePackages.isEmpty()) {
+                    process.setReceivePackages(receivePackages);
+                }
+
+                pl.add(process);
             }
-
-            description = getValue(x, "hasDescription");
-            if (description != null) {
-                process.setDescription(description);
-            }
-
-            critical = getValue(x, "isCritical");
-            if (critical != null) {
-                process.setCritical(critical);
-            }
-
-            sync = getValue(x, "isSync");
-            if (sync != null) {
-                process.setSync(sync);
-            }
-
-            before = getValue(x, "before");
-            if (before != null) {
-                process.setBefore(before);
-            }
-
-            after = getValue(x, "after");
-            if (after != null) {
-                process.setAfter(after);
-            }
-
-            tmps = getValue(x, "hasPeriodicity");
-            if (tmps != null) {
-                process.setPeriodicity(Integer.parseInt(tmps));
-            }
-
-            tmps = getValue(x, "hasDelay");
-            if (tmps != null) {
-                process.setDelay(Integer.parseInt(tmps));
-            }
-
-            tmps = getValue(x, "hasTimeOut");
-            // Note: time-outs are in seconds
-            if (tmps != null) {
-                process.setTimeout(Integer.parseInt(tmps));
-            }
-
-            tmps = getValue(x, "hasRequestId");
-            if (tmps != null) {
-                process.setRequestid(Integer.parseInt(tmps));
-            }
-
-            status = getValue(x, "status");
-            if (status != null) {
-                process.setStatus(status);
-            }
-
-            initiator = getValue(x, "isInitiator");
-            if (initiator != null) {
-                process.setInitiator(initiator);
-            }
-            scripts = parseScript(x, "runs");
-            if (scripts != null && !scripts.isEmpty()) {
-                process.setScripts(scripts);
-            }
-
-            sendPackages = parsePackage(x, "sends");
-            if (sendPackages != null && !sendPackages.isEmpty()) {
-                process.setSendPackages(sendPackages);
-            }
-            receivePackages = parsePackage(x, "receives");
-            if (receivePackages != null && !receivePackages.isEmpty()) {
-                process.setReceivePackages(receivePackages);
-            }
-
-            pl.add(process);
         }
-        results.close();
+
         return pl;
     }
-
     /**
      * Parses Cool service concept (object of the rdf statement) and
      * fills arraylist of {@link org.jlab.coda.afecs.cool.ontology.AService} objects.
@@ -992,7 +1612,57 @@ public class CParser {
      * @param predicate of the rdf statement
      * @return AService objects.
      */
+//    private ArrayList<AService> _old_parseServices(Object subject, String predicate) {
+//        AService service;
+//        ArrayList<AService> services = new ArrayList<AService>();
+//        String name;
+//        String description;
+//        String owner;
+//        ARule stateMachineRule;
+//
+//        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
+//                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
+//        Query query = new Query(tq);
+//        query.setSource(Gmodel);
+//        QueryExecution qe = new QueryEngine(query);
+//
+//        QueryResults results = qe.exec();
+//        for (; results.hasNext(); ) {
+//            ResultBinding res = (ResultBinding) results.next();
+//            Object x = res.get("x");
+//            if (x == null) break;
+//            service = new AService();
+//
+//            name = getValue(x, "hasName");
+//            if (name != null) {
+//                service.setName(name);
+//            } else {
+//                System.out.println("COOL: Name is not defined for the Service " + x.toString());
+//                return null;
+//            }
+//
+//            description = getValue(x, "hasDescription");
+//            if (description != null) {
+//                service.setDescription(description);
+//            }
+//
+//            owner = getValue(x, "hasOwner");
+//            if (owner != null) {
+//                service.setOwner(owner);
+//            }
+//
+//            stateMachineRule = parseRule(x, "startsStatemachine");
+//            if (stateMachineRule != null) {
+//                service.setStateMachineRule(stateMachineRule);
+//            }
+//            services.add(service);
+//        }
+//        results.close();
+//        return services;
+//    }
     private ArrayList<AService> parseServices(Object subject, String predicate) {
+        RDFNode x;
+
         AService service;
         ArrayList<AService> services = new ArrayList<AService>();
         String name;
@@ -1000,44 +1670,51 @@ public class CParser {
         String owner;
         ARule stateMachineRule;
 
-        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
-                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
-        Query query = new Query(tq);
-        query.setSource(Gmodel);
-        QueryExecution qe = new QueryEngine(query);
+        // Build a SPARQL query string. Note the braces { } and SPARQL syntax.
+        String queryString =
+                "SELECT ?x WHERE { "
+                        + "   <" + subject.toString() + "> <" + AConstants.COOL_CORE + predicate + "> ?x . "
+                        + "} ORDER BY ?x";
 
-        QueryResults results = qe.exec();
-        for (; results.hasNext(); ) {
-            ResultBinding res = (ResultBinding) results.next();
-            Object x = res.get("x");
-            if (x == null) break;
-            service = new AService();
+        // Parse the SPARQL query
+        Query query = QueryFactory.create(queryString);
 
-            name = getValue(x, "hasName");
-            if (name != null) {
-                service.setName(name);
-            } else {
-                System.out.println("COOL: Name is not defined for the Service " + x.toString());
-                return null;
+        // Execute the query over your model
+        try (QueryExecution qe = QueryExecutionFactory.create(query, Gmodel)) {
+            ResultSet rs = qe.execSelect();
+
+            // Iterate over the results
+            while (rs.hasNext()) {
+                QuerySolution sol = rs.nextSolution();
+                x = sol.get("x");
+                if (x == null) break;
+                service = new AService();
+
+                name = getValue(x, "hasName");
+                if (name != null) {
+                    service.setName(name);
+                } else {
+                    System.out.println("COOL: Name is not defined for the Service " + x.toString());
+                    return null;
+                }
+
+                description = getValue(x, "hasDescription");
+                if (description != null) {
+                    service.setDescription(description);
+                }
+
+                owner = getValue(x, "hasOwner");
+                if (owner != null) {
+                    service.setOwner(owner);
+                }
+
+                stateMachineRule = parseRule(x, "startsStatemachine");
+                if (stateMachineRule != null) {
+                    service.setStateMachineRule(stateMachineRule);
+                }
+                services.add(service);
             }
-
-            description = getValue(x, "hasDescription");
-            if (description != null) {
-                service.setDescription(description);
-            }
-
-            owner = getValue(x, "hasOwner");
-            if (owner != null) {
-                service.setOwner(owner);
-            }
-
-            stateMachineRule = parseRule(x, "startsStatemachine");
-            if (stateMachineRule != null) {
-                service.setStateMachineRule(stateMachineRule);
-            }
-            services.add(service);
         }
-        results.close();
         return services;
     }
 
@@ -1048,186 +1725,372 @@ public class CParser {
      * @param predicate String of the cool predicate name
      * @return rule             {@link org.jlab.coda.afecs.cool.ontology.ARule} object
      */
+//    private ARule _old_parseRule(Object subject, String predicate) {
+//        ARule rule = null;
+//        String name, description, code;
+//
+//        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
+//                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
+//        Query query = new Query(tq);
+//        query.setSource(Gmodel);
+//        QueryExecution qe = new QueryEngine(query);
+//
+//        QueryResults results = qe.exec();
+//        for (; results.hasNext(); ) {
+//            ResultBinding res = (ResultBinding) results.next();
+//            Object x = res.get("x");
+//            if (x == null) break;
+//
+//            rule = new ARule();
+//
+//            name = getValue(x, "hasName");
+//            if (name != null) {
+//                rule.setName(name);
+//            } else {
+//                System.out.println("COOL: Name is not defined for the rule of the" + x.toString());
+//                return null;
+//            }
+//
+//            description = getValue(x, "hasDescription");
+//            if (description != null) {
+//                rule.setDescription(description);
+//            }
+//
+//            code = getValue(x, "hasCode");
+//            if (code != null) {
+//                rule.setCode(code);
+//            } else {
+//                System.out.println("COOL: Code is not defined for the rule of the" + x.toString());
+//            }
+//        }
+//        results.close();
+//        return rule;
+//    }
     private ARule parseRule(Object subject, String predicate) {
+        RDFNode x;
         ARule rule = null;
         String name, description, code;
 
-        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
-                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
-        Query query = new Query(tq);
-        query.setSource(Gmodel);
-        QueryExecution qe = new QueryEngine(query);
+        // Build a SPARQL query string. Note the braces { } and SPARQL syntax.
+        String queryString =
+                "SELECT ?x WHERE { "
+                        + "   <" + subject.toString() + "> <" + AConstants.COOL_CORE + predicate + "> ?x . "
+                        + "} ORDER BY ?x";
 
-        QueryResults results = qe.exec();
-        for (; results.hasNext(); ) {
-            ResultBinding res = (ResultBinding) results.next();
-            Object x = res.get("x");
-            if (x == null) break;
+        // Parse the SPARQL query
+        Query query = QueryFactory.create(queryString);
 
-            rule = new ARule();
+        // Execute the query over your model
+        try (QueryExecution qe = QueryExecutionFactory.create(query, Gmodel)) {
+            ResultSet rs = qe.execSelect();
 
-            name = getValue(x, "hasName");
-            if (name != null) {
-                rule.setName(name);
-            } else {
-                System.out.println("COOL: Name is not defined for the rule of the" + x.toString());
-                return null;
-            }
+            // Iterate over the results
+            while (rs.hasNext()) {
+                QuerySolution sol = rs.nextSolution();
+                x = sol.get("x");
+                if (x == null) break;
 
-            description = getValue(x, "hasDescription");
-            if (description != null) {
-                rule.setDescription(description);
-            }
+                rule = new ARule();
 
-            code = getValue(x, "hasCode");
-            if (code != null) {
-                rule.setCode(code);
-            } else {
-                System.out.println("COOL: Code is not defined for the rule of the" + x.toString());
+                name = getValue(x, "hasName");
+                if (name != null) {
+                    rule.setName(name);
+                } else {
+                    System.out.println("COOL: Name is not defined for the rule of the" + x.toString());
+                    return null;
+                }
+
+                description = getValue(x, "hasDescription");
+                if (description != null) {
+                    rule.setDescription(description);
+                }
+
+                code = getValue(x, "hasCode");
+                if (code != null) {
+                    rule.setCode(code);
+                } else {
+                    System.out.println("COOL: Code is not defined for the rule of the" + x.toString());
+                }
             }
         }
-        results.close();
         return rule;
     }
 
-    private ArrayList<ALink>
-
-
-    parseLink(Object subject, String predicate) {
+//    private ArrayList<ALink> _old_parseLink(Object subject, String predicate) {
+//        ALink link;
+//        String tmps;
+//        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
+//                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
+//        Query query = new Query(tq);
+//        query.setSource(Gmodel);
+//        QueryExecution qe = new QueryEngine(query);
+//
+//        QueryResults results = qe.exec();
+//
+//        ArrayList<ALink> al = new ArrayList<ALink>();
+//
+//        for (; results.hasNext(); ) {
+//            ResultBinding res = (ResultBinding) results.next();
+//            Object x = res.get("x");
+//            if (x == null) break;
+//
+//            link = new ALink();
+//
+//            tmps = getValue(x, "hasName");
+//            if (tmps != null) {
+//                link.setName(tmps);
+//            } else {
+//                System.out.println("COOL: Name is not defined for the linkPoint " + x.toString());
+//                return null;
+//            }
+//
+//            tmps = getValue(x, "hasDescription");
+//            if (tmps != null) {
+//                link.setDescription(tmps);
+//            }
+//
+//            tmps = getValue(x, "hasTransport");
+//            if (tmps != null) {
+//                link.setTransport(tmps);
+//            }
+//
+//            tmps = getValue(x, "sourceComponentName");
+//            if (tmps != null) {
+//                link.setSourceComponentName(tmps);
+//            }
+//
+//            tmps = getValue(x, "sourceHost");
+//            if (tmps != null) {
+//                link.setSourceHost(tmps);
+//            }
+//
+//            tmps = getValue(x, "sourcePort");
+//            if (tmps != null) {
+//                try {
+//                    link.setSourcePort(Integer.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            tmps = getValue(x, "destinationComponentName");
+//            if (tmps != null) {
+//                link.setDestinationComponentName(tmps);
+//            }
+//
+//            tmps = getValue(x, "destinationHost");
+//            if (tmps != null) {
+//                link.setDestinationHost(tmps);
+//            }
+//
+//            tmps = getValue(x, "destinationPort");
+//            if (tmps != null) {
+//                try {
+//                    link.setDestinationPort(Integer.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            tmps = getValue(x, "destinationETNumberEvents");
+//            if (tmps != null) {
+//                try {
+//                    link.setDestinationETNumberEvents(Integer.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            tmps = getValue(x, "destinationETEventSize");
+//            if (tmps != null) {
+//                try {
+//                    link.setDestinationETEventSize(Integer.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            tmps = getValue(x, "startX");
+//            if (tmps != null) {
+//                try {
+//                    link.setStartX(Double.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            tmps = getValue(x, "startY");
+//            if (tmps != null) {
+//                try {
+//                    link.setStartY(Double.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            tmps = getValue(x, "endX");
+//            if (tmps != null) {
+//                try {
+//                    link.setEndX(Double.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            tmps = getValue(x, "endY");
+//            if (tmps != null) {
+//                try {
+//                    link.setEndY(Double.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//
+//            al.add(link);
+//
+//        }
+//        results.close();
+//        return al;
+//    }
+    private ArrayList<ALink> parseLink(Object subject, String predicate) {
+        RDFNode x;
         ALink link;
         String tmps;
-        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
-                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
-        Query query = new Query(tq);
-        query.setSource(Gmodel);
-        QueryExecution qe = new QueryEngine(query);
+        ArrayList<ALink> al = new ArrayList<>();
+        // Build a SPARQL query string. Note the braces { } and SPARQL syntax.
+        String queryString =
+                "SELECT ?x WHERE { "
+                        + "   <" + subject.toString() + "> <" + AConstants.COOL_CORE + predicate + "> ?x . "
+                        + "} ORDER BY ?x";
 
-        QueryResults results = qe.exec();
+        // Parse the SPARQL query
+        Query query = QueryFactory.create(queryString);
 
-        ArrayList<ALink> al = new ArrayList<ALink>();
+        // Execute the query over your model
+        try (QueryExecution qe = QueryExecutionFactory.create(query, Gmodel)) {
+            ResultSet rs = qe.execSelect();
 
-        for (; results.hasNext(); ) {
-            ResultBinding res = (ResultBinding) results.next();
-            Object x = res.get("x");
-            if (x == null) break;
+            // Iterate over the results
+            while (rs.hasNext()) {
+                QuerySolution sol = rs.nextSolution();
+                x = sol.get("x");
+                if (x == null) break;
 
-            link = new ALink();
+                link = new ALink();
 
-            tmps = getValue(x, "hasName");
-            if (tmps != null) {
-                link.setName(tmps);
-            } else {
-                System.out.println("COOL: Name is not defined for the linkPoint " + x.toString());
-                return null;
-            }
-
-            tmps = getValue(x, "hasDescription");
-            if (tmps != null) {
-                link.setDescription(tmps);
-            }
-
-            tmps = getValue(x, "hasTransport");
-            if (tmps != null) {
-                link.setTransport(tmps);
-            }
-
-            tmps = getValue(x, "sourceComponentName");
-            if (tmps != null) {
-                link.setSourceComponentName(tmps);
-            }
-
-            tmps = getValue(x, "sourceHost");
-            if (tmps != null) {
-                link.setSourceHost(tmps);
-            }
-
-            tmps = getValue(x, "sourcePort");
-            if (tmps != null) {
-                try {
-                    link.setSourcePort(Integer.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
+                tmps = getValue(x, "hasName");
+                if (tmps != null) {
+                    link.setName(tmps);
+                } else {
+                    System.out.println("COOL: Name is not defined for the linkPoint " + x.toString());
+                    return null;
                 }
-            }
 
-            tmps = getValue(x, "destinationComponentName");
-            if (tmps != null) {
-                link.setDestinationComponentName(tmps);
-            }
-
-            tmps = getValue(x, "destinationHost");
-            if (tmps != null) {
-                link.setDestinationHost(tmps);
-            }
-
-            tmps = getValue(x, "destinationPort");
-            if (tmps != null) {
-                try {
-                    link.setDestinationPort(Integer.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
+                tmps = getValue(x, "hasDescription");
+                if (tmps != null) {
+                    link.setDescription(tmps);
                 }
-            }
 
-            tmps = getValue(x, "destinationETNumberEvents");
-            if (tmps != null) {
-                try {
-                    link.setDestinationETNumberEvents(Integer.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
+                tmps = getValue(x, "hasTransport");
+                if (tmps != null) {
+                    link.setTransport(tmps);
                 }
-            }
 
-            tmps = getValue(x, "destinationETEventSize");
-            if (tmps != null) {
-                try {
-                    link.setDestinationETEventSize(Integer.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
+                tmps = getValue(x, "sourceComponentName");
+                if (tmps != null) {
+                    link.setSourceComponentName(tmps);
                 }
-            }
 
-            tmps = getValue(x, "startX");
-            if (tmps != null) {
-                try {
-                    link.setStartX(Double.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
+                tmps = getValue(x, "sourceHost");
+                if (tmps != null) {
+                    link.setSourceHost(tmps);
                 }
-            }
 
-            tmps = getValue(x, "startY");
-            if (tmps != null) {
-                try {
-                    link.setStartY(Double.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
+                tmps = getValue(x, "sourcePort");
+                if (tmps != null) {
+                    try {
+                        link.setSourcePort(Integer.valueOf(tmps));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
 
-            tmps = getValue(x, "endX");
-            if (tmps != null) {
-                try {
-                    link.setEndX(Double.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
+                tmps = getValue(x, "destinationComponentName");
+                if (tmps != null) {
+                    link.setDestinationComponentName(tmps);
                 }
-            }
 
-            tmps = getValue(x, "endY");
-            if (tmps != null) {
-                try {
-                    link.setEndY(Double.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
+                tmps = getValue(x, "destinationHost");
+                if (tmps != null) {
+                    link.setDestinationHost(tmps);
                 }
+
+                tmps = getValue(x, "destinationPort");
+                if (tmps != null) {
+                    try {
+                        link.setDestinationPort(Integer.valueOf(tmps));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                tmps = getValue(x, "destinationETNumberEvents");
+                if (tmps != null) {
+                    try {
+                        link.setDestinationETNumberEvents(Integer.valueOf(tmps));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                tmps = getValue(x, "destinationETEventSize");
+                if (tmps != null) {
+                    try {
+                        link.setDestinationETEventSize(Integer.valueOf(tmps));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                tmps = getValue(x, "startX");
+                if (tmps != null) {
+                    try {
+                        link.setStartX(Double.valueOf(tmps));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                tmps = getValue(x, "startY");
+                if (tmps != null) {
+                    try {
+                        link.setStartY(Double.valueOf(tmps));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                tmps = getValue(x, "endX");
+                if (tmps != null) {
+                    try {
+                        link.setEndX(Double.valueOf(tmps));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                tmps = getValue(x, "endY");
+                if (tmps != null) {
+                    try {
+                        link.setEndY(Double.valueOf(tmps));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+                al.add(link);
             }
-
-
-            al.add(link);
-
         }
-        results.close();
         return al;
     }
 
@@ -1238,114 +2101,231 @@ public class CParser {
      * @param predicate String of the cool predicate name
      * @return option           {@link org.jlab.coda.afecs.cool.ontology.AOption} object
      */
+//    private AOption _old_parseOption(Object subject, String predicate) {
+//        AOption option = null;
+//        String name, description, dataFile, dataFilePrefix, coda2Component,
+//                autoStart, startRun, configFile, configString, tmps;
+//
+//        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
+//                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
+//        Query query = new Query(tq);
+//        query.setSource(Gmodel);
+//        QueryExecution qe = new QueryEngine(query);
+//
+//        QueryResults results = qe.exec();
+//        for (; results.hasNext(); ) {
+//            ResultBinding res = (ResultBinding) results.next();
+//            Object x = res.get("x");
+//            if (x == null) break;
+//
+//            option = new AOption();
+//
+//            name = getValue(x, "hasName");
+//            if (name != null) {
+//                option.setName(name);
+//            } else {
+//                System.out.println("COOL: Name is not defined for the option " + x.toString());
+//                return null;
+//            }
+//
+//            description = getValue(x, "hasDescription");
+//            if (description != null) {
+//                option.setDescription(description);
+//            }
+//
+//            dataFile = getValue(x, "hasDataFile");
+//            if (dataFile != null) {
+//                option.setDataFile(dataFile);
+//            }
+//
+//            dataFilePrefix = getValue(x, "hasDataFilePrefix");
+//            if (dataFilePrefix != null) {
+//                option.setDataFilePrefix(dataFilePrefix);
+//            }
+//
+//            coda2Component = getValue(x, "hasCoda2Component");
+//            if (coda2Component != null) {
+//                option.setCoda2Component(coda2Component);
+//            }
+//
+//            autoStart = getValue(x, "hasAutoStart");
+//            if (autoStart != null) {
+//                option.setAutoStart(autoStart);
+//            }
+//
+//            startRun = getValue(x, "hasStartRun");
+//            if (startRun != null) {
+//                option.setStartRun(startRun);
+//            }
+//
+//            configFile = getValue(x, "hasConfigFile");
+//            if (configFile != null) {
+//                option.setConfigFile(configFile);
+//            }
+//
+//            configString = getValue(x, "hasConfigString");
+//            if (configString != null) {
+//                option.setConfigString(configString);
+//            }
+//
+//            tmps = getValue(x, "hasDownloadString");
+//            if (tmps != null) {
+//                option.setDownloadString(tmps);
+//            }
+//
+//            tmps = getValue(x, "hasPrestartString");
+//            if (tmps != null) {
+//                option.setPrestartString(tmps);
+//            }
+//
+//            tmps = getValue(x, "hasGoString");
+//            if (tmps != null) {
+//                option.setGoString(tmps);
+//            }
+//
+//            tmps = getValue(x, "hasEndString");
+//            if (tmps != null) {
+//                option.setEndString(tmps);
+//            }
+//
+//
+//            tmps = getValue(x, "hasEventLimit");
+//            if (tmps != null) {
+//                try {
+//                    option.setEventLimit(Integer.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            tmps = getValue(x, "hasDataLimit");
+//            if (tmps != null) {
+//                try {
+//                    option.setDataLimit(Integer.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//        }
+//        results.close();
+//        return option;
+//    }
     private AOption parseOption(Object subject, String predicate) {
+        RDFNode x;
         AOption option = null;
         String name, description, dataFile, dataFilePrefix, coda2Component,
                 autoStart, startRun, configFile, configString, tmps;
 
-        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
-                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
-        Query query = new Query(tq);
-        query.setSource(Gmodel);
-        QueryExecution qe = new QueryEngine(query);
+        // Build a SPARQL query string. Note the braces { } and SPARQL syntax.
+        String queryString =
+                "SELECT ?x WHERE { "
+                        + "   <" + subject.toString() + "> <" + AConstants.COOL_CORE + predicate + "> ?x . "
+                        + "} ORDER BY ?x";
 
-        QueryResults results = qe.exec();
-        for (; results.hasNext(); ) {
-            ResultBinding res = (ResultBinding) results.next();
-            Object x = res.get("x");
-            if (x == null) break;
+        // Parse the SPARQL query
+        Query query = QueryFactory.create(queryString);
 
-            option = new AOption();
+        // Execute the query over your model
+        try (QueryExecution qe = QueryExecutionFactory.create(query, Gmodel)) {
+            ResultSet rs = qe.execSelect();
 
-            name = getValue(x, "hasName");
-            if (name != null) {
-                option.setName(name);
-            } else {
-                System.out.println("COOL: Name is not defined for the option " + x.toString());
-                return null;
-            }
+            // Iterate over the results
+            while (rs.hasNext()) {
+                QuerySolution sol = rs.nextSolution();
+                x = sol.get("x");
+                if (x == null) break;
 
-            description = getValue(x, "hasDescription");
-            if (description != null) {
-                option.setDescription(description);
-            }
+                option = new AOption();
 
-            dataFile = getValue(x, "hasDataFile");
-            if (dataFile != null) {
-                option.setDataFile(dataFile);
-            }
+                name = getValue(x, "hasName");
+                if (name != null) {
+                    option.setName(name);
+                } else {
+                    System.out.println("COOL: Name is not defined for the option " + x.toString());
+                    return null;
+                }
 
-            dataFilePrefix = getValue(x, "hasDataFilePrefix");
-            if (dataFilePrefix != null) {
-                option.setDataFilePrefix(dataFilePrefix);
-            }
+                description = getValue(x, "hasDescription");
+                if (description != null) {
+                    option.setDescription(description);
+                }
 
-            coda2Component = getValue(x, "hasCoda2Component");
-            if (coda2Component != null) {
-                option.setCoda2Component(coda2Component);
-            }
+                dataFile = getValue(x, "hasDataFile");
+                if (dataFile != null) {
+                    option.setDataFile(dataFile);
+                }
 
-            autoStart = getValue(x, "hasAutoStart");
-            if (autoStart != null) {
-                option.setAutoStart(autoStart);
-            }
+                dataFilePrefix = getValue(x, "hasDataFilePrefix");
+                if (dataFilePrefix != null) {
+                    option.setDataFilePrefix(dataFilePrefix);
+                }
 
-            startRun = getValue(x, "hasStartRun");
-            if (startRun != null) {
-                option.setStartRun(startRun);
-            }
+                coda2Component = getValue(x, "hasCoda2Component");
+                if (coda2Component != null) {
+                    option.setCoda2Component(coda2Component);
+                }
 
-            configFile = getValue(x, "hasConfigFile");
-            if (configFile != null) {
-                option.setConfigFile(configFile);
-            }
+                autoStart = getValue(x, "hasAutoStart");
+                if (autoStart != null) {
+                    option.setAutoStart(autoStart);
+                }
 
-            configString = getValue(x, "hasConfigString");
-            if (configString != null) {
-                option.setConfigString(configString);
-            }
+                startRun = getValue(x, "hasStartRun");
+                if (startRun != null) {
+                    option.setStartRun(startRun);
+                }
 
-            tmps = getValue(x, "hasDownloadString");
-            if (tmps != null) {
-                option.setDownloadString(tmps);
-            }
+                configFile = getValue(x, "hasConfigFile");
+                if (configFile != null) {
+                    option.setConfigFile(configFile);
+                }
 
-            tmps = getValue(x, "hasPrestartString");
-            if (tmps != null) {
-                option.setPrestartString(tmps);
-            }
+                configString = getValue(x, "hasConfigString");
+                if (configString != null) {
+                    option.setConfigString(configString);
+                }
 
-            tmps = getValue(x, "hasGoString");
-            if (tmps != null) {
-                option.setGoString(tmps);
-            }
+                tmps = getValue(x, "hasDownloadString");
+                if (tmps != null) {
+                    option.setDownloadString(tmps);
+                }
 
-            tmps = getValue(x, "hasEndString");
-            if (tmps != null) {
-                option.setEndString(tmps);
-            }
+                tmps = getValue(x, "hasPrestartString");
+                if (tmps != null) {
+                    option.setPrestartString(tmps);
+                }
+
+                tmps = getValue(x, "hasGoString");
+                if (tmps != null) {
+                    option.setGoString(tmps);
+                }
+
+                tmps = getValue(x, "hasEndString");
+                if (tmps != null) {
+                    option.setEndString(tmps);
+                }
 
 
-            tmps = getValue(x, "hasEventLimit");
-            if (tmps != null) {
-                try {
-                    option.setEventLimit(Integer.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
+                tmps = getValue(x, "hasEventLimit");
+                if (tmps != null) {
+                    try {
+                        option.setEventLimit(Integer.valueOf(tmps));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                tmps = getValue(x, "hasDataLimit");
+                if (tmps != null) {
+                    try {
+                        option.setDataLimit(Integer.valueOf(tmps));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-
-            tmps = getValue(x, "hasDataLimit");
-            if (tmps != null) {
-                try {
-                    option.setDataLimit(Integer.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
-
         }
-        results.close();
         return option;
     }
 
@@ -1357,7 +2337,102 @@ public class CParser {
      * @param predicate String of the cool predicate name
      * @return list of          {@link org.jlab.coda.afecs.cool.ontology.APackage} objects
      */
+//    private ArrayList<APackage> _old_parsePackage(Object subject, String predicate) {
+//        APackage pk;
+//        String name;
+//        String description;
+//        String tmp;
+//        String subj;
+//        String type;
+//        String text;
+//        ArrayList<String> receivedTexts;
+//        ArrayList<AChannel> channels;
+//
+//        ArrayList<APackage> al = new ArrayList<APackage>();
+//
+//        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
+//                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
+//        Query query = new Query(tq);
+//        query.setSource(Gmodel);
+//        QueryExecution qe = new QueryEngine(query);
+//
+//        QueryResults results = qe.exec();
+//        for (; results.hasNext(); ) {
+//            ResultBinding res = (ResultBinding) results.next();
+//            Object x = res.get("x");
+//            if (x == null) break;
+//            pk = new APackage();
+//
+//            name = getValue(x, "hasName");
+//            if (name != null) {
+//                pk.setName(name);
+//            } else {
+//                System.out.println("COOL: Name is not defined for the package " + x.toString());
+//                return null;
+//            }
+//
+//            description = getValue(x, "hasDescription");
+//            if (description != null) {
+//                pk.setDescription(description);
+//            }
+//
+//            subj = getValue(x, "hasSendSubject");
+//            if (subj != null) {
+//                pk.setSendSubject(subj);
+//            }
+//
+//            type = getValue(x, "hasSendType");
+//            if (type != null) {
+//                pk.setSendType(type);
+//            }
+//
+//            text = getValue(x, "hasSendText");
+//            if (text != null) {
+//                pk.setSendText(text);
+//            }
+//
+//            subj = getValue(x, "hasReceivedSubject");
+//            if (subj != null) {
+//                pk.setReceivedSubject(subj);
+//            }
+//
+//            type = getValue(x, "hasReceivedType");
+//            if (type != null) {
+//                pk.setReceivedType(type);
+//            }
+//
+//            receivedTexts = getValueList(x, "hasReceivedText");
+//            if (receivedTexts != null && !receivedTexts.isEmpty()) {
+//                pk.setReceivedText(receivedTexts);
+//            }
+//
+//            tmp = getValue(x, "isForRcClient");
+//            if (tmp != null) {
+//                pk.setForRcClient(tmp);
+//            }
+//
+//            tmp = getValue(x, "isForNativecMsg");
+//            if (tmp != null) {
+//                pk.setForNativecMsg(tmp);
+//            }
+//
+//            tmp = getValue(x, "isForShellClient");
+//            if (tmp != null) {
+//                pk.setForShellClient(tmp);
+//            }
+//
+//            channels = parseChannel(x, "hasChannel");
+//            if (channels != null && !channels.isEmpty()) {
+//                pk.setChannels(channels);
+//            }
+//
+//            al.add(pk);
+//        }
+//        results.close();
+//        return al;
+//    }
     private ArrayList<APackage> parsePackage(Object subject, String predicate) {
+        RDFNode x;
         APackage pk;
         String name;
         String description;
@@ -1370,85 +2445,92 @@ public class CParser {
 
         ArrayList<APackage> al = new ArrayList<APackage>();
 
-        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
-                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
-        Query query = new Query(tq);
-        query.setSource(Gmodel);
-        QueryExecution qe = new QueryEngine(query);
+        // Build a SPARQL query string. Note the braces { } and SPARQL syntax.
+        String queryString =
+                "SELECT ?x WHERE { "
+                        + "   <" + subject.toString() + "> <" + AConstants.COOL_CORE + predicate + "> ?x . "
+                        + "} ORDER BY ?x";
 
-        QueryResults results = qe.exec();
-        for (; results.hasNext(); ) {
-            ResultBinding res = (ResultBinding) results.next();
-            Object x = res.get("x");
-            if (x == null) break;
-            pk = new APackage();
+        // Parse the SPARQL query
+        Query query = QueryFactory.create(queryString);
 
-            name = getValue(x, "hasName");
-            if (name != null) {
-                pk.setName(name);
-            } else {
-                System.out.println("COOL: Name is not defined for the package " + x.toString());
-                return null;
+        // Execute the query over your model
+        try (QueryExecution qe = QueryExecutionFactory.create(query, Gmodel)) {
+            ResultSet rs = qe.execSelect();
+
+            // Iterate over the results
+            while (rs.hasNext()) {
+                QuerySolution sol = rs.nextSolution();
+                x = sol.get("x");
+                if (x == null) break;
+                pk = new APackage();
+
+                name = getValue(x, "hasName");
+                if (name != null) {
+                    pk.setName(name);
+                } else {
+                    System.out.println("COOL: Name is not defined for the package " + x.toString());
+                    return null;
+                }
+
+                description = getValue(x, "hasDescription");
+                if (description != null) {
+                    pk.setDescription(description);
+                }
+
+                subj = getValue(x, "hasSendSubject");
+                if (subj != null) {
+                    pk.setSendSubject(subj);
+                }
+
+                type = getValue(x, "hasSendType");
+                if (type != null) {
+                    pk.setSendType(type);
+                }
+
+                text = getValue(x, "hasSendText");
+                if (text != null) {
+                    pk.setSendText(text);
+                }
+
+                subj = getValue(x, "hasReceivedSubject");
+                if (subj != null) {
+                    pk.setReceivedSubject(subj);
+                }
+
+                type = getValue(x, "hasReceivedType");
+                if (type != null) {
+                    pk.setReceivedType(type);
+                }
+
+                receivedTexts = getValueList(x, "hasReceivedText");
+                if (receivedTexts != null && !receivedTexts.isEmpty()) {
+                    pk.setReceivedText(receivedTexts);
+                }
+
+                tmp = getValue(x, "isForRcClient");
+                if (tmp != null) {
+                    pk.setForRcClient(tmp);
+                }
+
+                tmp = getValue(x, "isForNativecMsg");
+                if (tmp != null) {
+                    pk.setForNativecMsg(tmp);
+                }
+
+                tmp = getValue(x, "isForShellClient");
+                if (tmp != null) {
+                    pk.setForShellClient(tmp);
+                }
+
+                channels = parseChannel(x, "hasChannel");
+                if (channels != null && !channels.isEmpty()) {
+                    pk.setChannels(channels);
+                }
+
+                al.add(pk);
             }
-
-            description = getValue(x, "hasDescription");
-            if (description != null) {
-                pk.setDescription(description);
-            }
-
-            subj = getValue(x, "hasSendSubject");
-            if (subj != null) {
-                pk.setSendSubject(subj);
-            }
-
-            type = getValue(x, "hasSendType");
-            if (type != null) {
-                pk.setSendType(type);
-            }
-
-            text = getValue(x, "hasSendText");
-            if (text != null) {
-                pk.setSendText(text);
-            }
-
-            subj = getValue(x, "hasReceivedSubject");
-            if (subj != null) {
-                pk.setReceivedSubject(subj);
-            }
-
-            type = getValue(x, "hasReceivedType");
-            if (type != null) {
-                pk.setReceivedType(type);
-            }
-
-            receivedTexts = getValueList(x, "hasReceivedText");
-            if (receivedTexts != null && !receivedTexts.isEmpty()) {
-                pk.setReceivedText(receivedTexts);
-            }
-
-            tmp = getValue(x, "isForRcClient");
-            if (tmp != null) {
-                pk.setForRcClient(tmp);
-            }
-
-            tmp = getValue(x, "isForNativecMsg");
-            if (tmp != null) {
-                pk.setForNativecMsg(tmp);
-            }
-
-            tmp = getValue(x, "isForShellClient");
-            if (tmp != null) {
-                pk.setForShellClient(tmp);
-            }
-
-            channels = parseChannel(x, "hasChannel");
-            if (channels != null && !channels.isEmpty()) {
-                pk.setChannels(channels);
-            }
-
-            al.add(pk);
         }
-        results.close();
         return al;
     }
 
@@ -1459,7 +2541,86 @@ public class CParser {
      * @param predicate String of the cool predicate name
      * @return list of          {@link org.jlab.coda.afecs.cool.ontology.AChannel} objects
      */
+//    private ArrayList<AChannel> _old_parseChannel(Object subject, String predicate) {
+//        AChannel ch;
+//        String name;
+//        String value;
+//        String minValue;
+//        String maxValue;
+//        String setValue;
+//        String tmps;
+//        String unit;
+//        String description;
+//
+//        ArrayList<AChannel> al = new ArrayList<AChannel>();
+//
+//        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
+//                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
+//        Query query = new Query(tq);
+//        query.setSource(Gmodel);
+//        QueryExecution qe = new QueryEngine(query);
+//
+//        QueryResults results = qe.exec();
+//        for (; results.hasNext(); ) {
+//            ResultBinding res = (ResultBinding) results.next();
+//            Object x = res.get("x");
+//            if (x == null) break;
+//            ch = new AChannel();
+//
+//            name = getValue(x, "hasName");
+//            if (name != null) {
+//                ch.setName(name);
+//            } else {
+//                System.out.println("COOL: Name is not defined for the channel " + x.toString());
+//                return null;
+//            }
+//
+//            description = getValue(x, "hasDescription");
+//            if (description != null) {
+//                ch.setDescription(description);
+//            }
+//
+//            tmps = getValue(x, "hasValueType");
+//            if (tmps != null) {
+//                try {
+//                    ch.setValueType(Integer.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            value = getValue(x, "hasValue");
+//            if (value != null) {
+//                ch.setValue(value);
+//            }
+//
+//            minValue = getValue(x, "hasMinValue");
+//            if (minValue != null) {
+//                ch.setMinValue(minValue);
+//            }
+//
+//            maxValue = getValue(x, "hasMaxValue");
+//            if (maxValue != null) {
+//                ch.setMaxValue(maxValue);
+//            }
+//
+//            setValue = getValue(x, "hasSetValue");
+//            if (setValue != null) {
+//                ch.setSetValue(setValue);
+//            }
+//
+//            unit = getValue(x, "hasUnit");
+//            if (unit != null) {
+//                ch.setUnit(unit);
+//            }
+//
+//            al.add(ch);
+//        }
+//        results.close();
+//        return al;
+//    }
     private ArrayList<AChannel> parseChannel(Object subject, String predicate) {
+        RDFNode x;
         AChannel ch;
         String name;
         String value;
@@ -1472,69 +2633,76 @@ public class CParser {
 
         ArrayList<AChannel> al = new ArrayList<AChannel>();
 
-        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
-                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
-        Query query = new Query(tq);
-        query.setSource(Gmodel);
-        QueryExecution qe = new QueryEngine(query);
+        // Build a SPARQL query string. Note the braces { } and SPARQL syntax.
+        String queryString =
+                "SELECT ?x WHERE { "
+                        + "   <" + subject.toString() + "> <" + AConstants.COOL_CORE + predicate + "> ?x . "
+                        + "} ORDER BY ?x";
 
-        QueryResults results = qe.exec();
-        for (; results.hasNext(); ) {
-            ResultBinding res = (ResultBinding) results.next();
-            Object x = res.get("x");
-            if (x == null) break;
-            ch = new AChannel();
+        // Parse the SPARQL query
+        Query query = QueryFactory.create(queryString);
 
-            name = getValue(x, "hasName");
-            if (name != null) {
-                ch.setName(name);
-            } else {
-                System.out.println("COOL: Name is not defined for the channel " + x.toString());
-                return null;
-            }
+        // Execute the query over your model
+        try (QueryExecution qe = QueryExecutionFactory.create(query, Gmodel)) {
+            ResultSet rs = qe.execSelect();
 
-            description = getValue(x, "hasDescription");
-            if (description != null) {
-                ch.setDescription(description);
-            }
+            // Iterate over the results
+            while (rs.hasNext()) {
+                QuerySolution sol = rs.nextSolution();
+                x = sol.get("x");
+                if (x == null) break;
+                ch = new AChannel();
 
-            tmps = getValue(x, "hasValueType");
-            if (tmps != null) {
-                try {
-                    ch.setValueType(Integer.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
+                name = getValue(x, "hasName");
+                if (name != null) {
+                    ch.setName(name);
+                } else {
+                    System.out.println("COOL: Name is not defined for the channel " + x.toString());
+                    return null;
                 }
-            }
 
-            value = getValue(x, "hasValue");
-            if (value != null) {
-                ch.setValue(value);
-            }
+                description = getValue(x, "hasDescription");
+                if (description != null) {
+                    ch.setDescription(description);
+                }
 
-            minValue = getValue(x, "hasMinValue");
-            if (minValue != null) {
-                ch.setMinValue(minValue);
-            }
+                tmps = getValue(x, "hasValueType");
+                if (tmps != null) {
+                    try {
+                        ch.setValueType(Integer.valueOf(tmps));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-            maxValue = getValue(x, "hasMaxValue");
-            if (maxValue != null) {
-                ch.setMaxValue(maxValue);
-            }
+                value = getValue(x, "hasValue");
+                if (value != null) {
+                    ch.setValue(value);
+                }
 
-            setValue = getValue(x, "hasSetValue");
-            if (setValue != null) {
-                ch.setSetValue(setValue);
-            }
+                minValue = getValue(x, "hasMinValue");
+                if (minValue != null) {
+                    ch.setMinValue(minValue);
+                }
 
-            unit = getValue(x, "hasUnit");
-            if (unit != null) {
-                ch.setUnit(unit);
-            }
+                maxValue = getValue(x, "hasMaxValue");
+                if (maxValue != null) {
+                    ch.setMaxValue(maxValue);
+                }
 
-            al.add(ch);
+                setValue = getValue(x, "hasSetValue");
+                if (setValue != null) {
+                    ch.setSetValue(setValue);
+                }
+
+                unit = getValue(x, "hasUnit");
+                if (unit != null) {
+                    ch.setUnit(unit);
+                }
+
+                al.add(ch);
+            }
         }
-        results.close();
         return al;
     }
 
@@ -1545,7 +2713,80 @@ public class CParser {
      * @param predicate String of the cool predicate name
      * @return list of          {@link org.jlab.coda.afecs.cool.ontology.AScript} objects
      */
+//    private ArrayList<AScript> _old_parseScript(Object subject, String predicate) {
+//        AScript sc;
+//        String name;
+//        String description;
+//        String commandString;
+//        String sync;
+//        String tmp;
+//        ArrayList<AScript> al = new ArrayList<>();
+//
+//        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
+//                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
+//        Query query = new Query(tq);
+//        query.setSource(Gmodel);
+//        QueryExecution qe = new QueryEngine(query);
+//
+//        QueryResults results = qe.exec();
+//        for (; results.hasNext(); ) {
+//            ResultBinding res = (ResultBinding) results.next();
+//            Object x = res.get("x");
+//            if (x == null) break;
+//            sc = new AScript();
+//
+//            name = getValue(x, "hasName");
+//            if (name != null) {
+//                sc.setName(name);
+//            } else {
+//                System.out.println("COOL: Name is not defined for the script " + x.toString());
+//                return null;
+//            }
+//
+//            description = getValue(x, "hasDescription");
+//            if (description != null) {
+//                sc.setDescription(description);
+//            }
+//
+//            commandString = getValue(x, "hasCommandString");
+//            if (commandString != null) {
+//                if (AfecsTool.containsRTV(commandString)) {
+//                    sc.setCommandString(AfecsTool.checkRtvs(commandString, setRTVs));
+//                } else {
+//                    sc.setCommandString(commandString);
+//                }
+//            }
+//
+//            tmp = getValue(x, "hasExitCode");
+//            if (tmp != null) {
+//                try {
+//                    sc.setExitCode(Integer.valueOf(tmp));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            sync = getValue(x, "isSynchronous");
+//            if (sync != null) {
+//                sc.setSync(sync);
+//            }
+//
+//            tmp = getValue(x, "hasTimeout");
+//            if (tmp != null) {
+//                try {
+//                    sc.setTimeout(Integer.valueOf(tmp));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            al.add(sc);
+//        }
+//        results.close();
+//        return al;
+//    }
     private ArrayList<AScript> parseScript(Object subject, String predicate) {
+        RDFNode x;
         AScript sc;
         String name;
         String description;
@@ -1554,67 +2795,74 @@ public class CParser {
         String tmp;
         ArrayList<AScript> al = new ArrayList<>();
 
-        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
-                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
-        Query query = new Query(tq);
-        query.setSource(Gmodel);
-        QueryExecution qe = new QueryEngine(query);
+        // Build a SPARQL query string. Note the braces { } and SPARQL syntax.
+        String queryString =
+                "SELECT ?x WHERE { "
+                        + "   <" + subject.toString() + "> <" + AConstants.COOL_CORE + predicate + "> ?x . "
+                        + "} ORDER BY ?x";
 
-        QueryResults results = qe.exec();
-        for (; results.hasNext(); ) {
-            ResultBinding res = (ResultBinding) results.next();
-            Object x = res.get("x");
-            if (x == null) break;
-            sc = new AScript();
+        // Parse the SPARQL query
+        Query query = QueryFactory.create(queryString);
 
-            name = getValue(x, "hasName");
-            if (name != null) {
-                sc.setName(name);
-            } else {
-                System.out.println("COOL: Name is not defined for the script " + x.toString());
-                return null;
-            }
+        // Execute the query over your model
+        try (QueryExecution qe = QueryExecutionFactory.create(query, Gmodel)) {
+            ResultSet rs = qe.execSelect();
 
-            description = getValue(x, "hasDescription");
-            if (description != null) {
-                sc.setDescription(description);
-            }
+            // Iterate over the results
+            while (rs.hasNext()) {
+                QuerySolution sol = rs.nextSolution();
+                x = sol.get("x");
+                if (x == null) break;
+                sc = new AScript();
 
-            commandString = getValue(x, "hasCommandString");
-            if (commandString != null) {
-                if (AfecsTool.containsRTV(commandString)) {
-                    sc.setCommandString(AfecsTool.checkRtvs(commandString, setRTVs));
+                name = getValue(x, "hasName");
+                if (name != null) {
+                    sc.setName(name);
                 } else {
-                    sc.setCommandString(commandString);
+                    System.out.println("COOL: Name is not defined for the script " + x.toString());
+                    return null;
                 }
-            }
 
-            tmp = getValue(x, "hasExitCode");
-            if (tmp != null) {
-                try {
-                    sc.setExitCode(Integer.valueOf(tmp));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
+                description = getValue(x, "hasDescription");
+                if (description != null) {
+                    sc.setDescription(description);
                 }
-            }
 
-            sync = getValue(x, "isSynchronous");
-            if (sync != null) {
-                sc.setSync(sync);
-            }
-
-            tmp = getValue(x, "hasTimeout");
-            if (tmp != null) {
-                try {
-                    sc.setTimeout(Integer.valueOf(tmp));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
+                commandString = getValue(x, "hasCommandString");
+                if (commandString != null) {
+                    if (AfecsTool.containsRTV(commandString)) {
+                        sc.setCommandString(AfecsTool.checkRtvs(commandString, setRTVs));
+                    } else {
+                        sc.setCommandString(commandString);
+                    }
                 }
-            }
 
-            al.add(sc);
+                tmp = getValue(x, "hasExitCode");
+                if (tmp != null) {
+                    try {
+                        sc.setExitCode(Integer.valueOf(tmp));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                sync = getValue(x, "isSynchronous");
+                if (sync != null) {
+                    sc.setSync(sync);
+                }
+
+                tmp = getValue(x, "hasTimeout");
+                if (tmp != null) {
+                    try {
+                        sc.setTimeout(Integer.valueOf(tmp));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                al.add(sc);
+            }
         }
-        results.close();
         return al;
     }
 
@@ -1625,7 +2873,74 @@ public class CParser {
      * @param predicate String of the cool predicate name
      * @return gui             {@link org.jlab.coda.afecs.cool.ontology.HMI} objects
      */
+//    private HMI _old_parseHmi(Object subject, String predicate) {
+//        HMI h = null;
+//        String name;
+//        String description;
+//        ArrayList<APanel> panels;
+//        String isWebBased;
+//        String tmps;
+//
+//        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
+//                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
+//        Query query = new Query(tq);
+//        query.setSource(Gmodel);
+//        QueryExecution qe = new QueryEngine(query);
+//
+//        QueryResults results = qe.exec();
+//        for (; results.hasNext(); ) {
+//            ResultBinding res = (ResultBinding) results.next();
+//            Object x = res.get("x");
+//            if (x == null) break;
+//            h = new HMI();
+//
+//            name = getValue(x, "hasName");
+//            if (name != null) {
+//                h.setName(name);
+//            } else {
+//                System.out.println("COOL: Name is not defined for the hmi " + x.toString());
+//                return null;
+//            }
+//
+//            description = getValue(x, "hasDescription");
+//            if (description != null) {
+//                h.setDescription(description);
+//            }
+//
+//            isWebBased = getValue(x, "isWebBased");
+//            if (isWebBased != null) {
+//                h.setWebBased(isWebBased);
+//            }
+//
+//            tmps = getValue(x, "hasRows");
+//            if (tmps != null) {
+//                try {
+//                    h.setRowsNumber(Integer.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            tmps = getValue(x, "hasColumns");
+//            if (tmps != null) {
+//                try {
+//                    h.setColumnsNumber(Integer.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            panels = parsePanel(x, "hasPanel");
+//            if (panels != null && !panels.isEmpty()) {
+//                h.setPanels(panels);
+//            }
+//
+//        }
+//        results.close();
+//        return h;
+//    }
     private HMI parseHmi(Object subject, String predicate) {
+        RDFNode x;
         HMI h = null;
         String name;
         String description;
@@ -1633,62 +2948,68 @@ public class CParser {
         String isWebBased;
         String tmps;
 
-        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
-                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
-        Query query = new Query(tq);
-        query.setSource(Gmodel);
-        QueryExecution qe = new QueryEngine(query);
+        // Build a SPARQL query string. Note the braces { } and SPARQL syntax.
+        String queryString =
+                "SELECT ?x WHERE { "
+                        + "   <" + subject.toString() + "> <" + AConstants.COOL_CORE + predicate + "> ?x . "
+                        + "} ORDER BY ?x";
 
-        QueryResults results = qe.exec();
-        for (; results.hasNext(); ) {
-            ResultBinding res = (ResultBinding) results.next();
-            Object x = res.get("x");
-            if (x == null) break;
-            h = new HMI();
+        // Parse the SPARQL query
+        Query query = QueryFactory.create(queryString);
 
-            name = getValue(x, "hasName");
-            if (name != null) {
-                h.setName(name);
-            } else {
-                System.out.println("COOL: Name is not defined for the hmi " + x.toString());
-                return null;
-            }
+        // Execute the query over your model
+        try (QueryExecution qe = QueryExecutionFactory.create(query, Gmodel)) {
+            ResultSet rs = qe.execSelect();
 
-            description = getValue(x, "hasDescription");
-            if (description != null) {
-                h.setDescription(description);
-            }
+            // Iterate over the results
+            while (rs.hasNext()) {
+                QuerySolution sol = rs.nextSolution();
+                x = sol.get("x");
+                if (x == null) break;
+                h = new HMI();
 
-            isWebBased = getValue(x, "isWebBased");
-            if (isWebBased != null) {
-                h.setWebBased(isWebBased);
-            }
+                name = getValue(x, "hasName");
+                if (name != null) {
+                    h.setName(name);
+                } else {
+                    System.out.println("COOL: Name is not defined for the hmi " + x.toString());
+                    return null;
+                }
 
-            tmps = getValue(x, "hasRows");
-            if (tmps != null) {
-                try {
-                    h.setRowsNumber(Integer.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
+                description = getValue(x, "hasDescription");
+                if (description != null) {
+                    h.setDescription(description);
+                }
+
+                isWebBased = getValue(x, "isWebBased");
+                if (isWebBased != null) {
+                    h.setWebBased(isWebBased);
+                }
+
+                tmps = getValue(x, "hasRows");
+                if (tmps != null) {
+                    try {
+                        h.setRowsNumber(Integer.valueOf(tmps));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                tmps = getValue(x, "hasColumns");
+                if (tmps != null) {
+                    try {
+                        h.setColumnsNumber(Integer.valueOf(tmps));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                panels = parsePanel(x, "hasPanel");
+                if (panels != null && !panels.isEmpty()) {
+                    h.setPanels(panels);
                 }
             }
-
-            tmps = getValue(x, "hasColumns");
-            if (tmps != null) {
-                try {
-                    h.setColumnsNumber(Integer.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            panels = parsePanel(x, "hasPanel");
-            if (panels != null && !panels.isEmpty()) {
-                h.setPanels(panels);
-            }
-
         }
-        results.close();
         return h;
     }
 
@@ -1699,7 +3020,73 @@ public class CParser {
      * @param predicate String of the cool predicate name
      * @return list of          {@link APanel} objects
      */
+//    private ArrayList<APanel> _old_parsePanel(Object subject, String predicate) {
+//        APanel p;
+//        String name;
+//        String description;
+//        String color;
+//        String title;
+//        ArrayList<AWidget> widgets;
+//        String tmps;
+//        ArrayList<APanel> al = new ArrayList<APanel>();
+//
+//        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
+//                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
+//        Query query = new Query(tq);
+//        query.setSource(Gmodel);
+//        QueryExecution qe = new QueryEngine(query);
+//
+//        QueryResults results = qe.exec();
+//        for (; results.hasNext(); ) {
+//            ResultBinding res = (ResultBinding) results.next();
+//            Object x = res.get("x");
+//            if (x == null) break;
+//            p = new APanel();
+//
+//            name = getValue(x, "hasName");
+//            if (name != null) {
+//                p.setName(name);
+//            } else {
+//                System.out.println("COOL: Name is not defined for the panel " + x.toString());
+//                return null;
+//            }
+//
+//            description = getValue(x, "hasDescription");
+//            if (description != null) {
+//                p.setDescription(description);
+//            }
+//
+//            color = getValue(x, "hasColor");
+//            if (color != null) {
+//                p.setColor(color);
+//            }
+//
+//            title = getValue(x, "hasTitle");
+//            if (title != null) {
+//                p.setTitle(title);
+//            }
+//
+//            tmps = getValue(x, "hasNumber");
+//            if (tmps != null) {
+//                try {
+//                    p.setNumber(Integer.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            widgets = parseWidget(x, "hasWidget");
+//            if (widgets != null && !widgets.isEmpty()) {
+//                p.setWidgets(widgets);
+//            }
+//
+//            al.add(p);
+//        }
+//        results.close();
+//        return al;
+//    }
     private ArrayList<APanel> parsePanel(Object subject, String predicate) {
+        RDFNode x;
         APanel p;
         String name;
         String description;
@@ -1707,61 +3094,68 @@ public class CParser {
         String title;
         ArrayList<AWidget> widgets;
         String tmps;
-        ArrayList<APanel> al = new ArrayList<APanel>();
+        ArrayList<APanel> al = new ArrayList<>();
 
-        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
-                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
-        Query query = new Query(tq);
-        query.setSource(Gmodel);
-        QueryExecution qe = new QueryEngine(query);
+        // Build a SPARQL query string. Note the braces { } and SPARQL syntax.
+        String queryString =
+                "SELECT ?x WHERE { "
+                        + "   <" + subject.toString() + "> <" + AConstants.COOL_CORE + predicate + "> ?x . "
+                        + "} ORDER BY ?x";
 
-        QueryResults results = qe.exec();
-        for (; results.hasNext(); ) {
-            ResultBinding res = (ResultBinding) results.next();
-            Object x = res.get("x");
-            if (x == null) break;
-            p = new APanel();
+        // Parse the SPARQL query
+        Query query = QueryFactory.create(queryString);
 
-            name = getValue(x, "hasName");
-            if (name != null) {
-                p.setName(name);
-            } else {
-                System.out.println("COOL: Name is not defined for the panel " + x.toString());
-                return null;
-            }
+        // Execute the query over your model
+        try (QueryExecution qe = QueryExecutionFactory.create(query, Gmodel)) {
+            ResultSet rs = qe.execSelect();
 
-            description = getValue(x, "hasDescription");
-            if (description != null) {
-                p.setDescription(description);
-            }
+            // Iterate over the results
+            while (rs.hasNext()) {
+                QuerySolution sol = rs.nextSolution();
+                x = sol.get("x");
+                if (x == null) break;
+                p = new APanel();
 
-            color = getValue(x, "hasColor");
-            if (color != null) {
-                p.setColor(color);
-            }
-
-            title = getValue(x, "hasTitle");
-            if (title != null) {
-                p.setTitle(title);
-            }
-
-            tmps = getValue(x, "hasNumber");
-            if (tmps != null) {
-                try {
-                    p.setNumber(Integer.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
+                name = getValue(x, "hasName");
+                if (name != null) {
+                    p.setName(name);
+                } else {
+                    System.out.println("COOL: Name is not defined for the panel " + x.toString());
+                    return null;
                 }
-            }
 
-            widgets = parseWidget(x, "hasWidget");
-            if (widgets != null && !widgets.isEmpty()) {
-                p.setWidgets(widgets);
-            }
+                description = getValue(x, "hasDescription");
+                if (description != null) {
+                    p.setDescription(description);
+                }
 
-            al.add(p);
+                color = getValue(x, "hasColor");
+                if (color != null) {
+                    p.setColor(color);
+                }
+
+                title = getValue(x, "hasTitle");
+                if (title != null) {
+                    p.setTitle(title);
+                }
+
+                tmps = getValue(x, "hasNumber");
+                if (tmps != null) {
+                    try {
+                        p.setNumber(Integer.valueOf(tmps));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                widgets = parseWidget(x, "hasWidget");
+                if (widgets != null && !widgets.isEmpty()) {
+                    p.setWidgets(widgets);
+                }
+
+                al.add(p);
+            }
         }
-        results.close();
         return al;
     }
 
@@ -1772,7 +3166,103 @@ public class CParser {
      * @param predicate String of the cool predicate name
      * @return list of          {@link org.jlab.coda.afecs.cool.ontology.AWidget} objects
      */
+//    private ArrayList<AWidget> _old_parseWidget(Object subject, String predicate) {
+//        AWidget w;
+//        String name;
+//        String description;
+//        String title;
+//        String tmps;
+//        String type;
+//        String subType;
+//        String icon;
+//        String editable;
+//        ArrayList<AService> actionServices;
+//        ArrayList<AProcess> actionProcesses;
+//        ArrayList<AState> actionStates;
+//        ArrayList<AWidget> al = new ArrayList<AWidget>();
+//
+//        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
+//                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
+//        Query query = new Query(tq);
+//        query.setSource(Gmodel);
+//        QueryExecution qe = new QueryEngine(query);
+//
+//        QueryResults results = qe.exec();
+//        for (; results.hasNext(); ) {
+//            ResultBinding res = (ResultBinding) results.next();
+//            Object x = res.get("x");
+//            if (x == null) break;
+//            w = new AWidget();
+//
+//            name = getValue(x, "hasName");
+//            if (name != null) {
+//                w.setName(name);
+//            } else {
+//                System.out.println("COOL: Name is not defined for the widget " + x.toString());
+//                return null;
+//            }
+//
+//            description = getValue(x, "hasDescription");
+//            if (description != null) {
+//                w.setDescription(description);
+//            }
+//
+//            title = getValue(x, "hasTitle");
+//            if (title != null) {
+//                w.setTitle(title);
+//            }
+//
+//            tmps = getValue(x, "hasNumber");
+//            if (tmps != null) {
+//                try {
+//                    w.setNumber(Integer.valueOf(tmps));
+//                } catch (NumberFormatException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            type = getValue(x, "hasType");
+//            if (type != null) {
+//                w.setType(type);
+//            }
+//
+//            subType = getValue(x, "hasSubType");
+//            if (subType != null) {
+//                w.setSubType(subType);
+//            }
+//
+//            editable = getValue(x, "isEditable");
+//            if (editable != null) {
+//                w.setEditable(editable);
+//            }
+//
+//            icon = getValue(x, "hasIcon");
+//            if (icon != null) {
+//                w.setIcon(icon);
+//            }
+//
+//            actionStates = parseStates(x, "moveToState");
+//            if (actionStates != null && !actionStates.isEmpty()) {
+//                w.setActionStates(actionStates);
+//            }
+//
+//            actionProcesses = parseProcess(x, "startsProcess");
+//            if (actionProcesses != null && !actionProcesses.isEmpty()) {
+//                w.setActionProcesses(actionProcesses);
+//            }
+//
+//            actionServices = parseServices(x, "startsService");
+//            if (actionServices != null && !actionServices.isEmpty()) {
+//                w.setActionServices(actionServices);
+//            }
+//
+//            al.add(w);
+//        }
+//        results.close();
+//        return al;
+//    }
     private ArrayList<AWidget> parseWidget(Object subject, String predicate) {
+        RDFNode x;
         AWidget w;
         String name;
         String description;
@@ -1787,86 +3277,91 @@ public class CParser {
         ArrayList<AState> actionStates;
         ArrayList<AWidget> al = new ArrayList<AWidget>();
 
-        String tq = "SELECT ?x " + "WHERE(<" + subject.toString() +
-                ">, <" + AConstants.COOL_CORE + "" + predicate + ">,?x )";
-        Query query = new Query(tq);
-        query.setSource(Gmodel);
-        QueryExecution qe = new QueryEngine(query);
+        // Build a SPARQL query string. Note the braces { } and SPARQL syntax.
+        String queryString =
+                "SELECT ?x WHERE { "
+                        + "   <" + subject.toString() + "> <" + AConstants.COOL_CORE + predicate + "> ?x . "
+                        + "} ORDER BY ?x";
 
-        QueryResults results = qe.exec();
-        for (; results.hasNext(); ) {
-            ResultBinding res = (ResultBinding) results.next();
-            Object x = res.get("x");
-            if (x == null) break;
-            w = new AWidget();
+        // Parse the SPARQL query
+        Query query = QueryFactory.create(queryString);
 
-            name = getValue(x, "hasName");
-            if (name != null) {
-                w.setName(name);
-            } else {
-                System.out.println("COOL: Name is not defined for the widget " + x.toString());
-                return null;
-            }
+        // Execute the query over your model
+        try (QueryExecution qe = QueryExecutionFactory.create(query, Gmodel)) {
+            ResultSet rs = qe.execSelect();
 
-            description = getValue(x, "hasDescription");
-            if (description != null) {
-                w.setDescription(description);
-            }
+            // Iterate over the results
+            while (rs.hasNext()) {
+                QuerySolution sol = rs.nextSolution();
+                x = sol.get("x");
+                if (x == null) break;
+                w = new AWidget();
 
-            title = getValue(x, "hasTitle");
-            if (title != null) {
-                w.setTitle(title);
-            }
-
-            tmps = getValue(x, "hasNumber");
-            if (tmps != null) {
-                try {
-                    w.setNumber(Integer.valueOf(tmps));
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
+                name = getValue(x, "hasName");
+                if (name != null) {
+                    w.setName(name);
+                } else {
+                    System.out.println("COOL: Name is not defined for the widget " + x.toString());
+                    return null;
                 }
-            }
 
-            type = getValue(x, "hasType");
-            if (type != null) {
-                w.setType(type);
-            }
+                description = getValue(x, "hasDescription");
+                if (description != null) {
+                    w.setDescription(description);
+                }
 
-            subType = getValue(x, "hasSubType");
-            if (subType != null) {
-                w.setSubType(subType);
-            }
+                title = getValue(x, "hasTitle");
+                if (title != null) {
+                    w.setTitle(title);
+                }
 
-            editable = getValue(x, "isEditable");
-            if (editable != null) {
-                w.setEditable(editable);
-            }
+                tmps = getValue(x, "hasNumber");
+                if (tmps != null) {
+                    try {
+                        w.setNumber(Integer.valueOf(tmps));
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-            icon = getValue(x, "hasIcon");
-            if (icon != null) {
-                w.setIcon(icon);
-            }
+                type = getValue(x, "hasType");
+                if (type != null) {
+                    w.setType(type);
+                }
 
-            actionStates = parseStates(x, "moveToState");
-            if (actionStates != null && !actionStates.isEmpty()) {
-                w.setActionStates(actionStates);
-            }
+                subType = getValue(x, "hasSubType");
+                if (subType != null) {
+                    w.setSubType(subType);
+                }
 
-            actionProcesses = parseProcess(x, "startsProcess");
-            if (actionProcesses != null && !actionProcesses.isEmpty()) {
-                w.setActionProcesses(actionProcesses);
-            }
+                editable = getValue(x, "isEditable");
+                if (editable != null) {
+                    w.setEditable(editable);
+                }
 
-            actionServices = parseServices(x, "startsService");
-            if (actionServices != null && !actionServices.isEmpty()) {
-                w.setActionServices(actionServices);
-            }
+                icon = getValue(x, "hasIcon");
+                if (icon != null) {
+                    w.setIcon(icon);
+                }
 
-            al.add(w);
+                actionStates = parseStates(x, "moveToState");
+                if (actionStates != null && !actionStates.isEmpty()) {
+                    w.setActionStates(actionStates);
+                }
+
+                actionProcesses = parseProcess(x, "startsProcess");
+                if (actionProcesses != null && !actionProcesses.isEmpty()) {
+                    w.setActionProcesses(actionProcesses);
+                }
+
+                actionServices = parseServices(x, "startsService");
+                if (actionServices != null && !actionServices.isEmpty()) {
+                    w.setActionServices(actionServices);
+                }
+
+                al.add(w);
+            }
         }
-        results.close();
         return al;
     }
-
-
 }

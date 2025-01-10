@@ -4,10 +4,12 @@
       <root url="file://$PROJECT_DIR$/lib" />
       <root url="file://$PROJECT_DIR$/lib" />
       <root url="jar://$PROJECT_DIR$/../cMsg/java/jars/java8/cMsg-6.0.jar!/" />
+      <root url="file://$PROJECT_DIR$/lib/jena" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
     <jarDirectory url="file://$PROJECT_DIR$/lib" recursive="false" />
     <jarDirectory url="file://$PROJECT_DIR$/lib" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/lib/jena" recursive="false" />
   </library>
 </component>
