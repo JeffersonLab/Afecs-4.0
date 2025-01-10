@@ -230,7 +230,6 @@ public class ProcessManager {
 
         System.out.println("HHH ====] Request to execute a process");
         System.out.println(p);
-        System.out.println("@VIKUSH+++++++++ "+p.getSendPackages().isEmpty());
 
         // Now defined cMsg processes
         if (p.getSendPackages() != null && !p.getSendPackages().isEmpty()) {
