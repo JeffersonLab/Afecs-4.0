@@ -670,7 +670,7 @@ public class ProcessManager {
             if (msgBack != null) {
                 if (msgBack.getUserInt() == -1 ) {
                     owner.reportAlarmMsg(comp.getSession() + "/" + comp.getRunType(), comp.getName(), 6,
-                            AConstants.ERROR, "Process failed: type = "+type+" txt = "+text);
+                            AConstants.ERROR, "Process failed: type = "+type+" txt = "+text+" msg = "+msgBack.getText());
                 }
             }
 //           if (msgBack != null &&
