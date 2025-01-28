@@ -667,15 +667,21 @@ public class ProcessManager {
             }
 
             // check the return message
-            if (msgBack != null &&
-                    msgBack.getSubject() != null &&
-                    msgBack.getType() != null &&
-                    msgBack.getSubject().equals(pck.getReceivedSubject()) &&
-                    msgBack.getType().equals(pck.getReceivedType())) {
-                if (!pck.getReceivedText().contains(msgBack.getText())) {
-                    b = false;
+            if (msgBack != null) {
+                if (msgBack.getUserInt() == -1 ) {
+                    owner.reportAlarmMsg(comp.getSession() + "/" + comp.getRunType(), comp.getName(), 6,
+                            AConstants.ERROR, "Process failed: type = "+type+" txt = "+text);
                 }
             }
+//           if (msgBack != null &&
+//                    msgBack.getSubject() != null &&
+//                    msgBack.getType() != null &&
+//                    msgBack.getSubject().equals(pck.getReceivedSubject()) &&
+//                    msgBack.getType().equals(pck.getReceivedType())) {
+//                if (!pck.getReceivedText().contains(msgBack.getText())) {
+//                    b = false;
+//                }
+//            }
             return true;
         } else {
             return false;
