@@ -23,6 +23,7 @@
 package org.jlab.coda.afecs.supervisor.thread;
 
 import org.jlab.coda.afecs.codarc.CodaRCAgent;
+import org.jlab.coda.afecs.cool.ontology.APackage;
 import org.jlab.coda.afecs.cool.ontology.AProcess;
 import org.jlab.coda.afecs.cool.parser.ACondition;
 import org.jlab.coda.afecs.cool.parser.AStatement;
@@ -632,21 +633,32 @@ public class ServiceExecutionT implements Runnable {
                     }
                     if (su.contains(pr) ||
                             (serviceName.equals("CodaRcStartRun") && bp.getBefore().equals(AConstants.prestarted))) {
-                        owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
-                                owner.myName,
-                                1,
-                                AConstants.INFO,
-                                " Starting process = " + bp.getName());
+
+                        APackage pck = bp.getSendPackages().get(0);
+                        if (pck != null) {
+                            owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
+                                    owner.myName,
+                                    1,
+                                    AConstants.INFO,
+                                    " Starting process = " + bp.getName() + " to component " + pck.getSendType());
+
+                        } else {
+                            owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
+                                    owner.myName,
+                                    1,
+                                    AConstants.INFO,
+                                    " Starting process = " + bp.getName());
+                        }
                         // execute scripts before the state transition
 
 //                        owner.pm.executeProcess(bp, owner.myPlugin, owner.me); //12.18.24 VG
                         owner.pm.executeSup2RCProcess(bp, owner.myPlugin, owner);
 
-                        owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
-                                owner.myName,
-                                1,
-                                AConstants.INFO,
-                                " Done process = " + bp.getName());
+//                        owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
+//                                owner.myName,
+//                                1,
+//                                AConstants.INFO,
+//                                " Done process = " + bp.getName());
                     }
                 }
             }
@@ -671,22 +683,32 @@ public class ServiceExecutionT implements Runnable {
                     }
                     if (su.contains(pr) ||
                             (serviceName.equals("CodaRcStartRun") && bp.getAfter().equals(AConstants.active))) {
-                        owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
-                                owner.myName,
-                                1,
-                                AConstants.INFO,
-                                " Starting process = " + bp.getName());
+                        APackage pck = bp.getSendPackages().get(0);
+                        if (pck != null) {
+                            owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
+                                    owner.myName,
+                                    1,
+                                    AConstants.INFO,
+                                    " Starting process = " + bp.getName() + " to component " + pck.getSendType());
+
+                        } else {
+                            owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
+                                    owner.myName,
+                                    1,
+                                    AConstants.INFO,
+                                    " Starting process = " + bp.getName());
+                        }
 
                         // execute scripts before the state transition
 
 //                        owner.pm.executeProcess(bp, owner.myPlugin, owner.me); // 12/18/24 VG
                         owner.pm.executeSup2RCProcess(bp, owner.myPlugin, owner);
 
-                        owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
-                                owner.myName,
-                                1,
-                                AConstants.INFO,
-                                " Done process = " + bp.getName());
+//                        owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
+//                                owner.myName,
+//                                1,
+//                                AConstants.INFO,
+//                                " Done process = " + bp.getName());
                     }
                 }
             }

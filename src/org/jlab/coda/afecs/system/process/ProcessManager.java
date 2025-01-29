@@ -255,9 +255,6 @@ public class ProcessManager {
                     if (pck.getForRcClient().equals(AConstants.seton)) {
                         for (CodaRCAgent c : comp.myComponents.values()) {//VIK
                             if (c.me.getName().equals(pck.getSendSubject().trim())) {
-                                System.out.println("@VIK: " + c.me.getName()
-                                        + " is sending sync RC domain message: subject = " + pck.getSendSubject()
-                                        + " type =" + pck.getSendType());
                                 stat2 = _sync_sendPckgUsingRcSupervisedAgent(c.me, c.myCRCClientConnection, pck, p.getTimeout());
                             }
                         }
@@ -283,9 +280,6 @@ public class ProcessManager {
                     if (pck.getForRcClient().equals(AConstants.seton)) {
                         for (CodaRCAgent c : comp.myComponents.values()) {//VIK
                             if (c.me.getName().equals(pck.getSendSubject().trim())) {
-                                System.out.println("@VIK: " + c.me.getName()
-                                        + " is sending RC domain message: subject = " + pck.getSendSubject()
-                                        + " type =" + pck.getSendType());
                                 stat2 = _async_sendPckgUsingRcSupervisedAgent(c.me, c.myCRCClientConnection, pck);
                             }
                         }
@@ -632,8 +626,6 @@ public class ProcessManager {
         String text = pck.getSendText();
         to = to * 1000;
 
-        System.out.println("@VIK: =============== " + comp.getName());
-
         ArrayList<cMsgMessage> backMessages = new ArrayList<>();
 
         if (connection != null &&
@@ -670,7 +662,7 @@ public class ProcessManager {
             if (msgBack != null) {
                 if (msgBack.getUserInt() == -1 ) {
                     owner.reportAlarmMsg(comp.getSession() + "/" + comp.getRunType(), comp.getName(), 6,
-                            AConstants.ERROR, "Process failed: type = "+type+" txt = "+text+" msg = "+msgBack.getText());
+                            AConstants.SERROR, "Command = "+type+" failed with the msg = "+msgBack.getText());
                 }
             }
 //           if (msgBack != null &&
@@ -695,8 +687,6 @@ public class ProcessManager {
         String subject = pck.getSendSubject();
         String type = pck.getSendType();
         String text = pck.getSendText();
-
-        System.out.println("@VIK: =============== " + comp.getName());
 
         ArrayList<cMsgMessage> backMessages = new ArrayList<>();
 
