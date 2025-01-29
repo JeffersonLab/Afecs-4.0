@@ -662,10 +662,10 @@ public class ProcessManager {
             if (msgBack != null) {
                 if (msgBack.getUserInt() == -1 ) {
                     owner.reportAlarmMsg(comp.getSession() + "/" + comp.getRunType(), comp.getName(), 6,
-                            AConstants.SERROR, "Command = "+type+" failed with the msg = "+msgBack.getText());
+                            AConstants.SERROR, "Command = "+text+" failed with the msg = "+msgBack.getText());
                 } else {
                     owner.reportAlarmMsg(comp.getSession() + "/" + comp.getRunType(), comp.getName(), 6,
-                            AConstants.INFO, "Command = "+type+" completed with the msg = "+msgBack.getText());
+                            AConstants.INFO, "Command = "+text+" completed with the msg = "+msgBack.getText());
                 }
             }
 //           if (msgBack != null &&
