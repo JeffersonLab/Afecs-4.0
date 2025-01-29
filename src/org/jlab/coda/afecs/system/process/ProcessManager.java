@@ -661,10 +661,10 @@ public class ProcessManager {
             // check the return message
             if (msgBack != null) {
                 if (msgBack.getUserInt() == -1 ) {
-                    owner.reportAlarmMsg(comp.getSession() + "/" + comp.getRunType(), comp.getName(), 6,
-                            AConstants.SERROR, "Command = "+text+" failed with the msg = "+msgBack.getText());
+                    owner.reportAlarmMsg(comp.getSession() + "/" + comp.getRunType(), comp.getName(), 7,
+                            AConstants.ERROR, "Command = "+text+" failed with the msg = "+msgBack.getText());
                 } else {
-                    owner.reportAlarmMsg(comp.getSession() + "/" + comp.getRunType(), comp.getName(), 6,
+                    owner.reportAlarmMsg(comp.getSession() + "/" + comp.getRunType(), comp.getName(), 1,
                             AConstants.INFO, "Command = "+text+" completed with the msg = "+msgBack.getText());
                 }
             }
