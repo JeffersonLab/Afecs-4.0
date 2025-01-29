@@ -689,7 +689,7 @@ public class ServiceExecutionT implements Runnable {
                                     owner.myName,
                                     1,
                                     AConstants.INFO,
-                                    " Starting process = " + bp.getName() + " to component " + pck.getSendType());
+                                    " Starting process = " + bp.getName() + " to component " + pck.getSendSubject());
 
                         } else {
                             owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
