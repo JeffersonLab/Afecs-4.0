@@ -661,7 +661,7 @@ public class ProcessManager {
             // check the return message
             if (msgBack != null) {
                 if (msgBack.getUserInt() == -1 ) {
-                    owner.reportAlarmMsg(comp.getSession() + "/" + comp.getRunType(), comp.getName(), 7,
+                    owner.reportAlarmMsg(comp.getSession() + "/" + comp.getRunType(), comp.getName(), 13,
                             AConstants.ERROR, "Command = "+text+" failed with the msg = "+msgBack.getText());
                 } else {
                     owner.reportAlarmMsg(comp.getSession() + "/" + comp.getRunType(), comp.getName(), 1,
