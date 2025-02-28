@@ -336,6 +336,12 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
                 cMsgPayloadItem item = m.getPayloadItem("IpAddresses");
                 try {
                     String[] plHosts = item.getStringArray();
+                    if (plHosts.length > 0) {
+                        System.out.println(" DDD: Interfaces");
+                        for (String ph : plHosts) {
+                            System.out.println(ph);
+                        }
+                    }
                     // connect with the hostname
                     System.out.println("Info: Please wait... connecting to the platform host = " + plHost);
                     String UIMulticastUDL = base.updateHostUdl(plHost, cl.getPlatformTcpPort());
@@ -344,6 +350,7 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
                     } catch (cMsgException e) {
                         System.out.println("Failed to connect to IP address = " + plHost);
                     }
+
                     if (!base.isPlatformConnected()) {
 
                         // update platform udl and connect
