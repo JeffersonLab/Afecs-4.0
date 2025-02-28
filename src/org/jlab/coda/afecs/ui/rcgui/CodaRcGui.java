@@ -326,12 +326,11 @@ public class CodaRcGui extends JFrame implements ListSelectionListener {
             for (int i = 0; i < 10; i++) {
                 m = base.rcMonitor(300);
                 if (m != null) {
-                    System.out.println("/n");
                     break;
                 }
                 System.out.printf(".");
             }
-            System.out.println("/n");
+            System.out.println();
             if (m != null) {
                 plHost = m.getSenderHost();
                 cMsgPayloadItem item = m.getPayloadItem("IpAddresses");
