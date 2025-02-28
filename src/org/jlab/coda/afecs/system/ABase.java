@@ -169,6 +169,10 @@ public class ABase implements Serializable {
             try {
                 // define a cMsg connection object with the rcUdl
                 cMsg myRcDomainConnection = new cMsg(rcUDL, "x", "y");
+                System.out.println(AfecsTool.getCurrentTime("HH:mm:ss") + " " +
+                        myName +
+                        ": pinging RC domain multicast server using \n udl = " +
+                        rcUDL);
                 // send a monitor packet
                 m = myRcDomainConnection.monitor(Integer.toString(sleep));
             } catch (cMsgException e) {
