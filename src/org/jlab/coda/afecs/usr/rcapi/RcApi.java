@@ -515,7 +515,6 @@ public class RcApi extends ABase {
         try {
             if (msg != null) {
                 if (msg.getPayloadItem("outputfile_p") != null) {
-                    System.out.println("Payload type = "+ msg.getPayloadItem("outputfile_p").getType() );
                     String[] ps = msg.getPayloadItem("outputfile_p").getStringArray();
                     return ps[0];
                 } else {
