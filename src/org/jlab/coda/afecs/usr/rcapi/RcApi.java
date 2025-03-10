@@ -508,8 +508,8 @@ public class RcApi extends ABase {
         cMsgMessage msg = null;
         try {
             msg = p2pSend("sms_" + runType, AConstants.SupervisorReportComponentOutputFile_p, compName, AConstants.TIMEOUT);
-        } catch (AException e) {
-            System.out.println("Error: " + e.getMessage());
+        } catch (AException ee) {
+            System.out.println("Error: " + ee.getMessage());
 
         }
         try {
@@ -524,7 +524,8 @@ public class RcApi extends ABase {
                 System.out.println("communication error");
             }
         } catch (cMsgException e) {
-            if (AConstants.debug.get()) System.out.println(e.getMessage());
+//            if (AConstants.debug.get()) System.out.println(e.getMessage());
+             System.out.println(e.getMessage());
         }
         return null;
     }
