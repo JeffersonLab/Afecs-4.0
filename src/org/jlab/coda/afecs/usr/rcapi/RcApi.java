@@ -515,6 +515,7 @@ public class RcApi extends ABase {
         try {
             if (msg != null) {
                 if (msg.getPayloadItem("outputfile_p") != null) {
+                    System.out.println("Payload type = "+ msg.getPayloadItem("outputfile_p").getType() );
                     s = msg.getPayloadItem("outputfile_p").getString();
                     return s;
                 } else {
@@ -525,7 +526,7 @@ public class RcApi extends ABase {
             }
         } catch (cMsgException e) {
 //            if (AConstants.debug.get()) System.out.println(e.getMessage());
-             System.out.println(e.getMessage());
+             System.out.println("cMsg_error: "+ e.getMessage());
         }
         return null;
     }
