@@ -657,10 +657,11 @@ public class ServiceExecutionT implements Runnable {
 
                             // Execution rc domain
 
-                            System.out.println("FFF =======================> 4 " );
+                        if (bp.getScripts() != null && !bp.getScripts().isEmpty()) {
                             owner.pm.executeShellProcess(bp, owner.myPlugin, owner.me);
+                        } else {
                             owner.pm.executeSup2RCProcess(bp, owner.myPlugin, owner);
-
+                        }
 
 //                        owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
 //                                owner.myName,

@@ -227,13 +227,13 @@ public class ProcessManager {
                                   AComponent comp) {
         boolean stat1 = true;
 
+        System.out.println("FFF =======================> 4 " );
+
         System.out.println("HHH ====] Request to execute a shell process");
         System.out.println(p);
 
             // Execute scripts first
-            if (p.getScripts() != null && !p.getScripts().isEmpty()) {
                 stat1 = _execShellScripts(p.getScripts(), comp, false);
-            }
 
         return stat1;
     }
