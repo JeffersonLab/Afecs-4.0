@@ -619,6 +619,7 @@ public class ServiceExecutionT implements Runnable {
 
         System.out.println("FFF========> 2"+serviceName);
 
+
         for (AProcess bp : owner.me.getProcesses()) {
             System.out.println("FFF========> 3"+serviceName);
 
