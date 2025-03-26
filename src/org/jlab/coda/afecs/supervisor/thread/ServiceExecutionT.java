@@ -636,7 +636,7 @@ public class ServiceExecutionT implements Runnable {
                     } else {
                         pr = pu;
                     }
-                    System.out.println("FFF: "+ su+" "+ pr);
+                    System.out.println("FFF: "+ su+" "+ pr+" "+su.contains(pr));
                     if (su.contains(pr) ||
                             (serviceName.equals("CodaRcStartRun") && bp.getBefore().equals(AConstants.prestarted))) {
 
