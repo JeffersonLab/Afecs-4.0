@@ -661,6 +661,7 @@ public class ServiceExecutionT implements Runnable {
                             owner.pm.executeProcess(bp, owner.myPlugin, owner.me);
                             owner.pm.executeSup2RCProcess(bp, owner.myPlugin, owner);
 
+
 //                        owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
 //                                owner.myName,
 //                                1,
