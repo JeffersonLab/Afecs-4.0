@@ -259,7 +259,6 @@ public class ServiceExecutionT implements Runnable {
                     }
                 }
             }
-            System.out.println("FFF========> 1"+serviceName);
             // See if we have processes scheduled to be executed
             // before the state transition. Note that supervisor agent supports
             // scripts/processes at only pre and post state transitions.
@@ -616,15 +615,10 @@ public class ServiceExecutionT implements Runnable {
 
 
     private void execProcessBeforeTransition() {
-        System.out.println("FFF========> 2"+serviceName);
 
         for (AProcess bp : owner.me.getProcesses()) {
-
-
             if (bp != null) {
-                System.out.println("FFF========> 3"+serviceName);
                 if (bp.getBefore() != null && !bp.getBefore().equals(AConstants.udf)) {
-                    System.out.println("FFF========> 4"+serviceName);
                     String pu = bp.getBefore().toUpperCase();
                     String su = serviceName.toUpperCase();
                     String pr;
@@ -638,25 +632,8 @@ public class ServiceExecutionT implements Runnable {
                     }
                     if (su.contains(pr) ||
                             (serviceName.equals("CodaRcStartRun") && bp.getBefore().equals(AConstants.prestarted))) {
-                        System.out.println("FFF: "+ su+" "+ pr+" "+su.contains(pr));
 
-//                        APackage pck = bp.getSendPackages().get(0);
-//                        if (pck != null) {
-//                            owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
-//                                    owner.myName,
-//                                    1,
-//                                    AConstants.INFO,
-//                                    " Starting process = " + bp.getName() + " to component " + pck.getSendSubject());
-//
-//                        } else {
-//                            owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
-//                                    owner.myName,
-//                                    1,
-//                                    AConstants.INFO,
-//                                    " Starting process = " + bp.getName());
-//                        }
                         // execute scripts before the state transition
-                        System.out.println(bp);
 
                         if (bp.getScripts() != null && !bp.getScripts().isEmpty()) {
                             owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
@@ -704,26 +681,24 @@ public class ServiceExecutionT implements Runnable {
                     }
                     if (su.contains(pr) ||
                             (serviceName.equals("CodaRcStartRun") && bp.getAfter().equals(AConstants.active))) {
-                        APackage pck = bp.getSendPackages().get(0);
-                        if (pck != null) {
+
+                        if (bp.getScripts() != null && !bp.getScripts().isEmpty()) {
+                            owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
+                                    owner.myName,
+                                    1,
+                                    AConstants.INFO,
+                                    " Starting shell process = " + bp.getName());
+                            owner.pm.executeShellProcess(bp, owner.myPlugin, owner.me);
+                        } else {
+                            APackage pck = bp.getSendPackages().get(0);
                             owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
                                     owner.myName,
                                     1,
                                     AConstants.INFO,
                                     " Starting process = " + bp.getName() + " to component " + pck.getSendSubject());
-
-                        } else {
-                            owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
-                                    owner.myName,
-                                    1,
-                                    AConstants.INFO,
-                                    " Starting process = " + bp.getName());
+                            owner.pm.executeSup2RCProcess(bp, owner.myPlugin, owner);
                         }
 
-                        // execute scripts before the state transition
-
-//                        owner.pm.executeProcess(bp, owner.myPlugin, owner.me); // 12/18/24 VG
-                        owner.pm.executeSup2RCProcess(bp, owner.myPlugin, owner);
 
 //                        owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
 //                                owner.myName,

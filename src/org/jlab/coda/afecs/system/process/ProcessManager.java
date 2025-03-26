@@ -121,10 +121,6 @@ public class ProcessManager {
         boolean stat1 = true;
         boolean stat2 = true;
 
-        System.out.println("HHH ====] Request to execute a process");
-        System.out.println(p);
-
-
         if (p.getPeriodicity() == 0) {
 
             // Execute scripts first
@@ -155,9 +151,6 @@ public class ProcessManager {
                         // Execution rc domain
                         if (pck.getForRcClient().equals(AConstants.seton)) {
                             if (pck.getSendText() != null) {
-                                System.out.println("HHH ==== ] sending message - type = " + pck.getSendType() +
-                                        " subject = " + pck.getSendSubject() +
-                                        " text = " + pck.getSendText());
                                 stat2 = _sync_sendPckgUsingRc(pck, comp, p.getTimeout());
                             }
                             // Execution cMsg domain
@@ -195,10 +188,6 @@ public class ProcessManager {
                         if (pck.getForRcClient().equals(AConstants.seton)) {
                             stat2 = _async_sendPckgUsingRc(pck, comp);
 
-                            System.out.println("HHH ==== ] sending message - type = " + pck.getSendType() +
-                                    " subject = " + pck.getSendSubject() +
-                                    " text = " + pck.getSendText());
-
                             // Execution using native cMsg
                         } else if (pck.getForNativecMsg().equals(AConstants.seton)) {
                             _async_sendPckgUsingcMsg(pck, comp);
@@ -227,9 +216,7 @@ public class ProcessManager {
                                   AComponent comp) {
         boolean stat1 = true;
 
-        System.out.println("FFF =======================> SHELL PROCESS EXECUTION " );
-
-        System.out.println("HHH ====] Request to execute a shell process");
+        System.out.println("DDD ====] Request to execute a shell process");
         System.out.println(p);
 
             // Execute scripts first
@@ -244,7 +231,7 @@ public class ProcessManager {
         boolean stat1 = true;
         boolean stat2 = true;
 
-        System.out.println("HHH ====] Request to execute a process");
+        System.out.println("DDD ====] Request to execute a RC domain cMsg process");
         System.out.println(p);
 
         // Now defined cMsg processes
