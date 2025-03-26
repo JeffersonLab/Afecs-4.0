@@ -616,6 +616,7 @@ public class ServiceExecutionT implements Runnable {
 
 
     private void execProcessBeforeTransition() {
+
         System.out.println("FFF========> 2"+serviceName);
 
         for (AProcess bp : owner.me.getProcesses()) {
