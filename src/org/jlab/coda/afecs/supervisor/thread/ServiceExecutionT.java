@@ -259,7 +259,7 @@ public class ServiceExecutionT implements Runnable {
                     }
                 }
             }
-
+            System.out.println("FFF========> "+serviceName);
             // See if we have processes scheduled to be executed
             // before the state transition. Note that supervisor agent supports
             // scripts/processes at only pre and post state transitions.
