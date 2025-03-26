@@ -650,10 +650,13 @@ public class ServiceExecutionT implements Runnable {
                                     " Starting process = " + bp.getName());
                         }
                         // execute scripts before the state transition
+                        if (bp.getSendPackages().isEmpty()) {
+                            System.out.println("FFF =======================> " );
 
-//                        owner.pm.executeProcess(bp, owner.myPlugin, owner.me); //12.18.24 VG
-                        owner.pm.executeSup2RCProcess(bp, owner.myPlugin, owner);
-
+                            owner.pm.executeProcess(bp, owner.myPlugin, owner.me);
+                        } else {//12.18.24 VG
+                            owner.pm.executeSup2RCProcess(bp, owner.myPlugin, owner);
+                        }
 //                        owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
 //                                owner.myName,
 //                                1,
