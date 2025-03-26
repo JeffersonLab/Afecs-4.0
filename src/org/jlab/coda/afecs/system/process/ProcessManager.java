@@ -132,87 +132,87 @@ public class ProcessManager {
             }
 
             // Now defined cMsg processes
-//            if (p.getSendPackages() != null && !p.getSendPackages().isEmpty()) {
-//
-//                // Synchronous messaging
-//                if (p.getSync() != null && p.getSync().equals(AConstants.seton)) {
-//
-//                    // Send a described packages.
-//                    for (APackage pck : p.getSendPackages()) {
-//
-//                        // If cool does not define send or received subject,
-//                        // set the subject to the name of this agent. This
-//                        // means this agent represents the same name physical
-//                        // client
-//                        if (pck.getSendSubject().equals(AConstants.udf)) {
-//                            pck.setSendSubject(owner.myName);
-//                        }
-//                        if (pck.getReceivedSubject().equals(AConstants.udf)) {
-//                            pck.setReceivedSubject(owner.myName);
-//                        }
-//
-//                        // Execution rc domain
-//                        if (pck.getForRcClient().equals(AConstants.seton)) {
-//                            if (pck.getSendText() != null) {
-//                                System.out.println("HHH ==== ] sending message - type = " + pck.getSendType() +
-//                                        " subject = " + pck.getSendSubject() +
-//                                        " text = " + pck.getSendText());
-//                                stat2 = _sync_sendPckgUsingRc(pck, comp, p.getTimeout());
-//                            }
-//                            // Execution cMsg domain
-//                        } else if (pck.getForNativecMsg().equals(AConstants.seton)) {
-//                            stat2 = _sync_sendPckgUsingcMsg(pck, comp, p.getTimeout());
-//
-//                            // Execution using described plugin
-//                            // timeout is defined from passed process
-//                        } else if (plugin != null) {
-//                            stat2 = _sync_execProcUsingPlugin(plugin, p, pck, comp);
-//                        }
-//
-//                        // One of the send packages of the process failed to send
-//                        // fail the process execution
-//                        if (!stat2) return false;
-//                    }
-//
-//                    // Asynchronous process execution.
-//                    // Async processes will always return false, meaning
-//                    // that the state of the agent will not be changed
-//                    // now, but only after receiving state from the client.
-//                    // Send a described packages.
-//                } else {
-//
-//                    for (APackage pck : p.getSendPackages()) {
-//
-//                        if (pck.getSendSubject().equals(AConstants.udf)) {
-//                            pck.setSendSubject(owner.myName);
-//                        }
-//                        if (pck.getReceivedSubject().equals(AConstants.udf)) {
-//                            pck.setReceivedSubject(owner.myName);
-//                        }
-//
-//                        // Execution rc domain
-//                        if (pck.getForRcClient().equals(AConstants.seton)) {
-//                            stat2 = _async_sendPckgUsingRc(pck, comp);
-//
-//                            System.out.println("HHH ==== ] sending message - type = " + pck.getSendType() +
-//                                    " subject = " + pck.getSendSubject() +
-//                                    " text = " + pck.getSendText());
-//
-//                            // Execution using native cMsg
-//                        } else if (pck.getForNativecMsg().equals(AConstants.seton)) {
-//                            _async_sendPckgUsingcMsg(pck, comp);
-//
-//                            // Execution using described plugin
-//                        } else if (plugin != null) {
-//                            stat2 = _async_execProcUsingPlugin(plugin, pck, comp);
-//                        }
-//
-//                        // One of the send packages of the process failed to send
-//                        // fail the process execution
-//                        if (!stat2) return false;
-//                    }
-//                }
-//            }
+            if (p.getSendPackages() != null && !p.getSendPackages().isEmpty()) {
+
+                // Synchronous messaging
+                if (p.getSync() != null && p.getSync().equals(AConstants.seton)) {
+
+                    // Send a described packages.
+                    for (APackage pck : p.getSendPackages()) {
+
+                        // If cool does not define send or received subject,
+                        // set the subject to the name of this agent. This
+                        // means this agent represents the same name physical
+                        // client
+                        if (pck.getSendSubject().equals(AConstants.udf)) {
+                            pck.setSendSubject(owner.myName);
+                        }
+                        if (pck.getReceivedSubject().equals(AConstants.udf)) {
+                            pck.setReceivedSubject(owner.myName);
+                        }
+
+                        // Execution rc domain
+                        if (pck.getForRcClient().equals(AConstants.seton)) {
+                            if (pck.getSendText() != null) {
+                                System.out.println("HHH ==== ] sending message - type = " + pck.getSendType() +
+                                        " subject = " + pck.getSendSubject() +
+                                        " text = " + pck.getSendText());
+                                stat2 = _sync_sendPckgUsingRc(pck, comp, p.getTimeout());
+                            }
+                            // Execution cMsg domain
+                        } else if (pck.getForNativecMsg().equals(AConstants.seton)) {
+                            stat2 = _sync_sendPckgUsingcMsg(pck, comp, p.getTimeout());
+
+                            // Execution using described plugin
+                            // timeout is defined from passed process
+                        } else if (plugin != null) {
+                            stat2 = _sync_execProcUsingPlugin(plugin, p, pck, comp);
+                        }
+
+                        // One of the send packages of the process failed to send
+                        // fail the process execution
+                        if (!stat2) return false;
+                    }
+
+                    // Asynchronous process execution.
+                    // Async processes will always return false, meaning
+                    // that the state of the agent will not be changed
+                    // now, but only after receiving state from the client.
+                    // Send a described packages.
+                } else {
+
+                    for (APackage pck : p.getSendPackages()) {
+
+                        if (pck.getSendSubject().equals(AConstants.udf)) {
+                            pck.setSendSubject(owner.myName);
+                        }
+                        if (pck.getReceivedSubject().equals(AConstants.udf)) {
+                            pck.setReceivedSubject(owner.myName);
+                        }
+
+                        // Execution rc domain
+                        if (pck.getForRcClient().equals(AConstants.seton)) {
+                            stat2 = _async_sendPckgUsingRc(pck, comp);
+
+                            System.out.println("HHH ==== ] sending message - type = " + pck.getSendType() +
+                                    " subject = " + pck.getSendSubject() +
+                                    " text = " + pck.getSendText());
+
+                            // Execution using native cMsg
+                        } else if (pck.getForNativecMsg().equals(AConstants.seton)) {
+                            _async_sendPckgUsingcMsg(pck, comp);
+
+                            // Execution using described plugin
+                        } else if (plugin != null) {
+                            stat2 = _async_execProcUsingPlugin(plugin, pck, comp);
+                        }
+
+                        // One of the send packages of the process failed to send
+                        // fail the process execution
+                        if (!stat2) return false;
+                    }
+                }
+            }
 
             // periodic process request
         } else {
