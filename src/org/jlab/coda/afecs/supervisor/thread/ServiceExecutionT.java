@@ -653,6 +653,8 @@ public class ServiceExecutionT implements Runnable {
 
                             // Execution rc domain
                         assert pck != null;
+                        System.out.println("FFF =======================> "+ pck.getForRcClient()+" "+pck.getForNativecMsg() );
+
                         if (!pck.getForRcClient().equals(AConstants.seton))
                             {
                             System.out.println("FFF =======================> " );
