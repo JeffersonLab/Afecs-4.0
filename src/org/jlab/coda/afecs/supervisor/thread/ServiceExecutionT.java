@@ -658,7 +658,7 @@ public class ServiceExecutionT implements Runnable {
                             // Execution rc domain
 
                             System.out.println("FFF =======================> 4 " );
-                            owner.pm.executeProcess(bp, owner.myPlugin, owner.me);
+                            owner.pm.executeShellProcess(bp, owner.myPlugin, owner.me);
                             owner.pm.executeSup2RCProcess(bp, owner.myPlugin, owner);
 
 
