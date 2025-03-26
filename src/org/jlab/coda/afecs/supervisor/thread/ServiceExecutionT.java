@@ -621,7 +621,6 @@ public class ServiceExecutionT implements Runnable {
         for (AProcess bp : owner.me.getProcesses()) {
             System.out.println("FFF========> 3"+serviceName);
 
-            System.out.println(bp);
             if (bp != null) {
                 if (bp.getBefore() != null && !bp.getBefore().equals(AConstants.udf)) {
                     String pu = bp.getBefore().toUpperCase();
@@ -654,8 +653,7 @@ public class ServiceExecutionT implements Runnable {
                                     " Starting process = " + bp.getName());
                         }
                         // execute scripts before the state transition
-
-                            // Execution rc domain
+                        System.out.println(bp);
 
                         if (bp.getScripts() != null && !bp.getScripts().isEmpty()) {
                             owner.pm.executeShellProcess(bp, owner.myPlugin, owner.me);
