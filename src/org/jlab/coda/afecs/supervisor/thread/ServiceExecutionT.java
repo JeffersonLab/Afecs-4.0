@@ -619,10 +619,12 @@ public class ServiceExecutionT implements Runnable {
         System.out.println("FFF========> 2"+serviceName);
 
         for (AProcess bp : owner.me.getProcesses()) {
-            System.out.println("FFF========> 3"+serviceName);
+
 
             if (bp != null) {
+                System.out.println("FFF========> 3"+serviceName);
                 if (bp.getBefore() != null && !bp.getBefore().equals(AConstants.udf)) {
+                    System.out.println("FFF========> 4"+serviceName);
                     String pu = bp.getBefore().toUpperCase();
                     String su = serviceName.toUpperCase();
                     String pr;
