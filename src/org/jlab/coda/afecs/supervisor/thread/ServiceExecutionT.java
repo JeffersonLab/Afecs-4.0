@@ -259,7 +259,7 @@ public class ServiceExecutionT implements Runnable {
                     }
                 }
             }
-            System.out.println("FFF========> "+serviceName);
+            System.out.println("FFF========> 1"+serviceName);
             // See if we have processes scheduled to be executed
             // before the state transition. Note that supervisor agent supports
             // scripts/processes at only pre and post state transitions.
@@ -616,6 +616,7 @@ public class ServiceExecutionT implements Runnable {
 
 
     private void execProcessBeforeTransition() {
+        System.out.println("FFF========> 2"+serviceName);
 
         for (AProcess bp : owner.me.getProcesses()) {
             if (bp != null) {
@@ -655,8 +656,7 @@ public class ServiceExecutionT implements Runnable {
                         assert pck != null;
                         System.out.println("FFF =======================> "+ pck.getForRcClient()+" "+pck.getForNativecMsg() );
 
-                        if (!pck.getForRcClient().equals(AConstants.seton))
-                            {
+                        if (!pck.getForRcClient().equals(AConstants.seton)) {
                             System.out.println("FFF =======================> " );
                             owner.pm.executeProcess(bp, owner.myPlugin, owner.me);
                         } else {//12.18.24 VG
