@@ -636,31 +636,42 @@ public class ServiceExecutionT implements Runnable {
                     } else {
                         pr = pu;
                     }
-                    System.out.println("FFF: "+ su+" "+ pr+" "+su.contains(pr));
                     if (su.contains(pr) ||
                             (serviceName.equals("CodaRcStartRun") && bp.getBefore().equals(AConstants.prestarted))) {
+                        System.out.println("FFF: "+ su+" "+ pr+" "+su.contains(pr));
 
-                        APackage pck = bp.getSendPackages().get(0);
-                        if (pck != null) {
+//                        APackage pck = bp.getSendPackages().get(0);
+//                        if (pck != null) {
+//                            owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
+//                                    owner.myName,
+//                                    1,
+//                                    AConstants.INFO,
+//                                    " Starting process = " + bp.getName() + " to component " + pck.getSendSubject());
+//
+//                        } else {
+//                            owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
+//                                    owner.myName,
+//                                    1,
+//                                    AConstants.INFO,
+//                                    " Starting process = " + bp.getName());
+//                        }
+                        // execute scripts before the state transition
+                        System.out.println(bp);
+
+                        if (bp.getScripts() != null && !bp.getScripts().isEmpty()) {
+                            owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
+                                    owner.myName,
+                                    1,
+                                    AConstants.INFO,
+                                    " Starting shell process = " + bp.getName());
+                            owner.pm.executeShellProcess(bp, owner.myPlugin, owner.me);
+                        } else {
+                            APackage pck = bp.getSendPackages().get(0);
                             owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
                                     owner.myName,
                                     1,
                                     AConstants.INFO,
                                     " Starting process = " + bp.getName() + " to component " + pck.getSendSubject());
-
-                        } else {
-                            owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
-                                    owner.myName,
-                                    1,
-                                    AConstants.INFO,
-                                    " Starting process = " + bp.getName());
-                        }
-                        // execute scripts before the state transition
-                        System.out.println(bp);
-
-                        if (bp.getScripts() != null && !bp.getScripts().isEmpty()) {
-                            owner.pm.executeShellProcess(bp, owner.myPlugin, owner.me);
-                        } else {
                             owner.pm.executeSup2RCProcess(bp, owner.myPlugin, owner);
                         }
 
