@@ -621,7 +621,6 @@ public class ServiceExecutionT implements Runnable {
         for (AProcess bp : owner.me.getProcesses()) {
             System.out.println("FFF========> 3"+serviceName);
 
-            System.out.println(bp);
             if (bp != null) {
                 if (bp.getBefore() != null && !bp.getBefore().equals(AConstants.udf)) {
                     String pu = bp.getBefore().toUpperCase();
@@ -655,14 +654,9 @@ public class ServiceExecutionT implements Runnable {
                         }
                         // execute scripts before the state transition
 
-                            // Execution rc domain
-                        assert pck != null;
-                        System.out.println("FFF =======================> "+ pck.getForRcClient()+" "+pck.getForNativecMsg() );
 
-                        if (!pck.getForRcClient().equals(AConstants.seton)) {
-                            System.out.println("FFF =======================> " );
+                            System.out.println("FFF =======================> 4" );
                             owner.pm.executeProcess(bp, owner.myPlugin, owner.me);
-                        } else {//12.18.24 VG
                             owner.pm.executeSup2RCProcess(bp, owner.myPlugin, owner);
                         }
 //                        owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
