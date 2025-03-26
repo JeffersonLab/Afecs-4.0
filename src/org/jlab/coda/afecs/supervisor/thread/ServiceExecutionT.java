@@ -616,13 +616,12 @@ public class ServiceExecutionT implements Runnable {
 
 
     private void execProcessBeforeTransition() {
-
         System.out.println("FFF========> 2"+serviceName);
-
 
         for (AProcess bp : owner.me.getProcesses()) {
             System.out.println("FFF========> 3"+serviceName);
 
+            System.out.println(bp);
             if (bp != null) {
                 if (bp.getBefore() != null && !bp.getBefore().equals(AConstants.udf)) {
                     String pu = bp.getBefore().toUpperCase();
@@ -656,11 +655,12 @@ public class ServiceExecutionT implements Runnable {
                         }
                         // execute scripts before the state transition
 
+                            // Execution rc domain
 
-                            System.out.println("FFF =======================> 4" );
+                            System.out.println("FFF =======================> 4 " );
                             owner.pm.executeProcess(bp, owner.myPlugin, owner.me);
                             owner.pm.executeSup2RCProcess(bp, owner.myPlugin, owner);
-                        }
+
 //                        owner.reportAlarmMsg(owner.me.getSession() + "/" + owner.me.getRunType(),
 //                                owner.myName,
 //                                1,
