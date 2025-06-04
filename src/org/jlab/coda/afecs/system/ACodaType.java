@@ -44,8 +44,9 @@ public enum ACodaType {
     EB   (710),
     EBER (810),
     DC   (910),
-    FPGA (960),
+
     ROC  (1010),
+    FPGA (1060),
     GT   (1110),
     TS   (1210),
     SMS  (1310),
