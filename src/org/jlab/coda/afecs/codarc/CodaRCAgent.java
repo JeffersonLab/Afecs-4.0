@@ -970,27 +970,72 @@ public class CodaRCAgent extends AParent {
                             me.setState(st);
 
                         }
-                        if (msg.getPayloadItem(AConstants.EVENTNUMBER64) != null) {
-                            me.setEventNumber(msg.getPayloadItem(AConstants.EVENTNUMBER64).getLong());
-                        } else if (msg.getPayloadItem(AConstants.EVENTNUMBER) != null) {
-                            int _evt_numner = msg.getPayloadItem(AConstants.EVENTNUMBER).getInt();
-                            if (_evt_numner < 0){
-                                long _l_evt_number = Integer.MAX_VALUE + (_evt_numner * (-1));
-                                me.setEventNumber(_l_evt_number);
-                            } else {
-                                me.setEventNumber(msg.getPayloadItem(AConstants.EVENTNUMBER).getInt());
-                            }
+
+                        // supports single stream from a VTP ROC -------- vg 04.26
+//> eventNumber
+                        Long eventNumber = null;
+                        if (msg.getPayloadItem("eventCount") != null) {
+                            eventNumber = Integer.toUnsignedLong(msg.getPayloadItem("eventCount").getInt());
+                        } else if (msg.getPayloadItem("frameCount") != null) {
+                            eventNumber = Integer.toUnsignedLong(msg.getPayloadItem("frameCount").getInt());
+                        } else if (msg.getPayloadItem("eventCount64") != null) {
+                            eventNumber = msg.getPayloadItem("eventCount64").getLong();
                         }
 
-                        if (msg.getPayloadItem(AConstants.EVENTRATE) != null)
-                            me.setEventRate(msg.getPayloadItem(AConstants.EVENTRATE).getFloat());
-
-                        if (msg.getPayloadItem(AConstants.DATARATE) != null) {
-                            me.setDataRate((msg.getPayloadItem(AConstants.DATARATE).getDouble() * 4.0) / 1000.0);
-
+                        if (eventNumber != null) {
+                            me.setEventNumber(eventNumber);
                         }
-                        if (msg.getPayloadItem(AConstants.NUMBEROFLONGS) != null)
-                            me.setNumberOfLongs(msg.getPayloadItem(AConstants.NUMBEROFLONGS).getLong());
+//                        if (msg.getPayloadItem(AConstants.EVENTNUMBER64) != null) {
+//                            me.setEventNumber(msg.getPayloadItem(AConstants.EVENTNUMBER64).getLong());
+//                        } else if (msg.getPayloadItem(AConstants.EVENTNUMBER) != null) {
+//                            int _evt_numner = msg.getPayloadItem(AConstants.EVENTNUMBER).getInt();
+//                            if (_evt_numner < 0){
+//                                long _l_evt_number = Integer.MAX_VALUE + (_evt_numner * (-1));
+//                                me.setEventNumber(_l_evt_number);
+//                            } else {
+//                                me.setEventNumber(msg.getPayloadItem(AConstants.EVENTNUMBER).getInt());
+//                            }
+//                        }
+
+//>eventRate
+                        Float eventRate = null;
+                        if (msg.getPayloadItem("eventRate") != null)
+                            eventRate = msg.getPayloadItem("eventRate").getFloat();
+                        else if (msg.getPayloadItem("frameRate") != null)
+                            eventRate = msg.getPayloadItem("frameRate").getFloat();
+                        if(eventRate !=null){
+                            me.setEventRate(eventRate);
+                        }
+//                        if (msg.getPayloadItem(AConstants.EVENTRATE) != null)
+//                            me.setEventRate(msg.getPayloadItem(AConstants.EVENTRATE).getFloat());
+
+//> dataRate
+                        Double dataRate = null;
+                        if (msg.getPayloadItem("dataRate") != null) {
+                            dataRate = msg.getPayloadItem("dataRate").getDouble();
+                        } else if (msg.getPayloadItem("frameDataRate") != null) {
+                            dataRate = msg.getPayloadItem("frameDataRate").getDouble();
+                        }
+                        if(dataRate !=null){
+                            me.setDataRate(dataRate* 4.0 / 1000.0);
+                        }
+//                        if (msg.getPayloadItem(AConstants.DATARATE) != null) {
+//                            me.setDataRate((msg.getPayloadItem(AConstants.DATARATE).getDouble() * 4.0) / 1000.0);
+//                        }
+
+//> dataCount
+                        Long dataCount = null;
+                        if (msg.getPayloadItem("dataCount") != null){
+                            dataCount = msg.getPayloadItem("dataCount").getLong();
+                        } else if (msg.getPayloadItem("frameDataCount") != null){
+                            dataCount = msg.getPayloadItem("frameDataCount").getLong();
+                        }
+                        if(dataCount !=null){
+                            me.setNumberOfLongs(dataCount);
+                        }
+//                        if (msg.getPayloadItem(AConstants.NUMBEROFLONGS) != null)
+//                            me.setNumberOfLongs(msg.getPayloadItem(AConstants.NUMBEROFLONGS).getLong());
+// end -------- vg 04.26
 
                         if (msg.getPayloadItem(AConstants.LIVETIME) != null)
                             me.setLiveTime(msg.getPayloadItem(AConstants.LIVETIME).getFloat());
