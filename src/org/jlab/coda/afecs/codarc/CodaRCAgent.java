@@ -943,7 +943,6 @@ public class CodaRCAgent extends AParent {
     private class StatusMsgCB extends cMsgCallbackAdapter {
 
         public void callback(cMsgMessage msg, Object userObject) {
-            System.out.println("DDD !!!!!!!!!!!!! In the status-callback");
 
             if (msg != null) {
 
@@ -970,6 +969,10 @@ public class CodaRCAgent extends AParent {
                             String st = msg.getPayloadItem(AConstants.STATE).getString();
                             me.setState(st);
 
+                        }
+                        System.out.println("DDD !!!!!!!!!!!!! In the status-callback");
+                        for (String s:msg.getPayloadNames()){
+                            System.out.println(s);
                         }
 
                         // supports single stream from a VTP ROC -------- vg 04.26
