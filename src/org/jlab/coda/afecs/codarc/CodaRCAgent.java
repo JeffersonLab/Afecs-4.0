@@ -980,11 +980,11 @@ public class CodaRCAgent extends AParent {
                         Long eventNumber = null;
                         if (msg.getPayloadItem("eventCount") != null) {
                             eventNumber = Integer.toUnsignedLong(msg.getPayloadItem("eventCount").getInt());
-                            System.out.println("DDD !!!!!!!!!!!!! Received eventCount = "+eventNumber);
+                            System.out.println("DDD !!!!!!!!!!!!! Received eventCount = "+eventNumber+" type = "+me.getType());
                         }
                         if (msg.getPayloadItem("frameCount") != null) {
                             eventNumber = Integer.toUnsignedLong(msg.getPayloadItem("frameCount").getInt());
-                            System.out.println("DDD !!!!!!!!!!!!! Received frameCount = "+eventNumber);
+                            System.out.println("DDD !!!!!!!!!!!!! Received frameCount = "+eventNumber+" type = "+me.getType());
 
                         }
                         if (msg.getPayloadItem("eventCount64") != null) {
