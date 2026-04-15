@@ -943,6 +943,7 @@ public class CodaRCAgent extends AParent {
     private class StatusMsgCB extends cMsgCallbackAdapter {
 
         public void callback(cMsgMessage msg, Object userObject) {
+            System.out.println("DDD !!!!!!!!!!!!! In the status-callback");
 
             if (msg != null) {
 
