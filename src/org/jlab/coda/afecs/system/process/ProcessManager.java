@@ -22,7 +22,6 @@
 
 package org.jlab.coda.afecs.system.process;
 
-import com.sun.scenario.effect.impl.sw.java.JSWBlend_SRC_OUTPeer;
 import org.jlab.coda.afecs.agent.AParent;
 import org.jlab.coda.afecs.codarc.CodaRCAgent;
 import org.jlab.coda.afecs.cool.ontology.*;
