@@ -970,21 +970,19 @@ public class CodaRCAgent extends AParent {
                             me.setState(st);
 
                         }
-//                        System.out.println("DDD !!!!!!!!!!!!! In the status-callback");
-//                        for (String s:msg.getPayloadNames()){
-//                            System.out.println(s);
-//                        }
+                        System.out.println("DDD !!!!!!!!!!!!! In the status-callback");
+                        for (String s: me.getLinkedComponentNames()){
+                            System.out.println(s);
+                        }
 
                         // supports single stream from a VTP ROC -------- vg 04.26
 //> eventNumber
                         Long eventNumber = null;
                         if (msg.getPayloadItem("eventCount") != null) {
                             eventNumber = Integer.toUnsignedLong(msg.getPayloadItem("eventCount").getInt());
-                            System.out.println("DDD !!!!!!!!!!!!! Received eventCount = "+eventNumber+" type = "+me.getType());
                         }
                         if (msg.getPayloadItem("frameCount") != null) {
                             eventNumber = Integer.toUnsignedLong(msg.getPayloadItem("frameCount").getInt());
-                            System.out.println("DDD !!!!!!!!!!!!! Received frameCount = "+eventNumber+" type = "+me.getType());
 
                         }
                         if (msg.getPayloadItem("eventCount64") != null) {
