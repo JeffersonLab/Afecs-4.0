@@ -970,25 +970,22 @@ public class CodaRCAgent extends AParent {
                             me.setState(st);
 
                         }
-                        System.out.println("DDD !!!!!!!!!!!!! In the status-callback");
-                        for (String s: me.getLinkedComponentNames()){
-                            System.out.println(s);
-                        }
 
                         // supports single stream from a VTP ROC -------- vg 04.26
 //> eventNumber
                         Long eventNumber = null;
-                        if (msg.getPayloadItem("eventCount") != null) {
-                            eventNumber = Integer.toUnsignedLong(msg.getPayloadItem("eventCount").getInt());
+                        if (me.getType().equalsIgnoreCase(ACodaType.FPGA.name())){
+                            if (msg.getPayloadItem("frameCount") != null) {
+                                eventNumber = Integer.toUnsignedLong(msg.getPayloadItem("frameCount").getInt());
+                            }
+                        } else {
+                            if (msg.getPayloadItem("eventCount") != null) {
+                                eventNumber = Integer.toUnsignedLong(msg.getPayloadItem("eventCount").getInt());
+                            }
+                            if (msg.getPayloadItem("eventCount64") != null) {
+                                eventNumber = msg.getPayloadItem("eventCount64").getLong();
+                            }
                         }
-                        if (msg.getPayloadItem("frameCount") != null) {
-                            eventNumber = Integer.toUnsignedLong(msg.getPayloadItem("frameCount").getInt());
-
-                        }
-                        if (msg.getPayloadItem("eventCount64") != null) {
-                            eventNumber = msg.getPayloadItem("eventCount64").getLong();
-                        }
-
                         if (eventNumber != null) {
                             me.setEventNumber(eventNumber);
                         }
@@ -1006,10 +1003,13 @@ public class CodaRCAgent extends AParent {
 
 //>eventRate
                         Float eventRate = null;
-                        if (msg.getPayloadItem("eventRate") != null)
-                            eventRate = msg.getPayloadItem("eventRate").getFloat();
-                        else if (msg.getPayloadItem("frameRate") != null)
-                            eventRate = msg.getPayloadItem("frameRate").getFloat();
+                        if (me.getType().equalsIgnoreCase(ACodaType.FPGA.name())){
+                            if (msg.getPayloadItem("frameRate") != null)
+                                eventRate = msg.getPayloadItem("frameRate").getFloat();
+                        } else {
+                            if (msg.getPayloadItem("eventRate") != null)
+                                eventRate = msg.getPayloadItem("eventRate").getFloat();
+                        }
                         if(eventRate !=null){
                             me.setEventRate(eventRate);
                         }
@@ -1018,10 +1018,12 @@ public class CodaRCAgent extends AParent {
 
 //> dataRate
                         Double dataRate = null;
-                        if (msg.getPayloadItem("dataRate") != null) {
+                        if (me.getType().equalsIgnoreCase(ACodaType.FPGA.name())){
+                            if (msg.getPayloadItem("frameDataRate") != null)
+                                dataRate = msg.getPayloadItem("frameDataRate").getDouble();
+                        } else {
+                        if (msg.getPayloadItem("dataRate") != null)
                             dataRate = msg.getPayloadItem("dataRate").getDouble();
-                        } else if (msg.getPayloadItem("frameDataRate") != null) {
-                            dataRate = msg.getPayloadItem("frameDataRate").getDouble();
                         }
                         if(dataRate !=null){
                             me.setDataRate(dataRate* 4.0 / 1000.0);
@@ -1032,10 +1034,12 @@ public class CodaRCAgent extends AParent {
 
 //> dataCount
                         Long dataCount = null;
-                        if (msg.getPayloadItem("dataCount") != null){
+                        if (me.getType().equalsIgnoreCase(ACodaType.FPGA.name())){
+                            if (msg.getPayloadItem("frameDataCount") != null)
+                                dataCount = msg.getPayloadItem("frameDataCount").getLong();
+                        } else {
+                        if (msg.getPayloadItem("dataCount") != null)
                             dataCount = msg.getPayloadItem("dataCount").getLong();
-                        } else if (msg.getPayloadItem("frameDataCount") != null){
-                            dataCount = msg.getPayloadItem("frameDataCount").getLong();
                         }
                         if(dataCount !=null){
                             me.setNumberOfLongs(dataCount);
